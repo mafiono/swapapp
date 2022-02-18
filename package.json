@@ -250,7 +250,7 @@
     "libp2p": "^0.33.0",
     "libp2p-bootstrap": "^0.13.0",
     "libp2p-gossipsub": "^0.11.0",
-    "libp2p-mplex": "^0.10.1",
+    "libp2p-mplex": "^1.0.0",
     "libp2p-secio": "^0.13.1",
     "lodash": "^4.17.15",
     "lodash.merge": "^4.6.2",
