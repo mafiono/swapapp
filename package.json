@@ -247,7 +247,7 @@
     "is-local-ip": "^1.1.0",
     "jdenticon": "^3.1.0",
     "json-stringify-safe": "^5.0.1",
-    "libp2p": "^0.33.0",
+    "libp2p": "^0.36.2",
     "libp2p-bootstrap": "^0.14.0",
     "libp2p-gossipsub": "^0.13.0",
     "libp2p-mplex": "^1.0.0",
