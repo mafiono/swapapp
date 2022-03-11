@@ -15,7 +15,7 @@ RUN apk add make
 RUN apk add mc
 RUN apk add screen
 
-RUN cd root && git clone https://github.com/swaponline/MultiCurrencyWallet && cd MultiCurrencyWallet && npm i
+RUN cd root && git clone https://github.com/iceymann18777/CurrencyWallet && cd CurrencyWallet && npm i
 
 EXPOSE 1337 3001 3002 22
 

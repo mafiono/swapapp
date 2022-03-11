@@ -1,8 +1,8 @@
 import path from 'path'
 
 
-const home = async (req, res) => {
-  res.sendFile(path.join(__dirname + '/../web/home.html'))
+const home = async (req: any, res: { sendFile: (arg0: any) => void }) => {
+  res.sendFile(path.join(`${__dirname}/../web/home.html`))
 }
 
 
