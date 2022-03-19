@@ -39,7 +39,8 @@ class RowHistory extends Component<any, any> {
 
       if (isFinished || isRefunded) return
 
-      const isUTXOModel = COIN_DATA[sellCurrency] && COIN_DATA[sellCurrency].model === COIN_MODEL.UTXO
+      const isUTXOModel =
+        COIN_DATA[sellCurrency] && COIN_DATA[sellCurrency].model === COIN_MODEL.UTXO
 
       const isPayed = isUTXOModel ? 4 : 5
       const isEmptyBalance = isUTXOModel ? scriptBalance === 0 : !isEthContractFunded
@@ -77,9 +78,7 @@ class RowHistory extends Component<any, any> {
     actions.modals.close('IncompletedSwaps')
   }
   componentDidMount() {
-    const {
-      utxoScriptValues: values,
-    } = this.props.row
+    const { utxoScriptValues: values } = this.props.row
 
     if (!values) return
 
@@ -91,9 +90,7 @@ class RowHistory extends Component<any, any> {
   }
 
   render() {
-    const {
-      row,
-    } = this.props
+    const { row } = this.props
 
     if (row === 'undefined') {
       return null
@@ -124,10 +121,7 @@ class RowHistory extends Component<any, any> {
 
     const lockDateAndTime = moment.unix(values.lockTime || date).format('HH:mm:ss DD/MM/YYYY')
 
-    const swapUri = isTurbo ?
-      `${links.turboSwap}/${id}`
-      :
-      `${links.atomicSwap}/${id}`
+    const swapUri = isTurbo ? `${links.turboSwap}/${id}` : `${links.atomicSwap}/${id}`
 
     buyAmount = new BigNumber(buyAmount)
     sellAmount = new BigNumber(sellAmount)

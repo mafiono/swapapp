@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { request, gql } from 'graphql-request'
 
-
 const addUserMut = gql`
   # input WalletDataInput {
   #   symbol: String!
@@ -31,11 +30,7 @@ const addUserMut = gql`
   #   wallets: [WalletDataInput]
   # }
 
-  mutation addUserMutation(
-    $createdBy: String!,
-    $domain: String!
-    $data: UserDataInput
-  ){
+  mutation addUserMutation($createdBy: String!, $domain: String!, $data: UserDataInput) {
     addUser(created_by: $createdBy, domain: $domain, data: $data) {
       id
       created_by
@@ -65,11 +60,7 @@ const addUserMut = gql`
 `
 
 const updUserMut = gql`
-  mutation updUserMutation(
-    $createdBy: String!,
-    $domain: String!
-    $data: UserDataInput
-  ){
+  mutation updUserMutation($createdBy: String!, $domain: String!, $data: UserDataInput) {
     updateUser(created_by: $createdBy, domain: $domain, data: $data) {
       id
       created_by
@@ -153,15 +144,15 @@ const getIPInfo = () => {
         const { ip, country_code } = result.data
         // eslint-disable-next-line camelcase
         if (!ip || !country_code) {
-          return ({
-            ip: 'json.geoiplookup.io didn\'t respond with a result, so setting locale EN by default',
+          return {
+            ip: "json.geoiplookup.io didn't respond with a result, so setting locale EN by default",
             locale: 'EN',
-          })
+          }
         }
-        return ({
+        return {
           ip,
           locale: country_code,
-        })
+        }
       })
       .catch((error) => {
         console.error('getIPInfo:', error)

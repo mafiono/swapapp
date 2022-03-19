@@ -1,7 +1,6 @@
 import request from './request'
 import getUnixTimeStamp from './getUnixTimeStamp'
 
-
 const apiStatuses = {}
 const apiQuery = {}
 const apiQueryTimers = {}
@@ -18,24 +17,23 @@ const apiQueryTimer = (queryName) => {
       error: onError,
       options,
       options: {
-        inQuery: {
-          delay,
-        },
+        inQuery: { delay },
       },
     } = queryChunk
 
-    apiLooper(method, api, endpoint, options).then((answer) => {
-      onResolve(answer)
-      apiQueryTimers[queryName] = setTimeout(() => {
-        apiQueryTimer(queryName)
-      }, delay)
-
-    }).catch((error) => {
-      onError(error)
-      apiQueryTimers[queryName] = setTimeout(() => {
-        apiQueryTimer(queryName)
-      }, delay)
-    })
+    apiLooper(method, api, endpoint, options)
+      .then((answer) => {
+        onResolve(answer)
+        apiQueryTimers[queryName] = setTimeout(() => {
+          apiQueryTimer(queryName)
+        }, delay)
+      })
+      .catch((error) => {
+        onError(error)
+        apiQueryTimers[queryName] = setTimeout(() => {
+          apiQueryTimer(queryName)
+        }, delay)
+      })
   } else {
     apiQueryTimers[queryName] = setTimeout(() => {
       apiQueryTimer(queryName)
@@ -45,9 +43,11 @@ const apiQueryTimer = (queryName) => {
 
 const apiQueryInit = (queryName) => {
   if (!apiQuery[queryName]) apiQuery[queryName] = []
-  if (!apiQueryTimers[queryName]) { apiQueryTimers[queryName] = setTimeout(() => {
-    apiQueryTimer(queryName)
-  }, apiQueryTicks) }
+  if (!apiQueryTimers[queryName]) {
+    apiQueryTimers[queryName] = setTimeout(() => {
+      apiQueryTimer(queryName)
+    }, apiQueryTicks)
+  }
 }
 
 const initApiStatus = (name, apiServers) => {
@@ -100,16 +100,9 @@ const switchNext = (api) => {
 }
 
 const apiLooper = (method, api, endpoint, options) => {
-  const {
-    inQuery,
-    ignoreErrors,
-    reportErrors,
-  } = options || {}
+  const { inQuery, ignoreErrors, reportErrors } = options || {}
 
-  const {
-    name: apiName,
-    servers: apiServers,
-  } = api
+  const { name: apiName, servers: apiServers } = api
 
   if (inQuery && !inQuery.inited) {
     return new Promise((resolve, error) => {
@@ -132,7 +125,6 @@ const apiLooper = (method, api, endpoint, options) => {
         resolve,
         error,
       })
-
     })
   }
 
@@ -198,10 +190,10 @@ const apiLooper = (method, api, endpoint, options) => {
       doRequest()
     })
   }
-  return new Promise((resolve, error) => { error('Api not found') })
-
+  return new Promise((resolve, error) => {
+    error('Api not found')
+  })
 }
-
 
 export default {
   get: (api, endpoint, options?) => apiLooper('get', api, endpoint, options),

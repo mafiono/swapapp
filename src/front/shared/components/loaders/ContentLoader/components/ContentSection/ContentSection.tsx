@@ -3,7 +3,6 @@ import CSSModules from 'react-css-modules'
 
 import styles from '../../ContentLoader.scss'
 
-
 const ContentSection = () => (
   <div styleName="container content">
     <div styleName="one" />

@@ -3,9 +3,7 @@
  */
 
 const aggregation = (baseClass, ...mixins) => {
-
   const base = class _Combined extends baseClass {
-
     constructor(...args) {
       super(...args)
 
@@ -20,7 +18,11 @@ const aggregation = (baseClass, ...mixins) => {
       //@ts-ignore
       .concat(Object.getOwnPropertySymbols(source))
       .forEach((prop) => {
-        if (prop.match(/^(?:_?constructor|prototype|arguments|caller|name|bind|call|apply|toString|length)$/)) {
+        if (
+          prop.match(
+            /^(?:_?constructor|prototype|arguments|caller|name|bind|call|apply|toString|length)$/
+          )
+        ) {
           return
         }
 
@@ -36,6 +38,5 @@ const aggregation = (baseClass, ...mixins) => {
 
   return base
 }
-
 
 export default aggregation

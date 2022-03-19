@@ -22,7 +22,8 @@ const Exchange = function (props) {
   const noNetworks = !Object.values(externalConfig.enabledEvmNetworks).length
 
   const validMode = globalMode && GlobalModes[globalMode]
-  let showOnlyOneType = validMode === GlobalModes.only_atomic || validMode === GlobalModes.only_quick
+  let showOnlyOneType =
+    validMode === GlobalModes.only_atomic || validMode === GlobalModes.only_quick
 
   const exchangeSettings = localStorage.getItem(constants.localStorage.exchangeSettings) || {}
   let initialState = location.pathname.match(/\/exchange\/quick/) ? 'quick' : 'atomic'

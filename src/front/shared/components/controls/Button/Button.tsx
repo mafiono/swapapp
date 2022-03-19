@@ -1,4 +1,4 @@
-import cx from "classnames";
+import cx from 'classnames'
 import { FormattedMessage } from 'react-intl'
 import cssModules from 'react-css-modules'
 import styles from './Button.scss'
@@ -82,11 +82,12 @@ const Button = (props: ButtonProps) => {
       data-for={id}
     >
       {pending ? (
-          <span styleName="pending">
-            <FormattedMessage id="ButtonPendingState" defaultMessage="Pending" />
-          </span>
-        ) : children
-      }
+        <span styleName="pending">
+          <FormattedMessage id="ButtonPendingState" defaultMessage="Pending" />
+        </span>
+      ) : (
+        children
+      )}
     </button>
   )
 }

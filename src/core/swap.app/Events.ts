@@ -1,8 +1,6 @@
 import debug from 'debug'
 
-
 class Event {
-
   name: any
   handlers: any[]
 
@@ -21,11 +19,13 @@ class Event {
    * @param handler {function}
    */
   addHandler(handler) {
-    this.handlers.push(handler.bind({
-      unsubscribe: () => {
-        this.removeHandler(handler)
-      },
-    }))
+    this.handlers.push(
+      handler.bind({
+        unsubscribe: () => {
+          this.removeHandler(handler)
+        },
+      })
+    )
   }
 
   /**
@@ -49,8 +49,7 @@ class Event {
     this.handlers.forEach((handler) => {
       try {
         handler(...eventArgs)
-      }
-      catch (err) {
+      } catch (err) {
         console.error(err)
       }
     })
@@ -58,7 +57,6 @@ class Event {
 }
 
 class EventAggregator {
-
   events: any
 
   constructor() {
@@ -146,9 +144,6 @@ class EventAggregator {
 
 const events = new EventAggregator()
 
-
 export default EventAggregator
 
-export {
-  events,
-}
+export { events }

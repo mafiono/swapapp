@@ -1,13 +1,10 @@
 export const initialState = {
-  items:[],
+  items: [],
 }
-
 
 export const addItems = (state, payload) => ({
   ...state,
-  items:[
-    ...payload,
-  ],
+  items: [...payload],
 })
 
 export const deleteItems = (state, payload) => ({

@@ -1,8 +1,8 @@
-import React from "react"
-import CSSModules from "react-css-modules"
-import styles from "./Loader.scss"
-import { FormattedMessage } from "react-intl"
-import config from "app-config"
+import React from 'react'
+import CSSModules from 'react-css-modules'
+import styles from './Loader.scss'
+import { FormattedMessage } from 'react-intl'
+import config from 'app-config'
 
 const isWidget = config && config.isWidget
 
@@ -15,17 +15,13 @@ type LoaderProps = {
 }
 
 const Loader = (props: LoaderProps) => {
-  const {
-    overlayClassName = '',
-    showMyOwnTip,
-    data = null,
-  } = props
+  const { overlayClassName = '', showMyOwnTip, data = null } = props
 
   return (
     <div styleName="overlay" className={overlayClassName}>
       <div>
         {window.loaderLogoUrl && (
-          <img styleName="loaderImg" src={window.loaderLogoUrl} alt="Loader logo"/>
+          <img styleName="loaderImg" src={window.loaderLogoUrl} alt="Loader logo" />
         )}
         {data && data.txId && (
           <p styleName="text">
@@ -46,4 +42,4 @@ const Loader = (props: LoaderProps) => {
   )
 }
 
-export default CSSModules(Loader, styles, { allowMultiple: true });
+export default CSSModules(Loader, styles, { allowMultiple: true })

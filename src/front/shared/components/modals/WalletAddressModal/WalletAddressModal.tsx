@@ -9,7 +9,6 @@ import Modal from 'components/modal/Modal/Modal'
 import { Button } from 'components/controls'
 import { FormattedMessage, defineMessages, injectIntl } from 'react-intl'
 
-
 const langPrefix = `WalletAddressModal`
 const langLabels = defineMessages({
   title: {
@@ -42,17 +41,15 @@ class WalletAddressModal extends React.PureComponent<any, any> {
       >
         <section styleName="content">
           <p styleName="text">
-            <FormattedMessage {...langLabels.message} 
+            <FormattedMessage
+              {...langLabels.message}
               values={{
                 cur: fullName,
               }}
             />
           </p>
-          <p styleName="address">
-            {address}
-          </p>
+          <p styleName="address">{address}</p>
         </section>
-
       </Modal>
     )
   }

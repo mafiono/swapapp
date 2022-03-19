@@ -62,21 +62,26 @@ const BalanceForm = function ({
     actions.multisigTx.goToLastWallet()
   }
 
-  const buttonsDisabled = !((config.opts.ui.disableInternalWallet && metamask.isConnected()) || !config.opts.ui.disableInternalWallet)
+  const buttonsDisabled = !(
+    (config.opts.ui.disableInternalWallet && metamask.isConnected()) ||
+    !config.opts.ui.disableInternalWallet
+  )
 
   const sendButtonDisabled = !currencyBalance || buttonsDisabled
 
   return (
     <div
-      styleName={
-        `${isWidgetBuild && !config.isFullBuild ? 'yourBalance widgetBuild' : 'yourBalance'}`
-      }
+      styleName={`${
+        isWidgetBuild && !config.isFullBuild ? 'yourBalance widgetBuild' : 'yourBalance'
+      }`}
     >
       <div styleName="yourBalanceTop" className="data-tut-widget-balance">
         <p styleName="yourBalanceDescr">
-          {singleWallet
-            ? <FormattedMessage id="YourWalletbalance" defaultMessage="Balance" />
-            : <FormattedMessage id="Yourtotalbalance" defaultMessage="Ваш общий баланс" />}
+          {singleWallet ? (
+            <FormattedMessage id="YourWalletbalance" defaultMessage="Balance" />
+          ) : (
+            <FormattedMessage id="Yourtotalbalance" defaultMessage="Ваш общий баланс" />
+          )}
         </p>
         <div styleName="yourBalanceValue">
           {isFetching && (
@@ -90,7 +95,9 @@ const BalanceForm = function ({
               {(activeFiat === 'USD' || activeFiat === 'CAD') && <img src={dollar} alt="dollar" />}
               {
                 // eslint-disable-next-line no-restricted-globals
-                !isNaN(fiatBalance) ? new BigNumber(fiatBalance).dp(2, BigNumber.ROUND_FLOOR).toString() : ''
+                !isNaN(fiatBalance)
+                  ? new BigNumber(fiatBalance).dp(2, BigNumber.ROUND_FLOOR).toString()
+                  : ''
               }
             </p>
           ) : (
@@ -139,15 +146,30 @@ const BalanceForm = function ({
         <div styleName="yourBalanceBottom">
           {showButtons ? (
             <div styleName="btns" className="data-tut-withdraw-buttons">
-              <Button blue disabled={buttonsDisabled} id="depositBtn" onClick={() => handleReceive('Deposit')}>
+              <Button
+                blue
+                disabled={buttonsDisabled}
+                id="depositBtn"
+                onClick={() => handleReceive('Deposit')}
+              >
                 <FormattedMessage id="YourtotalbalanceDeposit" defaultMessage="Пополнить" />
               </Button>
-              <Button blue disabled={sendButtonDisabled} id={!sendButtonDisabled ? 'sendBtn' : ''} onClick={() => handleWithdraw('Send')}>
+              <Button
+                blue
+                disabled={sendButtonDisabled}
+                id={!sendButtonDisabled ? 'sendBtn' : ''}
+                onClick={() => handleWithdraw('Send')}
+              >
                 <FormattedMessage id="YourtotalbalanceSend" defaultMessage="Отправить" />
               </Button>
             </div>
           ) : (
-            <Button blue disabled={!currencyBalance} styleName="button__invoice" onClick={handleInvoice}>
+            <Button
+              blue
+              disabled={!currencyBalance}
+              styleName="button__invoice"
+              onClick={handleInvoice}
+            >
               <FormattedMessage id="RequestPayment" defaultMessage="Запросить" />
             </Button>
           )}

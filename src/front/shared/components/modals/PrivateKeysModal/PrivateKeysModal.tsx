@@ -9,7 +9,6 @@ import Modal from 'components/modal/Modal/Modal'
 import { Button } from 'components/controls'
 import { FormattedMessage, defineMessages, injectIntl } from 'react-intl'
 
-
 const title = defineMessages({
   PrivateKeysModal: {
     id: 'ImCAUTIONport',
@@ -25,7 +24,6 @@ class PrivateKeysModal extends React.PureComponent<any, any> {
 
     navigator.clipboard.writeText(key)
   }
-
 
   handleCloseModal = () => {
     const { name } = this.props
@@ -63,7 +61,6 @@ class PrivateKeysModal extends React.PureComponent<any, any> {
             />
           </Button> */}
         </section>
-
       </Modal>
     )
   }

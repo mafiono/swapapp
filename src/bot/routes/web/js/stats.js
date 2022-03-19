@@ -5,13 +5,9 @@ class CurrencyStats extends React.Component {
 
     return (
       <tr>
-        <td>
-          {ticker}
-        </td>
+        <td>{ticker}</td>
 
-        <td>
-          {market_price.toFixed(6)} BTC
-        </td>
+        <td>{market_price.toFixed(6)} BTC</td>
 
         <td>
           {average.btc_profit.toFixed(6)} BTC
@@ -36,7 +32,6 @@ class CurrencyStats extends React.Component {
 }
 
 class Statistics extends React.Component {
-
   state = {
     currencies: [],
     swaps: [],
@@ -53,7 +48,7 @@ class Statistics extends React.Component {
   }
 
   calculateStatsForCurrency = (_ticker, swaps, prices, time) => {
-    const [ main, base ] = _ticker.split('-')
+    const [main, base] = _ticker.split('-')
 
     const usd_price = prices[`USD-${base}`] || 1
     const market_price = BigNumber(prices[_ticker])
@@ -65,7 +60,7 @@ class Statistics extends React.Component {
       .filter(({ swap }) => swap.flow.isFinished)
       // .filter(({ swap }) => !time || this.getCreatedAt(swap) > now - time)
       .filter(({ pair: { ticker } }) => ticker === _ticker)
-      .map(({ pair: { price, amount, type }}) => {
+      .map(({ pair: { price, amount, type } }) => {
         return {
           price,
           amount,
@@ -78,9 +73,8 @@ class Statistics extends React.Component {
         const totalMarket = _amount.times(market_price)
         const totalBase = _amount.times(price)
 
-        const btc_profit = type === 'bid'
-          ? totalMarket.minus(totalBase)
-          : totalBase.minus(totalMarket)
+        const btc_profit =
+          type === 'bid' ? totalMarket.minus(totalBase) : totalBase.minus(totalMarket)
 
         const usd_profit = btc_profit.div(usd_price)
 
@@ -109,10 +103,8 @@ class Statistics extends React.Component {
         usd_profit: processed[0] ? processed[0].usd_profit : BigNumber(0),
       },
       total: {
-        btc_profit: processed
-          .reduce((sum, { btc_profit }) => btc_profit.plus(sum), BigNumber(0)),
-        usd_profit: processed
-          .reduce((sum, { usd_profit }) => usd_profit.plus(sum), BigNumber(0)),
+        btc_profit: processed.reduce((sum, { btc_profit }) => btc_profit.plus(sum), BigNumber(0)),
+        usd_profit: processed.reduce((sum, { usd_profit }) => usd_profit.plus(sum), BigNumber(0)),
       },
     }
   }
@@ -122,32 +114,25 @@ class Statistics extends React.Component {
 
     const curr_list = [...new Set(curr_with_duplicates)]
 
-    const updatedCurrencies = curr_list.map(_ticker => {
-      const filtered = swaps.filter(({ pair: { ticker }}) => ticker === _ticker)
+    const updatedCurrencies = curr_list.map((_ticker) => {
+      const filtered = swaps.filter(({ pair: { ticker } }) => ticker === _ticker)
 
       return this.calculateStatsForCurrency(_ticker, filtered, prices)
     })
 
-    const currencies = [
-      ...this.state.currencies,
-      ...updatedCurrencies,
-    ]
+    const currencies = [...this.state.currencies, ...updatedCurrencies]
 
     this.setState({
       currencies: updatedCurrencies,
     })
   }
 
-
   componentDidMount() {
     Promise.all([
-      fetch(`/info/prices`)
-        .then(res => res.json()),
-      fetch(`/swaps/finished?parsed=true`)
-        .then(res => res.json()),
-    ])
-    .then(
-      ([ prices, swaps ]) => {
+      fetch(`/info/prices`).then((res) => res.json()),
+      fetch(`/swaps/finished?parsed=true`).then((res) => res.json()),
+    ]).then(
+      ([prices, swaps]) => {
         console.log(prices, swaps)
 
         this.setState({
@@ -161,63 +146,53 @@ class Statistics extends React.Component {
       (error) => {
         this.setState({
           isLoaded: true,
-          error
-        });
+          error,
+        })
       }
     )
   }
 
   onTypeChanged(event) {
     this.setState({
-      type: event.target.value
-    });
+      type: event.target.value,
+    })
   }
 
   render() {
-    const { error, isLoaded, currencies, swaps } = this.state;
+    const { error, isLoaded, currencies, swaps } = this.state
 
     if (error) {
-      return <div>Error: {error.message}</div>;
+      return <div>Error: {error.message}</div>
     } else if (!isLoaded) {
-      return <div>Loading...</div>;
+      return <div>Loading...</div>
     } else if (!swaps.length) {
-      return <div>Empty</div>;
+      return <div>Empty</div>
     }
 
     return (
       <div>
         <h2>Statistics</h2>
         <table>
-        <thead>
-          <tr>
-            <td>
-              Market
-            </td>
+          <thead>
+            <tr>
+              <td>Market</td>
 
-            <td>
-              Market Price
-            </td>
+              <td>Market Price</td>
 
-            <td>
-              Average
-            </td>
+              <td>Average</td>
 
-            <td>
-              Last
-            </td>
+              <td>Last</td>
 
-            <td>
-              Total
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          {currencies.map((item) => (
-            <CurrencyStats key={item.ticker} data={item} />
-          ))}
-        </tbody>
+              <td>Total</td>
+            </tr>
+          </thead>
+          <tbody>
+            {currencies.map((item) => (
+              <CurrencyStats key={item.ticker} data={item} />
+            ))}
+          </tbody>
         </table>
       </div>
-    );
+    )
   }
 }

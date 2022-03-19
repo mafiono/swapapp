@@ -35,29 +35,14 @@ const defaultLanguage = defineMessages({
   },
 })
 
-@connect(({
-  user: {
-    ethData,
-    bnbData,
-    maticData,
-    arbethData,
-    btcData,
-    ghostData,
-    nextData,
-    tokensData,
-  },
-}) => ({
-  currenciesData: [
-    ethData, 
-    bnbData, 
-    maticData,
-    arbethData, 
-    btcData, 
-    ghostData, 
-    nextData,
-  ],
-  tokensData: [...Object.keys(tokensData).map(k => (tokensData[k]))],
-}))
+@connect(
+  ({
+    user: { ethData, bnbData, maticData, arbethData, btcData, ghostData, nextData, tokensData },
+  }) => ({
+    currenciesData: [ethData, bnbData, maticData, arbethData, btcData, ghostData, nextData],
+    tokensData: [...Object.keys(tokensData).map((k) => tokensData[k])],
+  })
+)
 @CSSModules(styles, { allowMultiple: true })
 class ConfirmBeginSwap extends React.Component<any, any> {
   static propTypes = {
@@ -74,7 +59,7 @@ class ConfirmBeginSwap extends React.Component<any, any> {
     this.systemWallets = {}
 
     const coinsData = [...currenciesData, ...tokensData]
-    coinsData.forEach(item => {
+    coinsData.forEach((item) => {
       if (item.currency && item.address) {
         this.systemWallets[item.currency.toUpperCase()] = item.address
       }
@@ -100,7 +85,6 @@ class ConfirmBeginSwap extends React.Component<any, any> {
   }
 
   customWalletAllowed() {
-
     return false // temporary disable custom address
 
     /*const { buyCurrency, sellCurrency } = this.props.data.order
@@ -155,7 +139,7 @@ class ConfirmBeginSwap extends React.Component<any, any> {
 
     this.setState({
       customWalletUse: newCustomWalletUse,
-      customWallet: (newCustomWalletUse === false) ? '' : sellWalletAddress,
+      customWallet: newCustomWalletUse === false ? '' : sellWalletAddress,
     })
   }
 
@@ -184,11 +168,11 @@ class ConfirmBeginSwap extends React.Component<any, any> {
     actions.modals.close(name)
 
     if (typeof onAccept === 'function') {
-      onAccept((customWalletUse) ? customWallet : null)
+      onAccept(customWalletUse ? customWallet : null)
     }
 
     if (typeof data.onAccept === 'function') {
-      data.onAccept((customWalletUse) ? customWallet : null)
+      data.onAccept(customWalletUse ? customWallet : null)
     }
   }
 
@@ -196,12 +180,7 @@ class ConfirmBeginSwap extends React.Component<any, any> {
     const {
       intl,
       name,
-      data: {
-        title,
-        message,
-        labelYes,
-        labelNo,
-      },
+      data: { title, message, labelYes, labelNo },
     } = this.props
 
     const labels = {
@@ -212,10 +191,9 @@ class ConfirmBeginSwap extends React.Component<any, any> {
     }
 
     const { customWalletUse, customWallet } = this.state
-    const okStyle = (this.customWalletIsValid()) ? 'brand' : 'gray'
+    const okStyle = this.customWalletIsValid() ? 'brand' : 'gray'
 
     const linked = Link.all(this, 'customWallet')
-
 
     return (
       <div styleName="modal-overlay">
@@ -231,46 +209,69 @@ class ConfirmBeginSwap extends React.Component<any, any> {
             <div styleName="content-inner">
               <p styleName="notification">{labels.message}</p>
 
-              {this.customWalletAllowed()
-                ?
+              {this.customWalletAllowed() ? (
                 <div>
-                  {
-                    (!this.customWalletIsValid()) && (
-                      <div styleName="error">
-                        <FormattedMessage id="CustomWalletIsNotCorrect" defaultMessage="Wallet address is incorrect" />
-                      </div>
-                    )
-                  }
+                  {!this.customWalletIsValid() && (
+                    <div styleName="error">
+                      <FormattedMessage
+                        id="CustomWalletIsNotCorrect"
+                        defaultMessage="Wallet address is incorrect"
+                      />
+                    </div>
+                  )}
                   <div styleName="walletToggle walletToggle_site">
                     <div styleName="walletOpenSide">
                       {/*
                       //@ts-ignore */}
                       <Toggle checked={customWalletUse} onChange={this.handleCustomWalletUse} />
                       <span styleName="specify">
-                        <FormattedMessage id="UseAnotherWallet" defaultMessage="Specify the receiving wallet address" />
+                        <FormattedMessage
+                          id="UseAnotherWallet"
+                          defaultMessage="Specify the receiving wallet address"
+                        />
                       </span>
                     </div>
-                    <div styleName={customWalletUse ? 'anotherRecepient anotherRecepient_active' : 'anotherRecepient'}>
+                    <div
+                      styleName={
+                        customWalletUse
+                          ? 'anotherRecepient anotherRecepient_active'
+                          : 'anotherRecepient'
+                      }
+                    >
                       <div styleName="walletInput">
-                        <Input required valueLink={linked.customWallet} pattern="0-9a-zA-Z" placeholder="Enter the receiving wallet address" />
+                        <Input
+                          required
+                          valueLink={linked.customWallet}
+                          pattern="0-9a-zA-Z"
+                          placeholder="Enter the receiving wallet address"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
-                :
+              ) : (
                 <div>
-                  <FormattedMessage id="ConfirmBeginSwapOnlyInternal" defaultMessage="Acceptance of an offer from the offerbook is temporarily possible only for internal addresses" />
+                  <FormattedMessage
+                    id="ConfirmBeginSwapOnlyInternal"
+                    defaultMessage="Acceptance of an offer from the offerbook is temporarily possible only for internal addresses"
+                  />
                 </div>
-              }
+              )}
             </div>
           </div>
           <div styleName="buttons">
-            <Button styleName="button" gray onClick={this.handleClose}>{labels.no}</Button>
-            {(this.customWalletIsValid()) && (
-              <Button styleName="button" blue onClick={this.handleConfirm}>{labels.yes}</Button>
+            <Button styleName="button" gray onClick={this.handleClose}>
+              {labels.no}
+            </Button>
+            {this.customWalletIsValid() && (
+              <Button styleName="button" blue onClick={this.handleConfirm}>
+                {labels.yes}
+              </Button>
             )}
-            {(!this.customWalletIsValid()) && (
-              <Button styleName="button" disabled>{labels.yes}</Button>
+            {!this.customWalletIsValid() && (
+              <Button styleName="button" disabled>
+                {labels.yes}
+              </Button>
             )}
           </div>
         </div>

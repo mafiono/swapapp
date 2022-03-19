@@ -19,7 +19,6 @@ import { getFullOrigin } from 'helpers/links'
 
 import SwapApp from 'swap.app'
 
-
 const langLabels = defineMessages({
   multiSignJoinLinkMessage: {
     id: 'multiSignJoinLinkMessage',
@@ -35,7 +34,7 @@ const langLabels = defineMessages({
   },
   pleaseSaveMnemonicToContinue: {
     id: 'multiSignJoinLink_SaveYourMnemonic',
-    defaultMessage: `Пожалуйста сохраните свою секретную фразу.`
+    defaultMessage: `Пожалуйста сохраните свою секретную фразу.`,
   },
   buttonSaveMnemonic: {
     id: 'multiSignJoinLink_ButtonSaveMnemonic',
@@ -47,15 +46,9 @@ const langLabels = defineMessages({
   },
 })
 
-@connect(
-  ({
-    user: {
-      btcData,
-    },
-  }) => ({
-    btcData,
-  })
-)
+@connect(({ user: { btcData } }) => ({
+  btcData,
+}))
 @cssModules({ ...defaultStyles, ...styles }, { allowMultiple: true })
 class MultisignJoinLink extends React.Component<any, any> {
   static propTypes = {
@@ -67,20 +60,18 @@ class MultisignJoinLink extends React.Component<any, any> {
     super(props)
 
     const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-    const mnemonicSaved = (mnemonic === `-`)
+    const mnemonicSaved = mnemonic === `-`
 
     this.state = {
       joinLink: '',
       mnemonicSaved,
-      step: (mnemonicSaved) ? 'link' : 'savemnemonic',
+      step: mnemonicSaved ? 'link' : 'savemnemonic',
     }
   }
 
   componentDidMount() {
     const {
-      data: {
-        action,
-      },
+      data: { action },
       btcData,
     } = this.props
 
@@ -88,7 +79,9 @@ class MultisignJoinLink extends React.Component<any, any> {
     const linkAction = action || `join`
 
     //@ts-ignore: strictNullChecks
-    const joinLink = `${getFullOrigin()}${links.multisign}/btc/${linkAction}/${publicKey}/${SwapApp.shared().services.room.peer}`
+    const joinLink = `${getFullOrigin()}${links.multisign}/btc/${linkAction}/${publicKey}/${
+      SwapApp.shared().services.room.peer
+    }`
 
     this.setState(() => ({
       joinLink,
@@ -99,14 +92,14 @@ class MultisignJoinLink extends React.Component<any, any> {
     actions.modals.open(constants.modals.SaveMnemonicModal, {
       onClose: () => {
         const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-        const mnemonicSaved = (mnemonic === `-`)
-        const step = (mnemonicSaved) ? 'link' : 'savemnemonic'
+        const mnemonicSaved = mnemonic === `-`
+        const step = mnemonicSaved ? 'link' : 'savemnemonic'
 
         this.setState({
           mnemonicSaved,
           step,
         })
-      }
+      },
     })
   }
 
@@ -127,9 +120,7 @@ class MultisignJoinLink extends React.Component<any, any> {
   handleFinish = async () => {
     const {
       name,
-      data: {
-        callback,
-      },
+      data: { callback },
     } = this.props
 
     actions.modals.close(name)
@@ -141,21 +132,20 @@ class MultisignJoinLink extends React.Component<any, any> {
 
   render() {
     const { name, intl } = this.props
-    const {
-      joinLink,
-      isLinkCopied,
-      step,
-    } = this.state
+    const { joinLink, isLinkCopied, step } = this.state
 
     const {
-      data: {
-        showCloseButton,
-      },
+      data: { showCloseButton },
     } = this.props
 
     return (
       //@ts-ignore: strictNullChecks
-      <Modal name={name} title={`${intl.formatMessage(langLabels.multiSignJoinLink)}`} onClose={this.handleClose} showCloseButton={showCloseButton}>
+      <Modal
+        name={name}
+        title={`${intl.formatMessage(langLabels.multiSignJoinLink)}`}
+        onClose={this.handleClose}
+        showCloseButton={showCloseButton}
+      >
         {step === 'savemnemonic' && (
           <Fragment>
             <div styleName="content-overlay">
@@ -181,14 +171,17 @@ class MultisignJoinLink extends React.Component<any, any> {
         {step === 'link' && (
           <Fragment>
             <p styleName="notice">
-              <FormattedMessage { ... langLabels.multiSignJoinLinkMessage } />
+              <FormattedMessage {...langLabels.multiSignJoinLinkMessage} />
             </p>
             <div className="ym-hide-content">
               <ShareLink link={joinLink} fullSize={true} />
             </div>
             <hr />
             <Button blue styleName="finishButton" fullWidth onClick={this.handleFinish}>
-              <FormattedMessage id="BTCMS_CreateWalletReadyButton" defaultMessage="Готово. Открыть кошелек" />
+              <FormattedMessage
+                id="BTCMS_CreateWalletReadyButton"
+                defaultMessage="Готово. Открыть кошелек"
+              />
             </Button>
           </Fragment>
         )}

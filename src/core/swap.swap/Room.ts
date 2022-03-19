@@ -1,9 +1,7 @@
 import debug from 'debug'
 import SwapApp, { Events } from 'swap.app'
 
-
 class Room {
-
   swapId: string
   peer: any
   _events: any
@@ -12,10 +10,10 @@ class Room {
   // TODO add destroy method with all events unsubscribe (when swap is finished)
 
   constructor(app, { swapId, participantPeer }) {
-    this.swapId           = swapId
-    this.peer  = participantPeer
-    this._events          = new Events()
-    this.app              = null
+    this.swapId = swapId
+    this.peer = participantPeer
+    this._events = new Events()
+    this.app = null
 
     this._attachSwapApp(app)
   }
@@ -81,6 +79,5 @@ class Room {
     })
   }
 }
-
 
 export default Room

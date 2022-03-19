@@ -4,12 +4,8 @@ import CSSModules from 'react-css-modules'
 
 import styles from '../CreateWallet.scss'
 
-
 export const subHeaderText1 = () => (
-  <FormattedMessage
-    id="createWalletSubHeader1"
-    defaultMessage="Укажите валюту кошелька"
-  />
+  <FormattedMessage id="createWalletSubHeader1" defaultMessage="Укажите валюту кошелька" />
 )
 
 /* eslint-disable */

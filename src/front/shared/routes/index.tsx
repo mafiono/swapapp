@@ -23,10 +23,10 @@ import InvoicesList from 'pages/Invoices/InvoicesList'
 import Invoice from 'pages/Invoices/Invoice'
 
 import ScrollToTop from '../components/layout/ScrollToTop/ScrollToTop'
-import SaveMnemonicModal from "components/modals/SaveMnemonicModal/SaveMnemonicModal"
-import SaveKeysModal from "components/modals/SaveKeysModal/SaveKeysModal"
+import SaveMnemonicModal from 'components/modals/SaveMnemonicModal/SaveMnemonicModal'
+import SaveKeysModal from 'components/modals/SaveKeysModal/SaveKeysModal'
 
-import RestoryMnemonicWallet from "components/modals/RestoryMnemonicWallet/RestoryMnemonicWallet"
+import RestoryMnemonicWallet from 'components/modals/RestoryMnemonicWallet/RestoryMnemonicWallet'
 
 const routes = (
   <ScrollToTop>
@@ -36,7 +36,10 @@ const routes = (
       <Route path={`${links.atomicSwap}/:orderId`} component={SwapComponent} />
       <Route path={`${links.turboSwap}/:orderId`} component={TurboSwap} />
 
-      <Route path={`/:ticker(btc|eth|bnb|matic|arbeth|xdai|ghost|next)/tx/:tx?`} component={Transaction} />
+      <Route
+        path={`/:ticker(btc|eth|bnb|matic|arbeth|xdai|ghost|next)/tx/:tx?`}
+        component={Transaction}
+      />
       <Route path={`/:token(token)/:ticker/tx/:tx?`} component={Transaction} />
 
       <Route
@@ -63,7 +66,10 @@ const routes = (
       <Route path={`${links.createWallet}/:currency`} component={CreateWallet} />
       <Route path={`${links.restoreWallet}`} component={RestoryMnemonicWallet} />
 
-      <Route path={`${links.multisign}/btc/:action/:data/:peer`} component={BtcMultisignProcessor} />
+      <Route
+        path={`${links.multisign}/btc/:action/:data/:peer`}
+        component={BtcMultisignProcessor}
+      />
       <Route path={`${links.multisign}/btc/:action/:data`} component={BtcMultisignProcessor} />
 
       <Route path={`${links.createInvoice}/:type/:wallet`} component={CreateInvoice} />
@@ -80,7 +86,10 @@ const routes = (
       <Route exact path={`${links.marketmaker}`} component={MarketmakerPromo} />
       <Route exact path={`${links.marketmaker_short}`} component={MarketmakerPromo} />
       <Route path={`${links.marketmaker}/:token/:utxoCoin?`} component={MarketmakerSettings} />
-      <Route path={`${links.marketmaker_short}/:token/:utxoCoin?`} component={MarketmakerSettings} />
+      <Route
+        path={`${links.marketmaker_short}/:token/:utxoCoin?`}
+        component={MarketmakerSettings}
+      />
 
       {/* In desktop mode - the history is shown in the wallet design */}
       {!isMobile && (

@@ -5,7 +5,6 @@ import Seo from './Seo'
 import JsonLd from './JsonLd'
 import seo, { getUrl } from 'helpers/seo'
 
-
 export default class PageSeo extends Seo {
   static propTypes = {
     location: PropTypes.object.isRequired,
@@ -21,14 +20,13 @@ export default class PageSeo extends Seo {
       }
     }
 
-    const  { defaultTitle, defaultDescription } = this.props
+    const { defaultTitle, defaultDescription } = this.props
     return {
       title: defaultTitle,
       description: defaultDescription,
       uri: null,
       url: null,
     }
-
   }
 
   render() {

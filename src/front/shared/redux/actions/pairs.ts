@@ -15,26 +15,29 @@ type Currency = {
 
 const filter = (value, tikers, items): Currency[] => {
   const selectedPairsBase = tikers
-    .map(ticker => parsePair(ticker))
+    .map((ticker) => parsePair(ticker))
     .filter(({ BASE }) => BASE.toLowerCase() === value.toLowerCase())
     .map(({ MAIN, BASE }) => MAIN)
 
   const selectedPairsMain = tikers
-    .map(ticker => parsePair(ticker))
+    .map((ticker) => parsePair(ticker))
     .filter(({ MAIN }) => MAIN.toLowerCase() === value.toLowerCase())
     .map(({ MAIN, BASE }) => BASE)
 
   const pairs = selectedPairsBase.concat(selectedPairsMain)
 
   const selectedItems = items
-    .filter(item => pairs.includes(item.value.toUpperCase()))
-    .concat(items.filter(item => item.value.toLowerCase() === value.toLowerCase()))
+    .filter((item) => pairs.includes(item.value.toUpperCase()))
+    .concat(items.filter((item) => item.value.toLowerCase() === value.toLowerCase()))
 
   return selectedItems
 }
 
-const selectPair = (value) => { // addOffer drop down
-  const { currencies:{ items } } = getState()
+const selectPair = (value) => {
+  // addOffer drop down
+  const {
+    currencies: { items },
+  } = getState()
 
   const pairs = actions.pairs.filter(value, TRADE_TICKERS, items)
   reducers.currencies.addSelectedItems(pairs)

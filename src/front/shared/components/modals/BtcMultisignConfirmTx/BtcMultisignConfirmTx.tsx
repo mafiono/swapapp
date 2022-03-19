@@ -95,7 +95,7 @@ class BtcMultisignConfirmTx extends React.Component<any, any> {
                 })
               }
             })
-          },
+          }
         )
       } else {
         const txDataParsed = await actions.btcmultisig.parseRawTX(txData)
@@ -195,13 +195,7 @@ class BtcMultisignConfirmTx extends React.Component<any, any> {
       data: { showCloseButton },
     } = this.props
 
-    const {
-      step,
-      txData,
-      isConfirming,
-      isControlFetching,
-      isTxHolder,
-    } = this.state
+    const { step, txData, isConfirming, isControlFetching, isTxHolder } = this.state
 
     const linked = Link.all(this, 'address', 'amount', 'from')
 
@@ -213,12 +207,7 @@ class BtcMultisignConfirmTx extends React.Component<any, any> {
     )
 
     return (
-      <Modal
-        name={name}
-        title={title}
-        onClose={this.handleClose}
-        showCloseButton={showCloseButton}
-      >
+      <Modal name={name} title={title} onClose={this.handleClose} showCloseButton={showCloseButton}>
         <>
           {step !== `dinned` && (
             <p styleName="notice">
@@ -260,15 +249,13 @@ class BtcMultisignConfirmTx extends React.Component<any, any> {
                     <FormattedMessage
                       id="BtcMultisignConfirmTx_FromAddress"
                       defaultMessage="Оплата с кошелька"
-                    />
-                    {' '}
+                    />{' '}
                   </FieldLabel>
                   <Input valueLink={linked.from} disabled styleName="input fakeInput" withMargin />
                 </div>
                 <div styleName="highLevel" style={{ marginBottom: '20px' }}>
                   <FieldLabel>
-                    <FormattedMessage id="Withdrow1194" defaultMessage="Address " />
-                    {' '}
+                    <FormattedMessage id="Withdrow1194" defaultMessage="Address " />{' '}
                     <Tooltip id="WtH203">
                       <div style={{ textAlign: 'center' }}>
                         <FormattedMessage
@@ -279,14 +266,15 @@ class BtcMultisignConfirmTx extends React.Component<any, any> {
                       </div>
                     </Tooltip>
                   </FieldLabel>
-                  <Input valueLink={linked.address} disabled styleName="input fakeInput" withMargin />
+                  <Input
+                    valueLink={linked.address}
+                    disabled
+                    styleName="input fakeInput"
+                    withMargin
+                  />
                 </div>
                 <div styleName="lowLevel" style={{ marginBottom: '30px' }}>
-                  <p styleName="balance walletBalance">
-                    {txData.wallet.balance}
-                    {' '}
-                    BTC
-                  </p>
+                  <p styleName="balance walletBalance">{txData.wallet.balance} BTC</p>
                   <FieldLabel>
                     <FormattedMessage id="orders102" defaultMessage="Amount" />
                   </FieldLabel>
@@ -339,9 +327,7 @@ class BtcMultisignConfirmTx extends React.Component<any, any> {
               </>
             )}
           </div>
-
         </>
-
       </Modal>
     )
   }

@@ -2,13 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import autosize from 'autosize'
 
-
-const UPDATE  = 'autosize:update'
+const UPDATE = 'autosize:update'
 const DESTROY = 'autosize:destroy'
 const RESIZED = 'autosize:resized'
 
 export default class TextareaAutosize extends Component<any, any> {
-
   static propTypes = {
     valueLink: PropTypes.object.isRequired,
     onResize: PropTypes.func,
@@ -52,20 +50,19 @@ export default class TextareaAutosize extends Component<any, any> {
 
     if (defer) {
       setTimeout(dispatch)
-    }
-    else {
+    } else {
       dispatch()
     }
   }
 
-  getValue = ({ valueLink, value }) => valueLink ? valueLink.value : value
+  getValue = ({ valueLink, value }) => (valueLink ? valueLink.value : value)
 
   render() {
     const { valueLink, ...props } = this.props
 
     return (
       <textarea
-        ref={(el) => this.textareaEl = el}
+        ref={(el) => (this.textareaEl = el)}
         {...props}
         value={valueLink.value}
         onChange={valueLink.action((x, e) => e.target.value)}

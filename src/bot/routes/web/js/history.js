@@ -1,5 +1,4 @@
 class Swap extends React.Component {
-
   componentWillMount() {
     this.calculateProfit()
   }
@@ -27,9 +26,7 @@ class Swap extends React.Component {
     const totalMarket = _amount.times(market_price)
     const totalBase = _amount.times(price)
 
-    const btc_profit = type === 'bid'
-      ? totalMarket.minus(totalBase)
-      : totalBase.minus(totalMarket)
+    const btc_profit = type === 'bid' ? totalMarket.minus(totalBase) : totalBase.minus(totalMarket)
 
     console.log(new Date().toISOString(), `market: ${totalMarket}, real: ${totalBase}`)
 
@@ -39,7 +36,7 @@ class Swap extends React.Component {
     this.setState({
       btc_profit,
       usd_profit,
-      isProfit: Number(btc_profit) > 0
+      isProfit: Number(btc_profit) > 0,
     })
   }
 
@@ -54,38 +51,24 @@ class Swap extends React.Component {
 
     return (
       <tr>
-        <td>
-          {ticker}
-        </td>
+        <td>{ticker}</td>
 
-        <td>
-          {createdAt}
-        </td>
+        <td>{createdAt}</td>
 
-        <td>
-          {swap.flow.step}
-        </td>
+        <td>{swap.flow.step}</td>
 
-        <td>
-          {type === 'bid'
-            ? 'BUY'
-            : 'SELL'}
-        </td>
+        <td>{type === 'bid' ? 'BUY' : 'SELL'}</td>
 
         <td>
           {BigNumber(amount).div(price).toFixed(6)} {main}
         </td>
 
-        <td>
-          at price
-        </td>
+        <td>at price</td>
         <td>
           {BigNumber(price).toFixed(6)} {base}
         </td>
 
-        <td>
-          total
-        </td>
+        <td>total</td>
         <td>
           {BigNumber(amount).toFixed(6)} {base}
         </td>
@@ -96,15 +79,11 @@ class Swap extends React.Component {
           {BigNumber(usd_profit).toFixed(6)} $
         </td>
 
-        <td>
-          {isProfit ? '+++' : '---'}
-        </td>
+        <td>{isProfit ? '+++' : '---'}</td>
 
         <td>
           <a href={`/swaps/${id}/formated`}>Go to swap</a>
-          &nbsp;
-          &middot;
-          &nbsp;
+          &nbsp; &middot; &nbsp;
           <a href={`/swaps/${id}/refund`}>Refund</a>
         </td>
       </tr>
@@ -112,9 +91,7 @@ class Swap extends React.Component {
   }
 }
 
-
 class History extends React.Component {
-
   state = {
     filter: '',
     mode: 'finished',
@@ -127,28 +104,25 @@ class History extends React.Component {
 
     if (path === '/history') {
       this.setState({
-        mode: 'finished'
+        mode: 'finished',
       })
     } else if (path === '/in-progress') {
       this.setState({
-        mode: 'in-progress'
+        mode: 'in-progress',
       })
     } else {
       this.setState({
-        filter: this.props.location.match.ticker
+        filter: this.props.location.match.ticker,
       })
     }
   }
 
   componentDidMount() {
     Promise.all([
-      fetch(`/info/prices`)
-        .then(res => res.json()),
-      fetch(`/swaps/${this.state.mode}?parsed=true`)
-        .then(res => res.json()),
-    ])
-    .then(
-      ([ prices, swaps ]) => {
+      fetch(`/info/prices`).then((res) => res.json()),
+      fetch(`/swaps/${this.state.mode}?parsed=true`).then((res) => res.json()),
+    ]).then(
+      ([prices, swaps]) => {
         console.log(prices, swaps)
 
         this.setState({
@@ -162,86 +136,65 @@ class History extends React.Component {
       (error) => {
         this.setState({
           isLoaded: true,
-          error
-        });
+          error,
+        })
       }
     )
   }
 
   onTypeChanged(event) {
     this.setState({
-      type: event.target.value
-    });
+      type: event.target.value,
+    })
   }
 
   render() {
-    const { error, isLoaded, swaps, prices } = this.state;
+    const { error, isLoaded, swaps, prices } = this.state
 
     if (error) {
-      return <div>Error: {error.message}</div>;
+      return <div>Error: {error.message}</div>
     } else if (!isLoaded) {
-      return <div>Loading...</div>;
+      return <div>Loading...</div>
     } else if (!swaps.length) {
-      return <div>Empty</div>;
+      return <div>Empty</div>
     }
 
     return (
       <div>
         <h2>History</h2>
         <table>
-        <thead>
-          <tr>
-            <td>
-              Market
-            </td>
+          <thead>
+            <tr>
+              <td>Market</td>
 
-            <td>
-              Created
-            </td>
+              <td>Created</td>
 
-            <td>
-              Step
-            </td>
+              <td>Step</td>
 
-            <td>
-              Type
-            </td>
+              <td>Type</td>
 
-            <td>
-              Amount
-            </td>
+              <td>Amount</td>
 
-            <td>
-            </td>
+              <td></td>
 
-            <td>
-              Price
-            </td>
+              <td>Price</td>
 
-            <td>
-            </td>
+              <td></td>
 
-            <td>
-              Total
-            </td>
+              <td>Total</td>
 
-            <td>
-              ~Profit
-            </td>
+              <td>~Profit</td>
 
-            <td>
-              + / -
-            </td>
-
-          </tr>
-        </thead>
-        <tbody>
-          {swaps.map(({ id, pair, swap }) => (
-            <Swap key={id} id={id} pair={pair} swap={swap} prices={prices} />
-          ))}
-        </tbody>
+              <td>+ / -</td>
+            </tr>
+          </thead>
+          <tbody>
+            {swaps.map(({ id, pair, swap }) => (
+              <Swap key={id} id={id} pair={pair} swap={swap} prices={prices} />
+            ))}
+          </tbody>
         </table>
       </div>
-    );
+    )
   }
 }

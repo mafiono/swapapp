@@ -13,7 +13,6 @@ import request from 'common/utils/request'
 import actions from 'redux/actions'
 import { Link } from 'react-router-dom'
 
-
 import { injectIntl, FormattedMessage } from 'react-intl'
 import { localisedUrl } from 'helpers/locale'
 
@@ -27,34 +26,34 @@ import Tx from './Tx'
 
 import { Button } from 'components/controls'
 
-
 interface ITurboSwapState {
-  swap: Swap,
-  flowState: any,
+  swap: Swap
+  flowState: any
 }
 
-@connect(({
-/*  user: {
+@connect(
+  ({
+    /*  user: {
     ethData,
     btcData,
     ghostData,
     nextData,
     tokensData,
   },*/
-  pubsubRoom: { peer },
-  rememberedOrders,
-}) => ({
-  //items: [ethData, btcData, ghostData, nextData],
-  //currenciesData: [ethData, btcData, ghostData, nextData],
-  //tokensData: [...Object.keys(tokensData).map(k => (tokensData[k]))],
-  //savedOrders: rememberedOrders.savedOrders,
-  //deletedOrders: rememberedOrders.deletedOrders,
-  //peer,
-}))
+    pubsubRoom: { peer },
+    rememberedOrders,
+  }) => ({
+    //items: [ethData, btcData, ghostData, nextData],
+    //currenciesData: [ethData, btcData, ghostData, nextData],
+    //tokensData: [...Object.keys(tokensData).map(k => (tokensData[k]))],
+    //savedOrders: rememberedOrders.savedOrders,
+    //deletedOrders: rememberedOrders.deletedOrders,
+    //peer,
+  })
+)
 @cssModules(styles, { allowMultiple: true })
 class TurboSwap extends PureComponent<any, ITurboSwapState> {
-
-/*
+  /*
   checkingConfirmSuccessTimer: any
   checkingCycleTimer: any*/
 
@@ -78,13 +77,16 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
       items,
       currenciesData,
       tokensData,
-      intl: {
-        locale
-      },
+      intl: { locale },
       //deletedOrders
     } = this.props
 
-    let { match: { params: { orderId } }, history } = this.props
+    let {
+      match: {
+        params: { orderId },
+      },
+      history,
+    } = this.props
 
     if (!orderId) {
       history.push(localisedUrl(links.exchange))
@@ -93,23 +95,22 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
 
     try {
       const swap = new Swap(orderId, SwapApp.shared())
-      console.log(`Front uses flow ${swap.flow._flowName}`);
+      console.log(`Front uses flow ${swap.flow._flowName}`)
 
       this.setState(() => ({
         swap,
-        flowState: swap.flow.state
+        flowState: swap.flow.state,
       }))
 
       setInterval(() => {
         this.setState(() => ({
-          flowState: swap.flow.state
+          flowState: swap.flow.state,
         }))
       }, 300)
-
     } catch (error) {
       console.error(error)
       actions.notifications.show(constants.notifications.ErrorNotification, {
-        error: 'Sorry, but this order do not exsit already'
+        error: 'Sorry, but this order do not exsit already',
       })
       this.props.history.push(localisedUrl(links.exchange))
     }
@@ -120,11 +121,13 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
   }
 
   componentDidMount() {
-    const { swap, /*deletedOrders*/ } = this.state
+    const { swap /*deletedOrders*/ } = this.state
 
-    const { /*match: { params: { orderId } }, savedOrders*/ } = this.props
+    const {
+      /*match: { params: { orderId } }, savedOrders*/
+    } = this.props
 
-/*    if (swap !== null) {
+    /*    if (swap !== null) {
       console.log('checkingCycle')
 
       const checkingCycle = setInterval(() => {
@@ -145,10 +148,11 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
       }, 5000)
     }*/
 
-    feedback.swap.started(JSON.stringify({
-      // todo
-    }))
-
+    feedback.swap.started(
+      JSON.stringify({
+        // todo
+      })
+    )
   }
 
   componentWillUnmount() {
@@ -156,9 +160,7 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
     clearTimeout(this.checkingConfirmSuccessTimer)*/
   }
 
-
-
-/*  saveThisSwap = (orderId) => {
+  /*  saveThisSwap = (orderId) => {
     actions.core.rememberOrder(orderId)
   }
 
@@ -194,13 +196,10 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
     const {
       peer,
       history,
-      intl: { locale }
+      intl: { locale },
     } = this.props
 
-    const {
-      swap,
-      flowState,
-    } = this.state
+    const { swap, flowState } = this.state
 
     const sellCurrencyKey = swap.sellCurrency.toLowerCase()
     const buyCurrencyKey = swap.buyCurrency.toLowerCase()
@@ -221,52 +220,59 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
     const participantAddressReceive = swap.participant[sellCurrencyKey].address
 
     const swapIdShortened = swap.id
-      .split('-').map(part =>
-        parseInt(part) || part
-          .split('')
-          .reduce((acc, letter, index) => {
-            if ([
-              0, 1, 2, 3,
-              part.length-4, part.length-3, part.length-2, part.length-1
-            ].includes(index))
+      .split('-')
+      .map(
+        (part) =>
+          parseInt(part) ||
+          part.split('').reduce((acc, letter, index) => {
+            if (
+              [
+                0,
+                1,
+                2,
+                3,
+                part.length - 4,
+                part.length - 3,
+                part.length - 2,
+                part.length - 1,
+              ].includes(index)
+            )
               return acc + letter
-            if (index === 4)
-              return acc + '…'
+            if (index === 4) return acc + '…'
             return acc
           }, '')
-      ).join('-')
-
+      )
+      .join('-')
 
     const takerTx = {
       amount: swap.isMy ? swap.buyAmount : swap.sellAmount,
       currency: swap.isMy ? swap.buyCurrency : swap.sellCurrency,
       hash: flowState.takerTxHash,
-      status: !flowState.takerTxHash ?
-        SwapTxStatus.Expected
-        :
-        !flowState.isTakerTxPended ?
-          SwapTxStatus.Pending
-          :
-          SwapTxStatus.Done,
+      status: !flowState.takerTxHash
+        ? SwapTxStatus.Expected
+        : !flowState.isTakerTxPended
+        ? SwapTxStatus.Pending
+        : SwapTxStatus.Done,
       url: null,
     }
-    takerTx.url = takerTx.hash ? helpers.transactions.getLink(takerTx.currency.toLowerCase(), takerTx.hash) : null
+    takerTx.url = takerTx.hash
+      ? helpers.transactions.getLink(takerTx.currency.toLowerCase(), takerTx.hash)
+      : null
 
     const makerTx = {
       amount: swap.isMy ? swap.sellAmount : swap.buyAmount,
       currency: swap.isMy ? swap.sellCurrency : swap.buyCurrency,
       hash: flowState.makerTxHash,
-      status: !flowState.makerTxHash ?
-        SwapTxStatus.Expected
-        :
-        !flowState.isMakerTxPended ?
-          SwapTxStatus.Pending
-          :
-          SwapTxStatus.Done,
+      status: !flowState.makerTxHash
+        ? SwapTxStatus.Expected
+        : !flowState.isMakerTxPended
+        ? SwapTxStatus.Pending
+        : SwapTxStatus.Done,
       url: null,
     }
-    makerTx.url = makerTx.hash ? helpers.transactions.getLink(makerTx.currency.toLowerCase(), makerTx.hash) : null
-
+    makerTx.url = makerTx.hash
+      ? helpers.transactions.getLink(makerTx.currency.toLowerCase(), makerTx.hash)
+      : null
 
     const swapStatus: SwapStatus = !flowState.isFinished ? SwapStatus.Pending : SwapStatus.Finished
 
@@ -281,12 +287,12 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
         </h1>
         <div styleName="swapId">#{swapIdShortened}</div>
         <div styleName={`swapStatus ${swapStatus}`}>
-          {swapStatus === SwapStatus.Pending &&
+          {swapStatus === SwapStatus.Pending && (
             <FormattedMessage id="TurboSwap_StatusPending" defaultMessage="Pending..." />
-          }
-          {swapStatus === SwapStatus.Finished &&
+          )}
+          {swapStatus === SwapStatus.Finished && (
             <FormattedMessage id="TurboSwap_StatusFinished" defaultMessage="Finished..." />
-          }
+          )}
         </div>
         <div styleName="blockchain">
           <TxSide
@@ -331,17 +337,17 @@ class TurboSwap extends PureComponent<any, ITurboSwapState> {
           />
         </div>
 
-        {swapStatus === SwapStatus.Finished &&
+        {swapStatus === SwapStatus.Finished && (
           <div styleName="checkBalanceButtonWrapper">
-            <Button brand onClick={this.goToWallet}><FormattedMessage id="swapProgressGoToWallet" defaultMessage="Check balance" /></Button>
+            <Button brand onClick={this.goToWallet}>
+              <FormattedMessage id="swapProgressGoToWallet" defaultMessage="Check balance" />
+            </Button>
           </div>
-        }
+        )}
 
-        {false && //debug
-          <code>
-            {JSON.stringify(flowState, null, 2)}
-          </code>
-        }
+        {false && ( //debug
+          <code>{JSON.stringify(flowState, null, 2)}</code>
+        )}
       </div>
     )
   }

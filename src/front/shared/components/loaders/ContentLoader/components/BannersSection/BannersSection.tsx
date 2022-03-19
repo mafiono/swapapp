@@ -3,9 +3,7 @@ import CSSModules from 'react-css-modules'
 
 import styles from '../../ContentLoader.scss'
 
-
 function BannersSection() {
-
   return (
     <div styleName="container banners">
       <div styleName="one" />
@@ -17,4 +15,3 @@ function BannersSection() {
 }
 
 export default CSSModules(BannersSection, styles, { allowMultiple: true })
-

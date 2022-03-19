@@ -6,10 +6,7 @@ import cssModules from 'react-css-modules'
 import styles from './WalletConnectAccount.scss'
 import { AddressFormat, AddressType } from 'domain/address'
 
-import {
-  metamask,
-  externalConfig as config
-} from 'helpers'
+import { metamask, externalConfig as config } from 'helpers'
 
 import { Button } from 'components/controls'
 import Address from 'components/ui/Address/Address'
@@ -22,10 +19,7 @@ type ComponentState = {
   balanceUpdating: boolean
 }
 
-@connect(({
-  ui: { dashboardModalsAllowed },
-  user: { metamaskData }
-}) => ({
+@connect(({ ui: { dashboardModalsAllowed }, user: { metamaskData } }) => ({
   dashboardModalsAllowed,
   metamaskData,
 }))
@@ -41,9 +35,7 @@ class WalletConnectAccount extends React.Component<any, ComponentState> {
   }
 
   handleClose = () => {
-    const {
-      name,
-    } = this.props
+    const { name } = this.props
 
     actions.modals.close(name)
   }
@@ -89,12 +81,7 @@ class WalletConnectAccount extends React.Component<any, ComponentState> {
   render() {
     const {
       dashboardModalsAllowed,
-      metamaskData: {
-        isConnected,
-        address,
-        balance,
-        currency,
-      },
+      metamaskData: { isConnected, address, balance, currency },
     } = this.props
 
     const { isPending, balanceUpdating } = this.state
@@ -102,31 +89,27 @@ class WalletConnectAccount extends React.Component<any, ComponentState> {
     const web3Type = metamask.web3connect.getProviderType()
     const isAvailableNetwork = metamask.isAvailableNetwork()
 
-    const walletAddress = isAvailableNetwork ?
-      (
-        <Copy text={address}>
-          <span>
-            <Address
-              address={address}
-              format={AddressFormat.Full}
-              type={AddressType.Metamask}
-            />
-          </span>
-        </Copy>
-      ) :
-      <FormattedMessage id="incorrectNetwork" defaultMessage='Please choose correct network' />
+    const walletAddress = isAvailableNetwork ? (
+      <Copy text={address}>
+        <span>
+          <Address address={address} format={AddressFormat.Full} type={AddressType.Metamask} />
+        </span>
+      </Copy>
+    ) : (
+      <FormattedMessage id="incorrectNetwork" defaultMessage="Please choose correct network" />
+    )
 
-    const walletBalance = isAvailableNetwork ?
-      `${balance} ${currency}` :
-      '0'
+    const walletBalance = isAvailableNetwork ? `${balance} ${currency}` : '0'
 
-    const chainName = isAvailableNetwork ?
-      config.evmNetworks[currency].chainName :
+    const chainName = isAvailableNetwork ? (
+      config.evmNetworks[currency].chainName
+    ) : (
       <FormattedMessage id="UnknownNetworkConnectedWallet" defaultMessage="Unknown Network" />
+    )
 
     return (
-      <div styleName={`modalOverlay ${dashboardModalsAllowed ? "modalOverlay_dashboardView" : ""}`}>
-        <div styleName={`modal ${dashboardModalsAllowed ? "modal_dashboardView" : ""}`}>
+      <div styleName={`modalOverlay ${dashboardModalsAllowed ? 'modalOverlay_dashboardView' : ''}`}>
+        <div styleName={`modal ${dashboardModalsAllowed ? 'modal_dashboardView' : ''}`}>
           <div styleName="header">
             <div styleName="headerContent">
               <h3 styleName="title">
@@ -150,7 +133,9 @@ class WalletConnectAccount extends React.Component<any, ComponentState> {
                       <i className="fas fa-sync-alt" />
                     </button>
                     {balanceUpdating ? (
-                      <span styleName="balanceLoader"><InlineLoader /></span>
+                      <span styleName="balanceLoader">
+                        <InlineLoader />
+                      </span>
                     ) : (
                       <span styleName="value">{walletBalance}</span>
                     )}
@@ -166,21 +151,20 @@ class WalletConnectAccount extends React.Component<any, ComponentState> {
                 {isPending ? '-' : <span styleName="value">{web3Type}</span>}
               </p>
             </div>
-            <span styleName="walletAddress">
-              {isPending ? <InlineLoader /> : walletAddress}
-            </span>
+            <span styleName="walletAddress">{isPending ? <InlineLoader /> : walletAddress}</span>
             <div>
-              {
-                isConnected ? (
-                  <Button blue onClick={this.handleDisconnect}>
-                    <FormattedMessage id="MetamaskDisconnect" defaultMessage="Disconnect wallet" />
-                  </Button>
-                ) : (
-                  <Button blue onClick={this.handleConnect}>
-                    <FormattedMessage id="Exchange_ConnectAddressOption" defaultMessage="Connect Wallet" />
-                  </Button>
-                )
-              }
+              {isConnected ? (
+                <Button blue onClick={this.handleDisconnect}>
+                  <FormattedMessage id="MetamaskDisconnect" defaultMessage="Disconnect wallet" />
+                </Button>
+              ) : (
+                <Button blue onClick={this.handleConnect}>
+                  <FormattedMessage
+                    id="Exchange_ConnectAddressOption"
+                    defaultMessage="Connect Wallet"
+                  />
+                </Button>
+              )}
             </div>
           </div>
         </div>

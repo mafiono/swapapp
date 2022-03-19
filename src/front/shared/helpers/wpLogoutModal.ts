@@ -2,7 +2,6 @@ import { FormattedMessage, injectIntl, defineMessages } from 'react-intl'
 import actions from 'redux/actions'
 import { constants } from 'helpers'
 
-
 const alertTexts = defineMessages({
   title: {
     id: 'WidgetExitAlertTitle',
@@ -13,7 +12,6 @@ const alertTexts = defineMessages({
     defaultMessage: 'Save your secret phrase before exit!',
   },
 })
-
 
 const confirmTexts = defineMessages({
   title: {
@@ -39,7 +37,7 @@ const handleShowMnemonic = () => {
 }
 
 const handleConfirm = () => {
-  actions.backupManager.serverBackup().then(({backupReady, hasBackupPlugin}) => {
+  actions.backupManager.serverBackup().then(({ backupReady, hasBackupPlugin }) => {
     console.log('Backup ready', backupReady)
     if (hasBackupPlugin) {
       if (backupReady) window.localStorage.clear()
@@ -47,14 +45,14 @@ const handleConfirm = () => {
       window.localStorage.clear()
     }
 
-    window.location = (window && window.logoutUrl) ? window.logoutUrl : '/wp-login.php?action=logout'
+    window.location = window && window.logoutUrl ? window.logoutUrl : '/wp-login.php?action=logout'
   })
 }
 
 const wpLogoutModal = (onCancelHandle, intl) => {
   const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-  const mnemonicSaved = (mnemonic === `-`)
-  if (!mnemonicSaved)  {
+  const mnemonicSaved = mnemonic === `-`
+  if (!mnemonicSaved) {
     //@ts-ignore: strictNullChecks
     actions.modals.open(constants.modals.AlertModal, {
       title: intl.formatMessage(alertTexts.title),
@@ -74,6 +72,5 @@ const wpLogoutModal = (onCancelHandle, intl) => {
     })
   }
 }
-
 
 export default wpLogoutModal

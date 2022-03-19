@@ -12,10 +12,7 @@ const FilterLink = (props: ComponentProps) => {
   const { name, filter, onClick } = props
 
   return (
-    <span
-      styleName={filter === name.toLowerCase() ? 'item  active' : 'item'}
-      onClick={onClick}
-    >
+    <span styleName={filter === name.toLowerCase() ? 'item  active' : 'item'} onClick={onClick}>
       {name}
     </span>
   )

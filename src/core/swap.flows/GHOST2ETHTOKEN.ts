@@ -3,9 +3,7 @@ import SwapApp, { constants, util } from 'swap.app'
 import { AtomicAB2UTXO } from 'swap.swap'
 import { BigNumber } from 'bignumber.js'
 
-
 export default (tokenName) => {
-
   class GHOST2ETHTOKEN extends AtomicAB2UTXO {
     static blockchainName = `ETH`
 
@@ -30,18 +28,18 @@ export default (tokenName) => {
       this._flowName = GHOST2ETHTOKEN.getName()
 
       this.stepNumbers = {
-        'sign': 1,
+        sign: 1,
         'submit-secret': 2,
         'sync-balance': 3,
         'lock-utxo': 4,
         'wait-lock-eth': 5,
         'withdraw-eth': 6,
-        'finish': 7,
-        'end': 8
+        finish: 7,
+        end: 8,
       }
 
       this.ethTokenSwap = swap.ownerSwap
-      this.ghostSwap      = swap.participantSwap
+      this.ghostSwap = swap.participantSwap
 
       this.abBlockchain = this.ethTokenSwap
       this.utxoBlockchain = this.ghostSwap
@@ -103,7 +101,6 @@ export default (tokenName) => {
       const flow = this
 
       return [
-
         // 1. Signs
 
         async () => {
@@ -138,20 +135,20 @@ export default (tokenName) => {
 
             flow.swap.room.once('request utxo script', () => {
               flow.swap.room.sendMessage({
-                event:  'create utxo script',
+                event: 'create utxo script',
                 data: {
                   scriptValues: utxoScriptValues,
                   utxoScriptCreatingTransactionHash: txID,
-                }
+                },
               })
             })
 
             flow.swap.room.sendMessage({
               event: 'create utxo script',
               data: {
-                scriptValues : utxoScriptValues,
-                utxoScriptCreatingTransactionHash : txID,
-              }
+                scriptValues: utxoScriptValues,
+                utxoScriptCreatingTransactionHash: txID,
+              },
             })
           }
 
@@ -177,7 +174,9 @@ export default (tokenName) => {
 
             const balance = await this.ghostSwap.getBalance(utxoScriptValues)
 
-            const isEnoughMoney = new BigNumber(balance).isGreaterThanOrEqualTo(sellAmount.times(1e8))
+            const isEnoughMoney = new BigNumber(balance).isGreaterThanOrEqualTo(
+              sellAmount.times(1e8)
+            )
 
             if (isEnoughMoney) {
               flow.setState({
@@ -203,9 +202,12 @@ export default (tokenName) => {
           const { isStoppedSwap } = flow.state
 
           if (!isStoppedSwap) {
-            flow.finishStep({
-              isGhostScriptFunded: true,
-            }, { step: 'lock-utxo' })
+            flow.finishStep(
+              {
+                isGhostScriptFunded: true,
+              },
+              { step: 'lock-utxo' }
+            )
           }
         },
 
@@ -227,7 +229,7 @@ export default (tokenName) => {
         // 7. Finish
 
         () => {
-          flow.swap.room.once('swap finished', ({utxoSwapWithdrawTransactionHash}) => {
+          flow.swap.room.once('swap finished', ({ utxoSwapWithdrawTransactionHash }) => {
             flow.setState({
               utxoSwapWithdrawTransactionHash,
             })
@@ -237,14 +239,17 @@ export default (tokenName) => {
             event: 'request swap finished',
           })
 
-          flow.finishStep({
-            isFinished: true,
-          }, 'finish')
+          flow.finishStep(
+            {
+              isFinished: true,
+            },
+            'finish'
+          )
         },
 
         // 8. Finished!
 
-        () => {}
+        () => {},
       ]
     }
 
@@ -253,10 +258,11 @@ export default (tokenName) => {
     }
 
     getRefundTxHex = () => {
-      this.ghostSwap.getRefundHexTransaction({
-        scriptValues: this.state.utxoScriptValues,
-        secret: this.state.secret,
-      })
+      this.ghostSwap
+        .getRefundHexTransaction({
+          scriptValues: this.state.utxoScriptValues,
+          secret: this.state.secret,
+        })
         .then((txHex) => {
           this.setState({
             refundTxHex: txHex,
@@ -268,10 +274,11 @@ export default (tokenName) => {
       const flow = this
       const { utxoScriptValues, secret } = flow.state
 
-      return flow.ghostSwap.refund({
-        scriptValues: utxoScriptValues,
-        secret: secret,
-      })
+      return flow.ghostSwap
+        .refund({
+          scriptValues: utxoScriptValues,
+          secret: secret,
+        })
         .then((hash) => {
           if (!hash) {
             return false
@@ -281,21 +288,27 @@ export default (tokenName) => {
             event: 'utxo refund completed',
           })
 
-          flow.setState({
-            refundTransactionHash: hash,
-            isRefunded: true,
-            isSwapExist: false,
-          }, true)
+          flow.setState(
+            {
+              refundTransactionHash: hash,
+              isRefunded: true,
+              isSwapExist: false,
+            },
+            true
+          )
 
           return true
         })
         .catch((error) => {
           if (/Address is empty/.test(error)) {
             // TODO - fetch TX list to script for refund TX
-            flow.setState({
-              isRefunded: true,
-              isSwapExist: false,
-            }, true)
+            flow.setState(
+              {
+                isRefunded: true,
+                isSwapExist: false,
+              },
+              true
+            )
             return true
           } else {
             console.warn('Ghost refund:', error)
@@ -312,10 +325,10 @@ export default (tokenName) => {
           return true
         } else {
           console.warn('GHOST2ETHTOKEN - unknown refund transaction')
-          this.setState( {
+          this.setState({
             refundTransactionHash: null,
             isRefunded: false,
-          } )
+          })
           return false
         }
       }
@@ -331,12 +344,13 @@ export default (tokenName) => {
       if (secret && secret != _secret)
         console.warn(`Secret already known and is different. Are you sure?`)
 
-      if (isEthWithdrawn)
-        console.warn(`Looks like money were already withdrawn, are you sure?`)
+      if (isEthWithdrawn) console.warn(`Looks like money were already withdrawn, are you sure?`)
 
       debug('swap.core:flow')(`WITHDRAW using secret = ${_secret}`)
 
-      const _secretHash = this.app.env.bitcoin.crypto.ripemd160(Buffer.from(_secret, 'hex')).toString('hex')
+      const _secretHash = this.app.env.bitcoin.crypto
+        .ripemd160(Buffer.from(_secret, 'hex'))
+        .toString('hex')
 
       if (secretHash != _secretHash)
         console.warn(`Hash does not match! state: ${secretHash}, given: ${_secretHash}`)
@@ -346,18 +360,22 @@ export default (tokenName) => {
         secret: _secret,
       }
 
-      await this.ethTokenSwap.withdraw(data, (hash) => {
-        debug('swap.core:flow')(`TX hash=${hash}`)
-        this.setState({
-          ethSwapWithdrawTransactionHash: hash,
-          canCreateEthTransaction: true,
+      await this.ethTokenSwap
+        .withdraw(data, (hash) => {
+          debug('swap.core:flow')(`TX hash=${hash}`)
+          this.setState({
+            ethSwapWithdrawTransactionHash: hash,
+            canCreateEthTransaction: true,
+          })
         })
-      }).then(() => {
-
-        this.finishStep({
-          isEthWithdrawn: true,
-        }, 'withdraw-eth')
-      })
+        .then(() => {
+          this.finishStep(
+            {
+              isEthWithdrawn: true,
+            },
+            'withdraw-eth'
+          )
+        })
     }
   }
 

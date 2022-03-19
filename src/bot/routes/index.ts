@@ -7,7 +7,6 @@ import homepage from './homepage'
 import kraken from './kraken'
 import info from './info'
 
-
 const router = Router()
 
 router.use('/orders', orders)
@@ -16,6 +15,5 @@ router.use('/swaps', swaps)
 router.use('/kraken', kraken)
 router.use('/info', info)
 router.use('/', homepage)
-
 
 export default router

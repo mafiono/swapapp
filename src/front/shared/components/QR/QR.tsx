@@ -14,7 +14,6 @@ type ComponentState = {
 
 @CSSModules({ ...styles, ...animateFetching }, { allowMultiple: true })
 export default class QR extends Component<ComponentProps, ComponentState> {
-
   constructor(props) {
     super(props)
 
@@ -28,7 +27,7 @@ export default class QR extends Component<ComponentProps, ComponentState> {
 
     if (!qrIsLoaded) {
       this.setState(() => ({
-        qrIsLoaded: true
+        qrIsLoaded: true,
       }))
     }
   }

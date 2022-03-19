@@ -1,15 +1,13 @@
 import config from 'app-config'
 import autoprefixer from 'autoprefixer'
 
-
-const compile         = config.env === 'development' ? 'sourceMap' : 'minimize'
-const localIdentName  = config.env === 'development' ? '[local]__[hash:base64:3]' : '[hash:base64:6]'
+const compile = config.env === 'development' ? 'sourceMap' : 'minimize'
+const localIdentName = config.env === 'development' ? '[local]__[hash:base64:3]' : '[hash:base64:6]'
 
 const isWidgetBuild = config && config.isWidget
 const _sccsDefaultConfig = '@import "./scss/config/index.scss";'
 const _sccsWidgetConfig = '@import "./scss/config/widget.scss";'
-const _sccsConfig = (isWidgetBuild) ? _sccsWidgetConfig : _sccsDefaultConfig
-
+const _sccsConfig = isWidgetBuild ? _sccsWidgetConfig : _sccsDefaultConfig
 
 export default [
   {
@@ -40,9 +38,9 @@ export default [
                 'Safari >= 8',
                 'Opera >= 20',
               ]),
-              require('postcss-import')
+              require('postcss-import'),
             ],
-          }
+          },
         },
       },
       {
@@ -50,13 +48,13 @@ export default [
         options: {
           sourceMap: true,
           additionalData: _sccsConfig,
-          sassOptions:{
+          sassOptions: {
             includePaths: [
               config.paths.base('node_modules'),
               config.paths.front('shared'),
               config.paths.front('client'),
-            ]
-          }
+            ],
+          },
         },
       },
     ],

@@ -7,7 +7,6 @@ import Pair from '../../Pair'
 
 import proceed from './doRequest'
 
-
 export default (app, orders) => async (order) => {
   console.log(new Date().toISOString(), `new order ${order.id}`)
   if (order.isMy) return
@@ -34,7 +33,7 @@ export default (app, orders) => async (order) => {
   }
 
   console.log(new Date().toISOString(), `[PRICE] market: ${marketPrice}`)
-  console.log(new Date().toISOString(), `${pair} ${pair.price.minus(fee)} ${(marketPrice)}`)
+  console.log(new Date().toISOString(), `${pair} ${pair.price.minus(fee)} ${marketPrice}`)
 
   const _ok =
     (pair.isBid() && pair.price.minus(fee).isGreaterThan(marketPrice)) ||

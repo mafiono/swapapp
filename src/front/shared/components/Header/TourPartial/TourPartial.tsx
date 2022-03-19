@@ -5,9 +5,7 @@ import Joyride, { STATUS } from 'react-joyride'
 import { FormattedMessage } from 'react-intl'
 import Tooltip from 'components/TourWindow'
 
-
 export default class TourPartial extends Component<any, any> {
-
   constructor(props) {
     super(props)
 
@@ -16,11 +14,21 @@ export default class TourPartial extends Component<any, any> {
       run: true,
       steps: [
         {
-          content: <FormattedMessage id="partial-tour-2" defaultMessage="В данное поле, введите сумму, которую вы хотите продать, выберите валюту для продажи. Вы также можете продать валюту с внешнего кошелька." />,
+          content: (
+            <FormattedMessage
+              id="partial-tour-2"
+              defaultMessage="В данное поле, введите сумму, которую вы хотите продать, выберите валюту для продажи. Вы также можете продать валюту с внешнего кошелька."
+            />
+          ),
           target: '.data-tut-have',
         },
         {
-          content: <FormattedMessage id="partial-tour-3" defaultMessage="В данное поле, введите сумму, которую вы хотели бы купить, выберите валюту для покупки." />,
+          content: (
+            <FormattedMessage
+              id="partial-tour-3"
+              defaultMessage="В данное поле, введите сумму, которую вы хотели бы купить, выберите валюту для покупки."
+            />
+          ),
           floaterProps: {
             disableAnimation: true,
           },
@@ -28,7 +36,12 @@ export default class TourPartial extends Component<any, any> {
           target: '.data-tut-get',
         },
         {
-          content: <FormattedMessage id="partial-tour-4" defaultMessage="Здесь вы можете увидеть статус поиска предложений по обмену. При загрузке будет отображаться «Поиск заказов ...». Когда заказ найден, проверьте курс обмена здесь" />,
+          content: (
+            <FormattedMessage
+              id="partial-tour-4"
+              defaultMessage="Здесь вы можете увидеть статус поиска предложений по обмену. При загрузке будет отображаться «Поиск заказов ...». Когда заказ найден, проверьте курс обмена здесь"
+            />
+          ),
           floaterProps: {
             disableAnimation: true,
           },
@@ -36,7 +49,12 @@ export default class TourPartial extends Component<any, any> {
           target: '.data-tut-status',
         },
         {
-          content: <FormattedMessage id="partial-tour-5" defaultMessage="Переключите эту кнопку, чтобы получать средства после обмена на внутренний кошелек на Swap.online или на другой кошелек" />,
+          content: (
+            <FormattedMessage
+              id="partial-tour-5"
+              defaultMessage="Переключите эту кнопку, чтобы получать средства после обмена на внутренний кошелек на Swap.online или на другой кошелек"
+            />
+          ),
           floaterProps: {
             disableAnimation: true,
           },
@@ -44,9 +62,12 @@ export default class TourPartial extends Component<any, any> {
           target: '.data-tut-togle',
         },
         {
-          content: <FormattedMessage
-            id="partial-tour-6"
-            defaultMessage="Переключите эту кнопку, чтобы увидеть прямой URL операции обмена. Это возможно, когда кнопка розовая." />,
+          content: (
+            <FormattedMessage
+              id="partial-tour-6"
+              defaultMessage="Переключите эту кнопку, чтобы увидеть прямой URL операции обмена. Это возможно, когда кнопка розовая."
+            />
+          ),
           floaterProps: {
             disableAnimation: true,
           },
@@ -54,9 +75,12 @@ export default class TourPartial extends Component<any, any> {
           target: '.data-tut-Exchange',
         },
         {
-          content: <FormattedMessage
-            id="partial-tour-7"
-            defaultMessage="Нажмите на эту кнопку, чтобы увидеть страницу с предложениями для обмена. Предложения будут представлены для конкретных валют. Также вы можете создать собственное предложение на странице предложений." />,
+          content: (
+            <FormattedMessage
+              id="partial-tour-7"
+              defaultMessage="Нажмите на эту кнопку, чтобы увидеть страницу с предложениями для обмена. Предложения будут представлены для конкретных валют. Также вы можете создать собственное предложение на странице предложений."
+            />
+          ),
           floaterProps: {
             disableAnimation: true,
           },
@@ -66,7 +90,6 @@ export default class TourPartial extends Component<any, any> {
       ],
     }
     /* eslint-enable */
-
   }
 
   handleJoyrideCallback = (data) => {
@@ -76,7 +99,7 @@ export default class TourPartial extends Component<any, any> {
     if (finishedStatuses.includes(status)) {
       this.setState({ run: false })
     }
-  };
+  }
 
   render() {
     const { run, steps } = this.state
@@ -84,22 +107,24 @@ export default class TourPartial extends Component<any, any> {
 
     return (
       <div className="demo-wrapper">
-        {isTourOpen && <Joyride
-          callback={this.handleJoyrideCallback}
-          continuous
-          run={run}
-          scrollToFirstStep
-          tooltipComponent={(props) => <Tooltip closeTour={closeTour} {...props} />}
-          showProgress
-          showSkipButton
-          steps={steps}
-          styles={{
-            options: {
-              zIndex: 10000,
-              arrowColor: '#302272',
-            },
-          }}
-        />}
+        {isTourOpen && (
+          <Joyride
+            callback={this.handleJoyrideCallback}
+            continuous
+            run={run}
+            scrollToFirstStep
+            tooltipComponent={(props) => <Tooltip closeTour={closeTour} {...props} />}
+            showProgress
+            showSkipButton
+            steps={steps}
+            styles={{
+              options: {
+                zIndex: 10000,
+                arrowColor: '#302272',
+              },
+            }}
+          />
+        )}
       </div>
     )
   }

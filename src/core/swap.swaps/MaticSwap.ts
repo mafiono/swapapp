@@ -1,7 +1,6 @@
 import { constants } from 'swap.app'
 import EthLikeSwap from './EthLikeSwap'
 
-
 class MaticSwap extends EthLikeSwap {
   constructor(options) {
     options = {
@@ -10,11 +9,10 @@ class MaticSwap extends EthLikeSwap {
       getWeb3Utils: `getMaticWeb3Utils`,
       getMyAddress: `getMyMaticAddress`,
       getParticipantAddress: `getParticipantMaticAddress`,
-      coinName: constants.COINS.matic
+      coinName: constants.COINS.matic,
     }
     super(options)
   }
 }
-
 
 export default MaticSwap

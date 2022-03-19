@@ -2,16 +2,17 @@ import * as swap from './../src'
 import commandLineArgs from 'command-line-args'
 import commandLineUsage from 'command-line-usage'
 
-const KEY_ID = [ 'id', 'i' ]
-const KEY_HASH = [ 'hash', 'h' ]
-const KEY_SECRET = [ 'secret', 's' ]
-const KEY_ALL = [ 'all', 'a' ]
-const KEY_HELP = [ 'help' ]
+const KEY_ID = ['id', 'i']
+const KEY_HASH = ['hash', 'h']
+const KEY_SECRET = ['secret', 's']
+const KEY_ALL = ['all', 'a']
+const KEY_HELP = ['help']
 
 const sections = [
   {
     header: 'Refund swaps',
-    content: 'Refund one your swap by swapID, transaction hash, script address or refund all swaps in history'
+    content:
+      'Refund one your swap by swapID, transaction hash, script address or refund all swaps in history',
   },
   {
     header: 'Options',
@@ -20,40 +21,40 @@ const sections = [
         name: KEY_ID[0],
         alias: KEY_ID[1],
         typeLabel: '{underline string}',
-        description: 'Refund swap by swapID.'
+        description: 'Refund swap by swapID.',
       },
       {
         name: KEY_HASH[0],
         alias: KEY_HASH[1],
         typeLabel: '{underline string}',
-        description: 'Refund swap by hash transaction.'
+        description: 'Refund swap by hash transaction.',
       },
       {
         name: KEY_SECRET[0],
         alias: KEY_SECRET[1],
         typeLabel: '{underline string}',
-        description: 'Refund swap by secret transaction.'
+        description: 'Refund swap by secret transaction.',
       },
       {
         name: KEY_ALL[0],
         alias: KEY_ALL[1],
         typeLabel: '{underline string}',
-        description: 'Refund all swaps inhistory.'
+        description: 'Refund all swaps inhistory.',
       },
       {
         name: KEY_HELP[0],
-        description: 'Print this usage guide.'
-      }
-    ]
-  }
+        description: 'Print this usage guide.',
+      },
+    ],
+  },
 ]
 
 const optionDefinitions = [
-  { name: KEY_ID[0], alias: KEY_ID[1], type: String, defaultOption: true, },
-  { name: KEY_HASH[0], alias: KEY_HASH[1], type: String, },
-  { name: KEY_SECRET[0], alias: KEY_SECRET[1], type: String, },
-  { name: KEY_ALL[0], alias: KEY_ALL[1], type: String, },
-  { name: KEY_HELP[0], alias: KEY_HELP[1], type: String, },
+  { name: KEY_ID[0], alias: KEY_ID[1], type: String, defaultOption: true },
+  { name: KEY_HASH[0], alias: KEY_HASH[1], type: String },
+  { name: KEY_SECRET[0], alias: KEY_SECRET[1], type: String },
+  { name: KEY_ALL[0], alias: KEY_ALL[1], type: String },
+  { name: KEY_HELP[0], alias: KEY_HELP[1], type: String },
 ]
 
 const usage = commandLineUsage(sections)
@@ -61,8 +62,7 @@ let options = {}
 
 try {
   options = commandLineArgs(optionDefinitions)
-}
-catch (error) {
+} catch (error) {
   console.log('Invalid key type', '\n', usage)
   process.exit(0)
 }
@@ -95,7 +95,6 @@ const _ = (async () => {
   let refundResult: boolean = false
 
   switch (keyType) {
-
     case KEY_ID[0]:
       console.log('Key type is ID')
 
@@ -176,5 +175,4 @@ const _ = (async () => {
   }
 
   process.exit(0)
-
 })()

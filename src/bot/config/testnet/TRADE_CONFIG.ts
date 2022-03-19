@@ -26,7 +26,6 @@
 
  */
 
-
 export default {
   'ETH-BTC': {
     active: true,

@@ -16,11 +16,12 @@ function LocalStorage() {
 
   useEffect(() => {
     const newStorage = {}
-    const privateDataRegExp = /(mnemonic|private|twentywords|backup|peeridjson)/i;
+    const privateDataRegExp = /(mnemonic|private|twentywords|backup|peeridjson)/i
 
     for (let key in window.localStorage) {
-      if ((key !== 'redux-store' && key.match(privateDataRegExp) === null)
-        || (dumpAll && (key !== 'redux-store'))
+      if (
+        (key !== 'redux-store' && key.match(privateDataRegExp) === null) ||
+        (dumpAll && key !== 'redux-store')
       ) {
         newStorage[key] = window.localStorage[key]
       }
@@ -39,26 +40,24 @@ function LocalStorage() {
         </h3>
       )}
 
-      <div styleName='localStorage__buttons-container'>
-        <button styleName='localStorage__btn' onClick={() => {
-          window.history.back()
-        }}>
-          <FormattedMessage
-            id="localStorageBtnBack"
-            defaultMessage="Back"
-          />
+      <div styleName="localStorage__buttons-container">
+        <button
+          styleName="localStorage__btn"
+          onClick={() => {
+            window.history.back()
+          }}
+        >
+          <FormattedMessage id="localStorageBtnBack" defaultMessage="Back" />
         </button>
-        <CopyToClipboard text={localStorage} >
-          <button styleName='localStorage__btn' onClick={timeoutCopied}>
-            {isCopied && <span styleName='localStorage__copy-tip'>Copied!</span>}
+        <CopyToClipboard text={localStorage}>
+          <button styleName="localStorage__btn" onClick={timeoutCopied}>
+            {isCopied && <span styleName="localStorage__copy-tip">Copied!</span>}
             <FormattedMessage id="localStorageBtnCopy" defaultMessage="Copy" />
           </button>
         </CopyToClipboard>
       </div>
 
-      <pre styleName='localStorage__json-output'>
-        {localStorage}
-      </pre>
+      <pre styleName="localStorage__json-output">{localStorage}</pre>
     </section>
   )
 }

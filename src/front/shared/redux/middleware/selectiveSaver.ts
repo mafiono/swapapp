@@ -1,23 +1,20 @@
 import stringify from 'json-stringify-safe'
 
-
-const toSaveStates = [
-  'rememberedSwaps',
-  'user',
-]
+const toSaveStates = ['rememberedSwaps', 'user']
 
 const cleanReduxStore = (reduxStore) =>
-  Object.keys(reduxStore)
-    .reduce((result, key) =>
+  Object.keys(reduxStore).reduce(
+    (result, key) =>
       toSaveStates.includes(key)
         ? {
-          ...result,
-          [key]: reduxStore[key],
-        }
+            ...result,
+            [key]: reduxStore[key],
+          }
         : result,
-    {})
+    {}
+  )
 
-const selectiveSaver = store => next => async action => {
+const selectiveSaver = (store) => (next) => async (action) => {
   next(action)
 
   const stateName = action.type.split('.')[0]
@@ -48,6 +45,4 @@ const selectiveSaver = store => next => async action => {
   }
 }
 
-export {
-  selectiveSaver,
-}
+export { selectiveSaver }

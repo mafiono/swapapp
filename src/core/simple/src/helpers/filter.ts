@@ -4,10 +4,10 @@ import history from './history'
 import * as swap from './swap'
 
 export const hash2id = (app, hash) =>
-  new Promise(async resolve => {
+  new Promise(async (resolve) => {
     const swapHisory = history.getAll()
 
-    swapHisory.forEach(swapID => {
+    swapHisory.forEach((swapID) => {
       const currentSwap = swap.get(app, swapID)
       const flowState = currentSwap.flow.state
       const currency = currentSwap.flow._flowName.split('2')[0].toLowerCase()
@@ -33,10 +33,10 @@ export const hash2id = (app, hash) =>
   })
 
 export const secret2id = (app, secret) =>
-  new Promise(async resolve => {
+  new Promise(async (resolve) => {
     const swapHisory = history.getAll()
 
-    swapHisory.forEach(swapID => {
+    swapHisory.forEach((swapID) => {
       const currentSwap = swap.get(app, swapID)
       const currentSecret = currentSwap.flow.state.secret
 

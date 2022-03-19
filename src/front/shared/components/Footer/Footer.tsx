@@ -26,7 +26,7 @@ function Footer() {
       data-version-name={version.name}
       data-version-url={version.link}
     >
-      { /* @ts-ignore */ }
+      {/* @ts-ignore */}
       <WidthContainer styleName="container">
         <SwitchLang />
 
@@ -36,17 +36,23 @@ function Footer() {
               id="FooterSwapDescription"
               defaultMessage="Online since 2018. Check our {twitter} and {github} history"
               values={{
-                github: <a href={links.github} target="_blank" rel="noreferrer">github</a>,
-                twitter: <a href={links.twitter} target="_blank" rel="noreferrer">twitter</a>,
+                github: (
+                  <a href={links.github} target="_blank" rel="noreferrer">
+                    github
+                  </a>
+                ),
+                twitter: (
+                  <a href={links.twitter} target="_blank" rel="noreferrer">
+                    twitter
+                  </a>
+                ),
               }}
             />
           </p>
         )}
         {!config.isWidget && <SocialMenu />}
 
-        {showServiceLinks && (
-          <ServiceLinks versionName={version.name} versionLink={version.link} />
-        )}
+        {showServiceLinks && <ServiceLinks versionName={version.name} versionLink={version.link} />}
       </WidthContainer>
     </footer>
   )

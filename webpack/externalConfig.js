@@ -3,7 +3,6 @@ import getHostName from './getHostName'
 import config from 'app-config'
 import fs from 'fs'
 
-
 const externalConfig = () => {
   let from = `src/front/externalConfigs/${config.entry}-default.js`
   const targetHost = getHostName(config.publicPath)

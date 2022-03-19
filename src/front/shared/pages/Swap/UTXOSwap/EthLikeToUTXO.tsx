@@ -11,7 +11,6 @@ import SwapList from './SwapList/SwapList'
 import SwapController from '../SwapController'
 import SwapPairInfo from './SwapPairInfo'
 
-
 @CSSModules(styles)
 export default class EthLikeToUTXO extends Component<any, any> {
   _fields = null
@@ -22,13 +21,7 @@ export default class EthLikeToUTXO extends Component<any, any> {
 
   constructor(props) {
     super(props)
-    const {
-      swap,
-      currencyData,
-      depositWindow,
-      enoughBalance,
-      fields,
-    } = props
+    const { swap, currencyData, depositWindow, enoughBalance, fields } = props
 
     this._fields = fields
     this.ethLikeCoin = fields.ethLikeCoin
@@ -53,11 +46,12 @@ export default class EthLikeToUTXO extends Component<any, any> {
   componentWillMount() {
     //@ts-ignore: strictNullChecks
     this.swap.on('state update', this.handleFlowStateUpdate)
-
   }
 
   componentDidMount() {
-    const { flow: { isStoppedSwap } } = this.state
+    const {
+      flow: { isStoppedSwap },
+    } = this.state
     if (isStoppedSwap) return
     window.addEventListener('resize', this.updateWindowDimensions)
     this.updateWindowDimensions()
@@ -84,11 +78,9 @@ export default class EthLikeToUTXO extends Component<any, any> {
   }
 
   handleFlowStateUpdate = (values) => {
-
     this.setState({
       flow: values,
     })
-
   }
 
   render() {
@@ -109,7 +101,10 @@ export default class EthLikeToUTXO extends Component<any, any> {
 
     return (
       <div>
-        <div styleName="swapContainer" style={(isMobile && (windowWidth < 569)) ? { paddingTop: 120 } : { paddingTop: 0 }}>
+        <div
+          styleName="swapContainer"
+          style={isMobile && windowWidth < 569 ? { paddingTop: 120 } : { paddingTop: 0 }}
+        >
           <div>
             {swap.id && <SwapPairInfo swap={swap} />}
             <SwapController swap={swap} />
@@ -125,21 +120,20 @@ export default class EthLikeToUTXO extends Component<any, any> {
               fields={this._fields}
               swapName="EthToBtcLike"
             />
-            {!continueSwap
-              ? <FeeControler ethAddress={ethAddress} requestToFaucetSended={requestToFaucetSended} />
-              : (
-                <SwapProgress
-                  flow={flow}
-                  swap={swap}
-                  history={history}
-                  signed={signed}
-                  locale={locale}
-                  wallets={wallets}
-                  tokenItems={tokenItems}
-                  fields={this._fields}
-                />
-              )
-            }
+            {!continueSwap ? (
+              <FeeControler ethAddress={ethAddress} requestToFaucetSended={requestToFaucetSended} />
+            ) : (
+              <SwapProgress
+                flow={flow}
+                swap={swap}
+                history={history}
+                signed={signed}
+                locale={locale}
+                wallets={wallets}
+                tokenItems={tokenItems}
+                fields={this._fields}
+              />
+            )}
           </div>
           {children && <div styleName="swapContainerInfo">{children}</div>}
         </div>

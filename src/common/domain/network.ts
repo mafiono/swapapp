@@ -9,9 +9,11 @@ export enum Networks {
 }
 
 export const getNetworkType = (name: string): Networks => {
-  switch(name.toLowerCase()) {
-    case `mainnet`: return Networks.mainnet
-    case `testnet`: return Networks.testnet
+  switch (name.toLowerCase()) {
+    case `mainnet`:
+      return Networks.mainnet
+    case `testnet`:
+      return Networks.testnet
   }
   throw new Error('Unknown network')
 }

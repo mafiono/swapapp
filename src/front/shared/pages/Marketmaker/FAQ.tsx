@@ -15,20 +15,14 @@ class FAQ extends React.Component {
 
   render() {
     return (
-      <div styleName='mm-faq-page'>
+      <div styleName="mm-faq-page">
         <section>
           <h2 styleName="section-title">
-            <FormattedMessage
-              id="MainFAQHeader"
-              defaultMessage="FAQ"
-            />
+            <FormattedMessage id="MainFAQHeader" defaultMessage="FAQ" />
           </h2>
           <Expandable
             title={
-              <FormattedMessage
-                id="MM_FAQ_ItemTitle3"
-                defaultMessage="How much will I earn?"
-              />
+              <FormattedMessage id="MM_FAQ_ItemTitle3" defaultMessage="How much will I earn?" />
             }
             content={
               <div>
@@ -38,22 +32,21 @@ class FAQ extends React.Component {
                 />
               </div>
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('How much will I earn?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('How much will I earn?')
+            }}
           />
           <Expandable
-            title={
-              <FormattedMessage
-                id="MM_FAQ_ItemTitle1"
-                defaultMessage="Why does it work?"
-              />
-            }
+            title={<FormattedMessage id="MM_FAQ_ItemTitle1" defaultMessage="Why does it work?" />}
             content={
               <FormattedMessage
                 id="MM_FAQ_ItemContent1"
                 defaultMessage="A market maker earns on the difference in exchange rates when servicing the purchase and sale (spread)"
               />
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('Why it works?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('Why it works?')
+            }}
           />
           <Expandable
             title={
@@ -69,7 +62,7 @@ class FAQ extends React.Component {
                     id="MM_FAQ_TotalSum"
                     defaultMessage="- At any given time, the sum of BTC and {token} balances will be greater than before."
                     values={{
-                      token: config.binance ? 'BTCB' : 'WBTC'
+                      token: config.binance ? 'BTCB' : 'WBTC',
                     }}
                   />
                 </div>
@@ -90,7 +83,11 @@ class FAQ extends React.Component {
                     id="MM_FAQ_Audit"
                     defaultMessage="- The app passed audit from {link}."
                     values={{
-                      link: <a href={links.swapAudit} target="_blank">dsec</a>
+                      link: (
+                        <a href={links.swapAudit} target="_blank">
+                          dsec
+                        </a>
+                      ),
                     }}
                   />
                 </div>
@@ -102,16 +99,18 @@ class FAQ extends React.Component {
                 </div>
                 <div>
                   {'- '}
-                  <a href="https://github.com/swaponline/MultiCurrencyWallet/blob/master/docs/RISKS.md" target="_blank">
-                    <FormattedMessage
-                      id="MM_FAQ_ItemBody2-5"
-                      defaultMessage="Risk Notification"
-                    />
+                  <a
+                    href="https://github.com/swaponline/MultiCurrencyWallet/blob/master/docs/RISKS.md"
+                    target="_blank"
+                  >
+                    <FormattedMessage id="MM_FAQ_ItemBody2-5" defaultMessage="Risk Notification" />
                   </a>
                 </div>
               </>
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('Is it safe?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('Is it safe?')
+            }}
           />
           <Expandable
             title={
@@ -151,7 +150,9 @@ class FAQ extends React.Component {
                 </div>
               </>
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('What is the minimum balance needed to get started?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('What is the minimum balance needed to get started?')
+            }}
           />
           <Expandable
             title={
@@ -166,7 +167,9 @@ class FAQ extends React.Component {
                 defaultMessage="Our clients love and support decentralization. Our exchange works through smart contracts and we will not be able to freeze the client's funds for more than 3 hours."
               />
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('What is the minimum balance needed to get started?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('What is the minimum balance needed to get started?')
+            }}
           />
           <Expandable
             title={
@@ -176,12 +179,11 @@ class FAQ extends React.Component {
               />
             }
             content={
-              <FormattedMessage
-                id="MM_FAQ_ItemContent4"
-                defaultMessage="(in development)"
-              />
+              <FormattedMessage id="MM_FAQ_ItemContent4" defaultMessage="(in development)" />
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('What is the minimum balance needed to get started?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('What is the minimum balance needed to get started?')
+            }}
           />
           <Expandable
             title={
@@ -196,14 +198,13 @@ class FAQ extends React.Component {
                 defaultMessage="There is no minimum term, you can withdraw funds at any time."
               />
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('What is the minimum period of marketmaking?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('What is the minimum period of marketmaking?')
+            }}
           />
           <Expandable
             title={
-              <FormattedMessage
-                id="MM_FAQ_ItemTitle6"
-                defaultMessage="How to increase earnings?"
-              />
+              <FormattedMessage id="MM_FAQ_ItemTitle6" defaultMessage="How to increase earnings?" />
             }
             content={
               <FormattedMessage
@@ -211,7 +212,9 @@ class FAQ extends React.Component {
                 defaultMessage="Tell the communities where you are a member about the possibility of swap."
               />
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('How to increase earnings?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('How to increase earnings?')
+            }}
           />
           <Expandable
             title={
@@ -229,13 +232,14 @@ class FAQ extends React.Component {
                 }}
               />
             }
-            onExpand={() => { feedback.marketmaking.faqOpened('What Impermanent Loss expected?') }}
+            onExpand={() => {
+              feedback.marketmaking.faqOpened('What Impermanent Loss expected?')
+            }}
           />
         </section>
       </div>
     )
   }
-
 }
 
 export default FAQ

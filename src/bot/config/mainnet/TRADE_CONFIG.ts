@@ -26,7 +26,6 @@
 
  */
 
-
 export default {
   'ETH-BTC': {
     active: true,
@@ -37,22 +36,22 @@ export default {
       {
         amount: 0.0005,
         spreadBuy: 2,
-        spreadSell: 2
+        spreadSell: 2,
       },
       {
         amount: 0.005,
         spreadBuy: 4,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.05,
         spreadBuy: 8,
-        spreadSell: 8
+        spreadSell: 8,
       },
       {
         amount: 0.5,
         spreadBuy: 16,
-        spreadSell: 16
+        spreadSell: 16,
       },
     ],
   },
@@ -65,18 +64,18 @@ export default {
       {
         amount: 0.0001,
         spreadBuy: 93.25,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.0005,
         spreadBuy: 93.25,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.005,
         spreadBuy: 93.25,
-        spreadSell: 4
-      }
+        spreadSell: 4,
+      },
     ],
   },
   'USDT-BTC': {
@@ -88,23 +87,23 @@ export default {
       {
         amount: 0.005,
         spreadBuy: 4,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.01,
         spreadBuy: 5,
-        spreadSell: 5
+        spreadSell: 5,
       },
       {
         amount: 0.05,
         spreadBuy: 5,
-        spreadSell: 5
+        spreadSell: 5,
       },
       {
         amount: 0.25,
         spreadBuy: 2,
         spreadSell: 2,
-      }
+      },
     ],
   },
   'JACK-BTC': {
@@ -116,16 +115,16 @@ export default {
       {
         amount: 0.01,
         spreadBuy: 1,
-        spreadSell: 1
+        spreadSell: 1,
       },
       {
         amount: 0.02,
         spreadBuy: 1,
-        spreadSell: 1
-      }
+        spreadSell: 1,
+      },
     ],
   },
-  'JOT-BTC' : {
+  'JOT-BTC': {
     active: false,
     buy: false,
     sell: false,
@@ -134,26 +133,26 @@ export default {
       {
         amount: 0.0005,
         spreadBuy: 50,
-        spreadSell: 50
+        spreadSell: 50,
       },
       {
         amount: 0.005,
         spreadBuy: 60,
-        spreadSell: 60
+        spreadSell: 60,
       },
       {
         amount: 0.05,
         spreadBuy: 70,
-        spreadSell: 70
+        spreadSell: 70,
       },
       {
         amount: 0.5,
         spreadBuy: 80,
-        spreadSell: 80
+        spreadSell: 80,
       },
     ],
   },
-  'SNM-BTC' : {
+  'SNM-BTC': {
     active: true,
     buy: true,
     sell: false,
@@ -162,27 +161,27 @@ export default {
       {
         amount: 0.0005,
         spreadBuy: 2,
-        spreadSell: 2
+        spreadSell: 2,
       },
       {
         amount: 0.005,
         spreadBuy: 4,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.05,
         spreadBuy: 8,
-        spreadSell: 8
+        spreadSell: 8,
       },
       {
         amount: 0.5,
         spreadBuy: 16,
-        spreadSell: 16
+        spreadSell: 16,
       },
     ],
   },
-  'WBTC-BTC' : {
-    active : true,
+  'WBTC-BTC': {
+    active: true,
     buy: true,
     sell: true,
     type: 'coin',
@@ -190,23 +189,23 @@ export default {
       {
         amount: 0.005,
         spreadBuy: 1,
-        spreadSell: 1
+        spreadSell: 1,
       },
       {
         amount: 0.01,
         spreadBuy: 1,
-        spreadSell: 1
+        spreadSell: 1,
       },
       {
         amount: 0.05,
         spreadBuy: 1,
-        spreadSell: 1
+        spreadSell: 1,
       },
       {
         amount: 0.25,
         spreadBuy: 1,
         spreadSell: 1,
-      }
+      },
     ],
   },
   'XSAT-BTC': {
@@ -218,22 +217,22 @@ export default {
       {
         amount: 0.0005,
         spreadBuy: 2,
-        spreadSell: 2
+        spreadSell: 2,
       },
       {
         amount: 0.005,
         spreadBuy: 4,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.05,
         spreadBuy: 8,
-        spreadSell: 8
+        spreadSell: 8,
       },
       {
         amount: 0.5,
         spreadBuy: 16,
-        spreadSell: 16
+        spreadSell: 16,
       },
     ],
   },
@@ -246,22 +245,22 @@ export default {
       {
         amount: 0.0005,
         spreadBuy: 2,
-        spreadSell: 2
+        spreadSell: 2,
       },
       {
         amount: 0.005,
         spreadBuy: 4,
-        spreadSell: 4
+        spreadSell: 4,
       },
       {
         amount: 0.05,
         spreadBuy: 8,
-        spreadSell: 8
+        spreadSell: 8,
       },
       {
         amount: 0.5,
         spreadBuy: 16,
-        spreadSell: 16
+        spreadSell: 16,
       },
     ],
   },

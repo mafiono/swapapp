@@ -6,8 +6,16 @@ import cssModules from 'react-css-modules'
 import Input from 'components/forms/Input/Input'
 import FieldLabel from 'components/forms/FieldLabel/FieldLabel'
 
-
-const Group = ({ className, disabled, label, id, inputValueLink, isInteger = false, placeholder, children }) => (
+const Group = ({
+  className,
+  disabled,
+  label,
+  id,
+  inputValueLink,
+  isInteger = false,
+  placeholder,
+  children,
+}) => (
   <Fragment>
     <div styleName="groupField" className={className}>
       <Input

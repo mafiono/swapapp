@@ -30,10 +30,9 @@ describe('Prepare to swap e2e tests', () => {
 
       await page.waitForSelector('#btcAddress')
 
-      const recoveredRWBtcAddress = await page.$eval('#btcAddress', el => el.textContent)
+      const recoveredRWBtcAddress = await page.$eval('#btcAddress', (el) => el.textContent)
 
       expect(recoveredRWBtcAddress).toBe(testWallets.btcTurnOnMM.address)
-
     } catch (error) {
       await takeScreenshot(page, 'TurnOnMM_RestoreWalletError')
       await browser.close()
@@ -63,8 +62,12 @@ describe('Prepare to swap e2e tests', () => {
       await timeOut(10_000)
 
       // find all your orders
-      const sellAmountOrders  = await page.$$eval('.sellAmountOrders', elements => elements.map(el => el.textContent))
-      const buyAmountOrders   = await page.$$eval('.buyAmountOrders', elements => elements.map(el => el.textContent))
+      const sellAmountOrders = await page.$$eval('.sellAmountOrders', (elements) =>
+        elements.map((el) => el.textContent)
+      )
+      const buyAmountOrders = await page.$$eval('.buyAmountOrders', (elements) =>
+        elements.map((el) => el.textContent)
+      )
       const mmOrders = [...sellAmountOrders, ...buyAmountOrders]
 
       if (+btcBalance) expect(mmOrders).toContain(btcBalance)
@@ -72,7 +75,6 @@ describe('Prepare to swap e2e tests', () => {
 
       if (+tokenBalance) expect(mmOrders).toContain(tokenBalance)
       else console.log('turnOnMM address have not token balance')
-
     } catch (error) {
       await takeScreenshot(page, 'TurnOnMMTestError')
       await browser.close()
@@ -102,12 +104,11 @@ describe('Prepare to swap e2e tests', () => {
       await MakerPage.waitForSelector('#btcAddress') // waits for Maker wallet to load
       await TakerPage.waitForSelector('#btcAddress') // waits for Taker wallet to load
 
-      const recoveredMakerBtcAddress = await MakerPage.$eval('#btcAddress', el => el.textContent)
-      const recoveredTakerBtcAddress = await TakerPage.$eval('#btcAddress', el => el.textContent)
+      const recoveredMakerBtcAddress = await MakerPage.$eval('#btcAddress', (el) => el.textContent)
+      const recoveredTakerBtcAddress = await TakerPage.$eval('#btcAddress', (el) => el.textContent)
 
       expect(recoveredMakerBtcAddress).toBe(testWallets.btcToEthTokenMMaker.address)
       expect(recoveredTakerBtcAddress).toBe(testWallets.btcToEthTokenMTaker.address)
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_CheckMessaging_RestoreWalletError')
       await takeScreenshot(TakerPage, 'TakerPage_CheckMessaging_RestoreWalletError')
@@ -127,15 +128,16 @@ describe('Prepare to swap e2e tests', () => {
       await TakerPage.goto(`${TakerPage.url()}exchange/btc-to-{ETH}wbtc`)
 
       // await TakerPage.waitForSelector('.dropDownSelectCurrency')
-      const [sellCurrencySelectorList, buyCurrencySelectorList] = await TakerPage.$$('.dropDownSelectCurrency')
+      const [sellCurrencySelectorList, buyCurrencySelectorList] = await TakerPage.$$(
+        '.dropDownSelectCurrency'
+      )
 
       await buyCurrencySelectorList.click()
-      await TakerPage.click('[id=\'{ETH}wbtc\']')
+      await TakerPage.click("[id='{ETH}wbtc']")
       await clickOn({
         page: TakerPage,
         selector: '#orderbookBtn',
       })
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_CheckMessaging_PreparePagesError')
       await takeScreenshot(TakerPage, 'TakerPage_CheckMessaging_PreparePagesError')
@@ -167,8 +169,12 @@ describe('Prepare to swap e2e tests', () => {
       await timeOut(30_000)
 
       // find all maker orders
-      const sellAmountOrders  = await MakerPage.$$eval('.sellAmountOrders', elements => elements.map(el => el.textContent))
-      const buyAmountOrders   = await MakerPage.$$eval('.buyAmountOrders', elements => elements.map(el => el.textContent))
+      const sellAmountOrders = await MakerPage.$$eval('.sellAmountOrders', (elements) =>
+        elements.map((el) => el.textContent)
+      )
+      const buyAmountOrders = await MakerPage.$$eval('.buyAmountOrders', (elements) =>
+        elements.map((el) => el.textContent)
+      )
       const mmOrders = [...sellAmountOrders, ...buyAmountOrders]
 
       if (+makerBtcBalance) expect(mmOrders).toContain(makerBtcBalance)
@@ -176,7 +182,6 @@ describe('Prepare to swap e2e tests', () => {
 
       if (+makerTokenBalance) expect(mmOrders).toContain(makerTokenBalance)
       else console.log('maker have not token balance')
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_CheckMessaging_SetupMMError')
       await takeScreenshot(TakerPage, 'TakerPage_CheckMessaging_SetupMMError')
@@ -190,13 +195,21 @@ describe('Prepare to swap e2e tests', () => {
       await timeOut(10_000)
 
       // find btc maker orders
-      const btcSellAmountsOfOrders  = await TakerPage.$$eval('.btcSellAmountOfOrder', elements => elements.map(el => el.textContent))
-      const btcGetAmountsOfOrders   = await TakerPage.$$eval('.btcGetAmountOfOrder', elements => elements.map(el => el.textContent))
+      const btcSellAmountsOfOrders = await TakerPage.$$eval('.btcSellAmountOfOrder', (elements) =>
+        elements.map((el) => el.textContent)
+      )
+      const btcGetAmountsOfOrders = await TakerPage.$$eval('.btcGetAmountOfOrder', (elements) =>
+        elements.map((el) => el.textContent)
+      )
       const btcOrders = [...btcSellAmountsOfOrders, ...btcGetAmountsOfOrders]
 
       // find wbtc maker orders
-      const wbtcSellAmountsOfOrders  = await TakerPage.$$eval('.wbtcSellAmountOfOrder', elements => elements.map(el => el.textContent))
-      const wbtcGetAmountsOfOrders   = await TakerPage.$$eval('.wbtcGetAmountOfOrder', elements => elements.map(el => el.textContent))
+      const wbtcSellAmountsOfOrders = await TakerPage.$$eval('.wbtcSellAmountOfOrder', (elements) =>
+        elements.map((el) => el.textContent)
+      )
+      const wbtcGetAmountsOfOrders = await TakerPage.$$eval('.wbtcGetAmountOfOrder', (elements) =>
+        elements.map((el) => el.textContent)
+      )
       const wbtcOrders = [...wbtcSellAmountsOfOrders, ...wbtcGetAmountsOfOrders]
 
       const allOrders = [
@@ -209,7 +222,6 @@ describe('Prepare to swap e2e tests', () => {
 
       if (+makerTokenBalance) expect(allOrders).toContain(makerTokenBalance)
       else console.log('maker have not token balance')
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_CheckMessagingTestError')
       await takeScreenshot(TakerPage, 'TakerPage_CheckMessagingTestError')
@@ -220,6 +232,5 @@ describe('Prepare to swap e2e tests', () => {
     }
     await MakerBrowser.close()
     await TakerBrowser.close()
-
   })
 })

@@ -11,10 +11,15 @@ type ComponentProps = {
 
 const Toggle = (props: ComponentProps) => {
   const { checked, onChange, dataTut = null, isDisabled = false } = props
-  
+
   return (
-    <label styleName={`Switch ${isDisabled ? 'disabled' : ''}`} data-tut={dataTut} >
-      <input type="checkbox" onChange={({ target }) => onChange(target.checked)} checked={checked} disabled={isDisabled} />
+    <label styleName={`Switch ${isDisabled ? 'disabled' : ''}`} data-tut={dataTut}>
+      <input
+        type="checkbox"
+        onChange={({ target }) => onChange(target.checked)}
+        checked={checked}
+        disabled={isDisabled}
+      />
       <span /> {/* need for button */}
     </label>
   )

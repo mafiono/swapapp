@@ -14,42 +14,21 @@ type SaveKeysProps = {
   data: IUniversalObj
 }
 
-@connect(({
-  user: {
-    ethData,
-    bnbData,
-    maticData,
-    arbethData,
-    xdaiData,
-    btcData,
-    ghostData,
-    nextData,
-  }
-}) => ({
-  data: [
-    btcData,
-    bnbData,
-    maticData,
-    arbethData,
-    xdaiData,
-    ethData,
-    ghostData,
-    nextData,
-  ]
-}))
+@connect(
+  ({
+    user: { ethData, bnbData, maticData, arbethData, xdaiData, btcData, ghostData, nextData },
+  }) => ({
+    data: [btcData, bnbData, maticData, arbethData, xdaiData, ethData, ghostData, nextData],
+  })
+)
 @CSSModules(styles)
 export default class SaveKeys extends Component<SaveKeysProps, null> {
   render() {
-    const {
-      data,
-      onChange,
-      onDownload,
-      ...otherProps
-    } = this.props
+    const { data, onChange, onDownload, ...otherProps } = this.props
 
     return (
       <div {...otherProps}>
-        <div styleName="title" >
+        <div styleName="title">
           <FormattedMessage
             id="SaveKeys235"
             defaultMessage={`These are your private keys. Download the keys by clicking on the button or take a screenshot of this page, then confirm it and click here.`}
@@ -60,8 +39,8 @@ export default class SaveKeys extends Component<SaveKeysProps, null> {
           <FormattedMessage id="SaveKeys26" defaultMessage="I saved the keys in a safe place" />
         </div>
 
-        <div styleName="row" >
-          <div styleName="cell" >
+        <div styleName="row">
+          <div styleName="cell">
             {data.map((currencyData, index) => {
               return (
                 <Field
@@ -72,13 +51,16 @@ export default class SaveKeys extends Component<SaveKeysProps, null> {
               )
             })}
           </div>
-          
+
           <Button brand onClick={onDownload} id="SaveKeysDownload">
             <FormattedMessage id="SaveKe33" defaultMessage="Download" />
           </Button>
           {/* @ts-ignore: strictNullChecks */}
           <Tooltip id="SaveKeysDownload" mark={false} place="bottom">
-            <FormattedMessage id="SaveKe37" defaultMessage="Download text document with keys and accounts" />
+            <FormattedMessage
+              id="SaveKe37"
+              defaultMessage="Download text document with keys and accounts"
+            />
           </Tooltip>
         </div>
       </div>

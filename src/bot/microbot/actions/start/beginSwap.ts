@@ -7,10 +7,7 @@ import handleSwapError from '../../../app/actions/errors/handleSwapError'
 import fillOrderbook from '../book/fillOrderbook'
 import kraken from '../../../services/instances/kraken'
 import Pair from '../../Pair'
-import {
-  debugFeedBack,
-  feedbackToOwner
-} from '../../../helpers/debugFeedBack'
+import { debugFeedBack, feedbackToOwner } from '../../../helpers/debugFeedBack'
 import { canBeDeleted, needsRefund } from './swapStatus'
 import { getNoxonPrice } from '../../../app/middlewares/prices'
 
@@ -20,7 +17,6 @@ import { checkSwapsCountLimit } from '../../core/checkSwapsCountLimit'
 import { removeMyOrders } from '../../core/orders'
 
 import { COIN_DATA, COIN_MODEL, COIN_TYPE } from 'swap.app/constants/COINS'
-
 
 export default (app, { id }, callback) => {
   let swap
@@ -38,23 +34,16 @@ export default (app, { id }, callback) => {
     // @ToDo - DONT DELETE THIS CODE!. Can exists token MY2YTOKEN and then flow MY2YTOKEN2BTC break swap
     //const main = swap.flow.getFromName()
     //const base = swap.flow.getToName()
-    const [ main, base ] = flowName.split('2')
+    const [main, base] = flowName.split('2')
 
     if (!main || !base) {
       throw new Error(`Cannot parse flow: ${flowName} ?= ${main}2${base}`)
     }
 
-    const mainIsUTXO = (
-      COIN_DATA
-      && COIN_DATA[main]
-      && COIN_DATA[main].model === COIN_MODEL.UTXO
-    ) ? true : false
+    const mainIsUTXO =
+      COIN_DATA && COIN_DATA[main] && COIN_DATA[main].model === COIN_MODEL.UTXO ? true : false
 
-    const baseIsUTXO = (
-      COIN_DATA
-      && COIN_DATA[base]
-      && COIN_DATA[base].model === COIN_MODEL.UTXO
-    )
+    const baseIsUTXO = COIN_DATA && COIN_DATA[base] && COIN_DATA[base].model === COIN_MODEL.UTXO
 
     const goFlow = DefaultFlowActions
 
@@ -70,12 +59,21 @@ export default (app, { id }, callback) => {
 
     console.log(new Date().toISOString(), `started ${main}2${base} ${swap.id} ${goFlow.name}`)
 
-
-    swap.on('enter step', step => {
+    swap.on('enter step', (step) => {
       console.log(new Date().toISOString(), '[SWAP ' + swap.id + '] enter step', step)
 
       if (step >= 2) {
-        const swapInfo = 'swap step '+step+' buy '+swap.buyCurrency+' '+swap.buyAmount.toString()+ ' sell '+swap.sellCurrency+' ' + swap.sellAmount.toString()
+        const swapInfo =
+          'swap step ' +
+          step +
+          ' buy ' +
+          swap.buyCurrency +
+          ' ' +
+          swap.buyAmount.toString() +
+          ' sell ' +
+          swap.sellCurrency +
+          ' ' +
+          swap.sellAmount.toString()
         feedbackToOwner(swapInfo)
       }
 
@@ -99,12 +97,10 @@ export default (app, { id }, callback) => {
           //kraken.createOrder(pair.amount.div(pair.price).toNumber(), pair.isBid() ? 'sell' : 'buy')
         }
       }
-
     })
 
     let updateTimeout: any = 0
     const update = async () => {
-
       if (await canBeDeleted(swap)) {
         console.log(new Date().toISOString(), `swap finished! remove ${swap.id}`)
         feedbackToOwner(`Swap ${swap.id} finished`)
@@ -115,7 +111,7 @@ export default (app, { id }, callback) => {
           // fill order book
           fillOrderbook(app.services.wallet, app.services.orders)
         }
-   
+
         return clearInterval(updateTimeout)
       }
 
@@ -139,13 +135,14 @@ export default (app, { id }, callback) => {
       } finally {
         updateTimeout = setTimeout(update, 5000)
       }
-
     }
 
     updateTimeout = setTimeout(update, 0)
-
   } catch (err) {
-    console.error(new Date().toISOString(), `[ERROR] swap id=${swap && swap.id} step=${swap && swap.flow.state.step}`)
+    console.error(
+      new Date().toISOString(),
+      `[ERROR] swap id=${swap && swap.id} step=${swap && swap.flow.state.step}`
+    )
 
     return handleError(err)
   }

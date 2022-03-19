@@ -18,7 +18,9 @@ type ComponentProps = {
 const InvoiceInfoBlock = (props: ComponentProps) => {
   const { invoiceData } = props
 
-  let bip0020link = `bitcoin:${(invoiceData.destAddress) ? invoiceData.destAddress : invoiceData.fromAddress}`
+  let bip0020link = `bitcoin:${
+    invoiceData.destAddress ? invoiceData.destAddress : invoiceData.fromAddress
+  }`
 
   bip0020link = `${bip0020link}?amount=${invoiceData.amount}`
   bip0020link = `${bip0020link}&label=Invoice-${invoiceData.id}-${invoiceData.invoiceNumber}`
@@ -30,16 +32,21 @@ const InvoiceInfoBlock = (props: ComponentProps) => {
   return (
     <div styleName="invoiceInfoBlock">
       <h4>
-        <FormattedMessage id="InvoiceInfoBlockTitle" defaultMessage="Payment of invoice #{id}-{invoiceNumber}" values={invoiceData} />
+        <FormattedMessage
+          id="InvoiceInfoBlockTitle"
+          defaultMessage="Payment of invoice #{id}-{invoiceNumber}"
+          values={invoiceData}
+        />
       </h4>
-      {invoiceData.label &&
-        <span>{invoiceData.label}</span>
-      }
-      {invoiceData.type === 'BTC' &&
+      {invoiceData.label && <span>{invoiceData.label}</span>}
+      {invoiceData.type === 'BTC' && (
         <a href={bip0020link}>
-          <FormattedMessage id="InvoiceInfoBlockOpenDesktopApp" defaultMessage="Pay from an external wallet" />
+          <FormattedMessage
+            id="InvoiceInfoBlockOpenDesktopApp"
+            defaultMessage="Pay from an external wallet"
+          />
         </a>
-      }
+      )}
       <hr />
     </div>
   )

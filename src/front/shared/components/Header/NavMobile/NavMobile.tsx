@@ -7,7 +7,6 @@ import styles from './NavMobile.scss'
 import { localisedUrl } from 'helpers/locale'
 import config from 'helpers/externalConfig'
 
-
 type NavProps = {
   menu: IUniversalObj[]
   isHidden?: boolean
@@ -21,7 +20,6 @@ type NavMobileState = {
 @withRouter
 @CSSModules(styles, { allowMultiple: true })
 class NavMobile extends Component<NavProps, NavMobileState> {
-  
   constructor(props) {
     super(props)
     this.state = {
@@ -52,33 +50,31 @@ class NavMobile extends Component<NavProps, NavMobileState> {
 
     const beforeMenuItems = config.opts.ui.menu.before
     const afterMenuItems = config.opts.ui.menu.after
-    const ownMenuItems = [
-      ...beforeMenuItems,
-      ...afterMenuItems,
-    ]
+    const ownMenuItems = [...beforeMenuItems, ...afterMenuItems]
 
     let dropDownMenu = null
     if (ownMenuItems.length) {
       // @ts-ignore
       dropDownMenu = (
         <>
-          <div onClick={this.hideOwnMenu.bind(this)} styleName={`navbar-dropmenu-bg ${ownMenuShowed ? 'active' : ''}`}></div>
+          <div
+            onClick={this.hideOwnMenu.bind(this)}
+            styleName={`navbar-dropmenu-bg ${ownMenuShowed ? 'active' : ''}`}
+          ></div>
           <div styleName={`navbar-dropmenu ${ownMenuShowed ? 'active' : ''}`}>
-          {
-            ownMenuItems.map((item, index) => {
+            {ownMenuItems.map((item, index) => {
               const { title, link, newwindow } = item
               return (
                 <a
                   onClick={this.hideOwnMenu.bind(this)}
                   href={link}
                   key={index}
-                  target={(newwindow) ? `_blank` : `_self`}
+                  target={newwindow ? `_blank` : `_self`}
                 >
                   {title}
                 </a>
               )
-            })
-          }
+            })}
           </div>
         </>
       )
@@ -88,23 +84,18 @@ class NavMobile extends Component<NavProps, NavMobileState> {
         {dropDownMenu}
         <div styleName={`navbar ${isHidden ? 'navbar-hidden' : ''}`}>
           {ownMenuItems.length > 0 && (
-            <a onClick={this.toggleOwnMenu.bind(this)} styleName={`show-own-menu ${ownMenuShowed ? 'active' : ''}`}>
+            <a
+              onClick={this.toggleOwnMenu.bind(this)}
+              styleName={`show-own-menu ${ownMenuShowed ? 'active' : ''}`}
+            >
               <i className="fa fa-bars" aria-hidden="true"></i>
             </a>
           )}
           {menu
-            .filter(i => i.isMobile !== false)
+            .filter((i) => i.isMobile !== false)
             .map((item, index) => {
-              const {
-                title,
-                link,
-                exact,
-                icon,
-                isBold,
-                isExternal,
-                currentPageFlag,
-                displayNone,
-              } = item
+              const { title, link, exact, icon, isBold, isExternal, currentPageFlag, displayNone } =
+                item
 
               if (isExternal) {
                 return (
@@ -116,31 +107,30 @@ class NavMobile extends Component<NavProps, NavMobileState> {
               }
 
               return !displayNone && currentPageFlag ? (
-                  <a
-                    key={index}
-                    href={link}
-                    tabIndex={-1}
-                  >
-                    {icon}
-                    <span className={isBold && styles.bold}>{title}</span>
-                  </a>
-                ) : (
-                  <NavLink
-                    key={index}
-                    exact={exact}
-                    to={localisedUrl(locale, link)}
-                    className={`
-                      ${link && link.includes("history") ? 'data-tut-recent' : ''}
-                      ${link && link.includes("exchange") ? 'reactour-exchange data-tut-widget-exchange' : ''}
+                <a key={index} href={link} tabIndex={-1}>
+                  {icon}
+                  <span className={isBold && styles.bold}>{title}</span>
+                </a>
+              ) : (
+                <NavLink
+                  key={index}
+                  exact={exact}
+                  to={localisedUrl(locale, link)}
+                  className={`
+                      ${link && link.includes('history') ? 'data-tut-recent' : ''}
+                      ${
+                        link && link.includes('exchange')
+                          ? 'reactour-exchange data-tut-widget-exchange'
+                          : ''
+                      }
                     `}
-                    activeClassName={ownMenuShowed ? styles.bold : styles.active}
-                  >
-                    {icon}
-                    <span className={isBold && styles.bold}>{title}</span>
-                  </NavLink>
-                )
-            })
-          }
+                  activeClassName={ownMenuShowed ? styles.bold : styles.active}
+                >
+                  {icon}
+                  <span className={isBold && styles.bold}>{title}</span>
+                </NavLink>
+              )
+            })}
         </div>
       </nav>
     )

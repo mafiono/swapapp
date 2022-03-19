@@ -7,14 +7,7 @@ import Sound from 'helpers/Sound/alert.mp4'
 import { RemoveButton } from 'components/controls'
 
 const Notification = (props) => {
-  const {
-    soundPlay = true,
-    className,
-    children,
-    name,
-    type,
-    timeout,
-  } = props
+  const { soundPlay = true, className, children, name, type, timeout } = props
   const [isMounted, setIsMounted] = useState(false)
   const [isRemoved, setIsRemoved] = useState(false)
 
@@ -36,10 +29,7 @@ const Notification = (props) => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
 
     if (timeout !== false) {
-      timeoutId = setTimeout(
-        closeNotification,
-        timeout === undefined ? 8000 : timeout
-      )
+      timeoutId = setTimeout(closeNotification, timeout === undefined ? 8000 : timeout)
     }
 
     return () => {
@@ -63,15 +53,15 @@ const Notification = (props) => {
   }
 
   const containerStyleName = cx('container', {
-    'mounted': isMounted,
-    'removed': isRemoved,
+    mounted: isMounted,
+    removed: isRemoved,
   })
 
   const notificationStyleName = cx('notification', {
-    'mounted': isMounted,
-    'removed': isRemoved,
-    'errorNotification': type === 'ErrorNotification',
-    'warning': type === 'warning'
+    mounted: isMounted,
+    removed: isRemoved,
+    errorNotification: type === 'ErrorNotification',
+    warning: type === 'warning',
   })
 
   return (

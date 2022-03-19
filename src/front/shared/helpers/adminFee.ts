@@ -14,7 +14,6 @@ const isEnabled = (currency) => {
     if (config.opts.fee[currencyKey]) {
       return config.opts.fee[currencyKey]
     }
-
   }
 
   return false
@@ -32,11 +31,12 @@ const getStandardFee = (token: string) => {
     const standardFee = config.opts.fee[standard]
 
     if (
-      baseCurrency === tokenBaseCurrency
-      && standardFee?.min
-      && standardFee.fee
-      && standardFee.address
-    ) tokenFee =  standardFee
+      baseCurrency === tokenBaseCurrency &&
+      standardFee?.min &&
+      standardFee.fee &&
+      standardFee.address
+    )
+      tokenFee = standardFee
   })
 
   return tokenFee
@@ -46,12 +46,13 @@ const calc = (currency, amount) => {
   const usedAdminFee = isEnabled(currency)
 
   if (usedAdminFee) {
-    let fee = (usedAdminFee.min) ? new BigNumber(usedAdminFee.min).toNumber() : 0
+    let fee = usedAdminFee.min ? new BigNumber(usedAdminFee.min).toNumber() : 0
 
     if (amount && new BigNumber(amount).isGreaterThan(0)) {
       let feeFromAmount = new BigNumber(usedAdminFee.fee).dividedBy(100).multipliedBy(amount)
 
-      if (new BigNumber(usedAdminFee.min).isGreaterThan(feeFromAmount)) feeFromAmount = new BigNumber(usedAdminFee.min)
+      if (new BigNumber(usedAdminFee.min).isGreaterThan(feeFromAmount))
+        feeFromAmount = new BigNumber(usedAdminFee.min)
 
       fee = feeFromAmount.toNumber() // Admin fee in satoshi
     }

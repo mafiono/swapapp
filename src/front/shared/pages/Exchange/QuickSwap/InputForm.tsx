@@ -14,7 +14,6 @@ import { QuickSwapFormTour } from 'components/Header/WidgetTours'
 import externalConfig from 'helpers/externalConfig'
 import { ComponentState, Direction, Actions, CurrencyMenuItem } from './types'
 
-
 const usePrevious = (value) => {
   const ref = useRef()
 

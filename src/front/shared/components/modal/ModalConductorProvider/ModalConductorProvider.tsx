@@ -8,7 +8,6 @@ import actions from 'redux/actions'
 import ModalConductor from 'components/modal/ModalConductor/ModalConductor'
 import styles from './styles.scss'
 
-
 const ModalConductorProvider = ({ children, history, modals, ...props }) => {
   const isAnyModalCalled = Object.keys(modals).length
 
@@ -17,10 +16,11 @@ const ModalConductorProvider = ({ children, history, modals, ...props }) => {
     (acc, i) => (acc > i.zIndex ? acc : i.zIndex),
     -1
   )
-  const upperModal = Object.keys(modals)[
-    //@ts-ignore 
-    Object.values(modals).findIndex((i) => i.zIndex === hiestZ)
-  ]
+  const upperModal =
+    Object.keys(modals)[
+      //@ts-ignore
+      Object.values(modals).findIndex((i) => i.zIndex === hiestZ)
+    ]
 
   let isModalOpenedHelper = false
   const handleClick = (e) => {
@@ -61,11 +61,7 @@ const ModalConductorProvider = ({ children, history, modals, ...props }) => {
         [styles.modalsCalled]: isAnyModalCalled,
       })}
     >
-      {isAnyModalCalled ? (
-        <ModalConductor dashboardView history={history} />
-      ) : (
-        children
-      )}
+      {isAnyModalCalled ? <ModalConductor dashboardView history={history} /> : children}
     </div>
   )
 }
@@ -75,7 +71,7 @@ export default connect(({ modals, ui: { dashboardModalsAllowed } }) => ({
   dashboardView: dashboardModalsAllowed,
 }))(
   withRouter(
-    //@ts-ignore 
+    //@ts-ignore
     cssModules(ModalConductorProvider, styles, { allowMultiple: true })
   )
 )

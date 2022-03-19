@@ -19,10 +19,11 @@ let buildOpts = {
   invoiceEnabled: true,
 }
 
-if (window
-  && window.buildOptions
-  && Object.keys(window.buildOptions)
-  && Object.keys(window.buildOptions).length
+if (
+  window &&
+  window.buildOptions &&
+  Object.keys(window.buildOptions) &&
+  Object.keys(window.buildOptions).length
 ) {
   buildOpts = { ...buildOpts, ...window.buildOptions }
 }
@@ -34,7 +35,7 @@ if (window?.widgetEvmLikeTokens?.length) {
 if (Array.isArray(buildOpts.ownTokens) && buildOpts.ownTokens.length) {
   // ? we can't use here as whole string {#WIDGETTOKENCODE#} ?
   const wcPb = `{#`
-  const wcP = (`WIDGETTOKENCODE`).toUpperCase()
+  const wcP = `WIDGETTOKENCODE`.toUpperCase()
   const wcPe = `#}`
 
   Object.keys(TOKEN_STANDARDS).forEach((key) => {
@@ -45,7 +46,7 @@ if (Array.isArray(buildOpts.ownTokens) && buildOpts.ownTokens.length) {
     const symbol = token.name.toLowerCase()
     const standard = token.standard.toLowerCase()
 
-    if (symbol.toUpperCase() !== (`${wcPb}${wcP}${wcPe}`)) {
+    if (symbol.toUpperCase() !== `${wcPb}${wcP}${wcPe}`) {
       config[standard][symbol] = token
     }
   })
@@ -95,322 +96,449 @@ Object.keys(TOKEN_STANDARDS).forEach((key) => {
 const initialState = {
   items: [
     //@ts-ignore
-    ...(!buildOpts.curEnabled || buildOpts.curEnabled.eth) ? [{
-      name: 'ETH',
-      title: 'ETH',
-      icon: 'eth',
-      value: 'eth',
-      fullTitle: 'ethereum',
-      blockchain: BLOCKCHAIN_TYPE.ETH,
-      addAssets: true,
-    }] : [],
-     //@ts-ignore
-     ...(!buildOpts.curEnabled || buildOpts.curEnabled.bnb) ? [{
-      name: 'BNB',
-      title: 'BNB',
-      icon: 'bnb',
-      value: 'bnb',
-      fullTitle: 'binance coin',
-      blockchain: BLOCKCHAIN_TYPE.BNB,
-      addAssets: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.eth
+      ? [
+          {
+            name: 'ETH',
+            title: 'ETH',
+            icon: 'eth',
+            value: 'eth',
+            fullTitle: 'ethereum',
+            blockchain: BLOCKCHAIN_TYPE.ETH,
+            addAssets: true,
+          },
+        ]
+      : []),
     //@ts-ignore
-      ...(!buildOpts.curEnabled || buildOpts.curEnabled.matic) ? [{
-      name: 'MATIC',
-      title: 'MATIC',
-      icon: 'matic',
-      value: 'matic',
-      fullTitle: 'matic token',
-      blockchain: BLOCKCHAIN_TYPE.MATIC,
-      addAssets: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.bnb
+      ? [
+          {
+            name: 'BNB',
+            title: 'BNB',
+            icon: 'bnb',
+            value: 'bnb',
+            fullTitle: 'binance coin',
+            blockchain: BLOCKCHAIN_TYPE.BNB,
+            addAssets: true,
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.curEnabled || buildOpts.curEnabled.arbeth) ? [{
-      name: 'ARBETH',
-      title: 'ARBETH',
-      icon: 'arbeth',
-      value: 'arbeth',
-      fullTitle: 'arbitrum eth',
-      blockchain: BLOCKCHAIN_TYPE.ARBITRUM,
-      addAssets: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.matic
+      ? [
+          {
+            name: 'MATIC',
+            title: 'MATIC',
+            icon: 'matic',
+            value: 'matic',
+            fullTitle: 'matic token',
+            blockchain: BLOCKCHAIN_TYPE.MATIC,
+            addAssets: true,
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.curEnabled || buildOpts.curEnabled.xdai) ? [{
-      name: 'XDAI',
-      title: 'XDAI',
-      icon: 'xdai',
-      value: 'xdai',
-      fullTitle: 'xdai',
-      blockchain: BLOCKCHAIN_TYPE.XDAI,
-      addAssets: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.arbeth
+      ? [
+          {
+            name: 'ARBETH',
+            title: 'ARBETH',
+            icon: 'arbeth',
+            value: 'arbeth',
+            fullTitle: 'arbitrum eth',
+            blockchain: BLOCKCHAIN_TYPE.ARBITRUM,
+            addAssets: true,
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.curEnabled || buildOpts.curEnabled.ghost) ? [{
-      name: 'GHOST',
-      title: 'GHOST',
-      icon: 'ghost',
-      value: 'ghost',
-      fullTitle: 'ghost',
-      blockchain: BLOCKCHAIN_TYPE.GHOST,
-      addAssets: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.xdai
+      ? [
+          {
+            name: 'XDAI',
+            title: 'XDAI',
+            icon: 'xdai',
+            value: 'xdai',
+            fullTitle: 'xdai',
+            blockchain: BLOCKCHAIN_TYPE.XDAI,
+            addAssets: true,
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.curEnabled || buildOpts.curEnabled.next) ? [{
-      name: 'NEXT',
-      title: 'NEXT',
-      icon: 'next',
-      value: 'next',
-      fullTitle: 'next',
-      blockchain: BLOCKCHAIN_TYPE.NEXT,
-      addAssets: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.ghost
+      ? [
+          {
+            name: 'GHOST',
+            title: 'GHOST',
+            icon: 'ghost',
+            value: 'ghost',
+            fullTitle: 'ghost',
+            blockchain: BLOCKCHAIN_TYPE.GHOST,
+            addAssets: true,
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.curEnabled || buildOpts.curEnabled.btc) ? [{
-      name: 'BTC',
-      title: 'BTC',
-      icon: 'btc',
-      value: 'btc',
-      fullTitle: 'bitcoin',
-      blockchain: BLOCKCHAIN_TYPE.BTC,
-      addAssets: true,
-    },
-    {
-      name: 'BTC (SMS-Protected)',
-      title: 'BTC (SMS-Protected)',
-      icon: 'btc',
-      value: 'btcMultisig',
-      fullTitle: 'bitcoinMultisig',
-      addAssets: false,
-      blockchain: BLOCKCHAIN_TYPE.BTC,
-      dontCreateOrder: true,
-    },
-    {
-      name: 'BTC (PIN-Protected)',
-      title: 'BTC (PIN-Protected)',
-      icon: 'btc',
-      value: 'btcMultisigPin',
-      fullTitle: 'bitcoinMultisigPin',
-      blockchain: BLOCKCHAIN_TYPE.BTC,
-      addAssets: false,
-      dontCreateOrder: true,
-    },
-    {
-      name: 'BTC (Multisig)',
-      title: 'BTC (Multisig)',
-      icon: 'btc',
-      value: 'btcMultisig',
-      fullTitle: 'bitcoinMultisig',
-      blockchain: BLOCKCHAIN_TYPE.BTC,
-      addAssets: false,
-      dontCreateOrder: true,
-    }] : [],
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.next
+      ? [
+          {
+            name: 'NEXT',
+            title: 'NEXT',
+            icon: 'next',
+            value: 'next',
+            fullTitle: 'next',
+            blockchain: BLOCKCHAIN_TYPE.NEXT,
+            addAssets: true,
+          },
+        ]
+      : []),
+    //@ts-ignore
+    ...(!buildOpts.curEnabled || buildOpts.curEnabled.btc
+      ? [
+          {
+            name: 'BTC',
+            title: 'BTC',
+            icon: 'btc',
+            value: 'btc',
+            fullTitle: 'bitcoin',
+            blockchain: BLOCKCHAIN_TYPE.BTC,
+            addAssets: true,
+          },
+          {
+            name: 'BTC (SMS-Protected)',
+            title: 'BTC (SMS-Protected)',
+            icon: 'btc',
+            value: 'btcMultisig',
+            fullTitle: 'bitcoinMultisig',
+            addAssets: false,
+            blockchain: BLOCKCHAIN_TYPE.BTC,
+            dontCreateOrder: true,
+          },
+          {
+            name: 'BTC (PIN-Protected)',
+            title: 'BTC (PIN-Protected)',
+            icon: 'btc',
+            value: 'btcMultisigPin',
+            fullTitle: 'bitcoinMultisigPin',
+            blockchain: BLOCKCHAIN_TYPE.BTC,
+            addAssets: false,
+            dontCreateOrder: true,
+          },
+          {
+            name: 'BTC (Multisig)',
+            title: 'BTC (Multisig)',
+            icon: 'btc',
+            value: 'btcMultisig',
+            fullTitle: 'bitcoinMultisig',
+            blockchain: BLOCKCHAIN_TYPE.BTC,
+            addAssets: false,
+            dontCreateOrder: true,
+          },
+        ]
+      : []),
     ...tokenItems,
   ],
   partialItems: [
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.eth) ? [{
-      name: 'ETH',
-      title: 'ETH',
-      icon: 'eth',
-      value: 'eth',
-      fullTitle: 'ethereum',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.eth
+      ? [
+          {
+            name: 'ETH',
+            title: 'ETH',
+            icon: 'eth',
+            value: 'eth',
+            fullTitle: 'ethereum',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.bnb) ? [{
-      name: 'BNB',
-      title: 'BNB',
-      icon: 'bnb',
-      value: 'bnb',
-      fullTitle: 'binance coin',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.bnb
+      ? [
+          {
+            name: 'BNB',
+            title: 'BNB',
+            icon: 'bnb',
+            value: 'bnb',
+            fullTitle: 'binance coin',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.matic) ? [{
-      name: 'MATIC',
-      title: 'MATIC',
-      icon: 'matic',
-      value: 'matic',
-      fullTitle: 'matic token',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.matic
+      ? [
+          {
+            name: 'MATIC',
+            title: 'MATIC',
+            icon: 'matic',
+            value: 'matic',
+            fullTitle: 'matic token',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.arbeth) ? [{
-      name: 'ARBETH',
-      title: 'ARBETH',
-      icon: 'arbeth',
-      value: 'arbeth',
-      fullTitle: 'arbitrum eth',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.arbeth
+      ? [
+          {
+            name: 'ARBETH',
+            title: 'ARBETH',
+            icon: 'arbeth',
+            value: 'arbeth',
+            fullTitle: 'arbitrum eth',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.xdai) ? [{
-      name: 'XDAI',
-      title: 'XDAI',
-      icon: 'xdai',
-      value: 'xdai',
-      fullTitle: 'xdai',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.xdai
+      ? [
+          {
+            name: 'XDAI',
+            title: 'XDAI',
+            icon: 'xdai',
+            value: 'xdai',
+            fullTitle: 'xdai',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.ghost) ? [{
-      name: 'GHOST',
-      title: 'GHOST',
-      icon: 'ghost',
-      value: 'ghost',
-      fullTitle: 'ghost',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.ghost
+      ? [
+          {
+            name: 'GHOST',
+            title: 'GHOST',
+            icon: 'ghost',
+            value: 'ghost',
+            fullTitle: 'ghost',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.next) ? [{
-      name: 'NEXT',
-      title: 'NEXT',
-      icon: 'next',
-      value: 'next',
-      fullTitle: 'next',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.next
+      ? [
+          {
+            name: 'NEXT',
+            title: 'NEXT',
+            icon: 'next',
+            value: 'next',
+            fullTitle: 'next',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.btc) ? [{
-      name: 'BTC',
-      title: 'BTC',
-      icon: 'btc',
-      value: 'btc',
-      fullTitle: 'bitcoin',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.btc
+      ? [
+          {
+            name: 'BTC',
+            title: 'BTC',
+            icon: 'btc',
+            value: 'btc',
+            fullTitle: 'bitcoin',
+          },
+        ]
+      : []),
     ...tokenPartialItems,
   ],
   addSelectedItems: [],
   addPartialItems: [],
 }
 
-
 if (config.isWidget) {
   initialState.items = [
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.eth) ? [{
-      name: 'ETH',
-      title: 'ETH',
-      icon: 'eth',
-      value: 'eth',
-      fullTitle: 'ethereum',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.eth
+      ? [
+          {
+            name: 'ETH',
+            title: 'ETH',
+            icon: 'eth',
+            value: 'eth',
+            fullTitle: 'ethereum',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.bnb) ? [{
-      name: 'BNB',
-      title: 'BNB',
-      icon: 'bnb',
-      value: 'bnb',
-      fullTitle: 'binance coin',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.bnb
+      ? [
+          {
+            name: 'BNB',
+            title: 'BNB',
+            icon: 'bnb',
+            value: 'bnb',
+            fullTitle: 'binance coin',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.matic) ? [{
-      name: 'MATIC',
-      title: 'MATIC',
-      icon: 'matic',
-      value: 'matic',
-      fullTitle: 'matic token',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.matic
+      ? [
+          {
+            name: 'MATIC',
+            title: 'MATIC',
+            icon: 'matic',
+            value: 'matic',
+            fullTitle: 'matic token',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.arbeth) ? [{
-      name: 'ARBETH',
-      title: 'ARBETH',
-      icon: 'arbeth',
-      value: 'arbeth',
-      fullTitle: 'arbitrum eth',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.arbeth
+      ? [
+          {
+            name: 'ARBETH',
+            title: 'ARBETH',
+            icon: 'arbeth',
+            value: 'arbeth',
+            fullTitle: 'arbitrum eth',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.xdai) ? [{
-      name: 'XDAI',
-      title: 'XDAI',
-      icon: 'xdai',
-      value: 'xdai',
-      fullTitle: 'xdai',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.xdai
+      ? [
+          {
+            name: 'XDAI',
+            title: 'XDAI',
+            icon: 'xdai',
+            value: 'xdai',
+            fullTitle: 'xdai',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.btc) ? [{
-      name: 'BTC',
-      title: 'BTC',
-      icon: 'btc',
-      value: 'btc',
-      fullTitle: 'bitcoin',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.btc
+      ? [
+          {
+            name: 'BTC',
+            title: 'BTC',
+            icon: 'btc',
+            value: 'btc',
+            fullTitle: 'bitcoin',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.ghost) ? [{
-      name: 'GHOST',
-      title: 'GHOST',
-      icon: 'ghost',
-      value: 'ghost',
-      fullTitle: 'ghost',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.ghost
+      ? [
+          {
+            name: 'GHOST',
+            title: 'GHOST',
+            icon: 'ghost',
+            value: 'ghost',
+            fullTitle: 'ghost',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.next) ? [{
-      name: 'NEXT',
-      title: 'NEXT',
-      icon: 'next',
-      value: 'next',
-      fullTitle: 'next',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.next
+      ? [
+          {
+            name: 'NEXT',
+            title: 'NEXT',
+            icon: 'next',
+            value: 'next',
+            fullTitle: 'next',
+          },
+        ]
+      : []),
   ]
 
   initialState.partialItems = [
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.eth) ? [{
-      name: 'ETH',
-      title: 'ETH',
-      icon: 'eth',
-      value: 'eth',
-      fullTitle: 'ethereum',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.eth
+      ? [
+          {
+            name: 'ETH',
+            title: 'ETH',
+            icon: 'eth',
+            value: 'eth',
+            fullTitle: 'ethereum',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.bnb) ? [{
-      name: 'BNB',
-      title: 'BNB',
-      icon: 'bnb',
-      value: 'bnb',
-      fullTitle: 'binance coin',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.bnb
+      ? [
+          {
+            name: 'BNB',
+            title: 'BNB',
+            icon: 'bnb',
+            value: 'bnb',
+            fullTitle: 'binance coin',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.matic) ? [{
-      name: 'MATIC',
-      title: 'MATIC',
-      icon: 'matic',
-      value: 'matic',
-      fullTitle: 'matic token',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.matic
+      ? [
+          {
+            name: 'MATIC',
+            title: 'MATIC',
+            icon: 'matic',
+            value: 'matic',
+            fullTitle: 'matic token',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.arbeth) ? [{
-      name: 'ARBETH',
-      title: 'ARBETH',
-      icon: 'arbeth',
-      value: 'arbeth',
-      fullTitle: 'arbitrum eth',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.arbeth
+      ? [
+          {
+            name: 'ARBETH',
+            title: 'ARBETH',
+            icon: 'arbeth',
+            value: 'arbeth',
+            fullTitle: 'arbitrum eth',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.xdai) ? [{
-      name: 'XDAI',
-      title: 'XDAI',
-      icon: 'xdai',
-      value: 'xdai',
-      fullTitle: 'xdai',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.xdai
+      ? [
+          {
+            name: 'XDAI',
+            title: 'XDAI',
+            icon: 'xdai',
+            value: 'xdai',
+            fullTitle: 'xdai',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.btc) ? [{
-      name: 'BTC',
-      title: 'BTC',
-      icon: 'btc',
-      value: 'btc',
-      fullTitle: 'bitcoin',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.btc
+      ? [
+          {
+            name: 'BTC',
+            title: 'BTC',
+            icon: 'btc',
+            value: 'btc',
+            fullTitle: 'bitcoin',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.ghost) ? [{
-      name: 'GHOST',
-      title: 'GHOST',
-      icon: 'ghost',
-      value: 'ghost',
-      fullTitle: 'ghost',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.ghost
+      ? [
+          {
+            name: 'GHOST',
+            title: 'GHOST',
+            icon: 'ghost',
+            value: 'ghost',
+            fullTitle: 'ghost',
+          },
+        ]
+      : []),
     //@ts-ignore
-    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.next) ? [{
-      name: 'NEXT',
-      title: 'NEXT',
-      icon: 'next',
-      value: 'next',
-      fullTitle: 'next',
-    }] : [],
+    ...(!buildOpts.blockchainSwapEnabled || buildOpts.blockchainSwapEnabled.next
+      ? [
+          {
+            name: 'NEXT',
+            title: 'NEXT',
+            icon: 'next',
+            value: 'next',
+            fullTitle: 'next',
+          },
+        ]
+      : []),
   ]
 
   // Мульти валюта с обратной совместимостью одиночного билда
@@ -473,15 +601,15 @@ if (buildOpts.addCustomTokens) {
 
       //@ts-ignore
       initialState.items.push({
-          name: symbol.toUpperCase(),
-          title: symbol.toUpperCase(),
-          icon: symbol,
-          value: `{${baseCurrency.toUpperCase()}}${symbol}`,
-          fullTitle: config[standard][symbol]?.fullName || symbol,
-          addAssets: true,
-          blockchain: BLOCKCHAIN_TYPE[baseCurrency.toUpperCase()],
-          standard,
-        })
+        name: symbol.toUpperCase(),
+        title: symbol.toUpperCase(),
+        icon: symbol,
+        value: `{${baseCurrency.toUpperCase()}}${symbol}`,
+        fullTitle: config[standard][symbol]?.fullName || symbol,
+        addAssets: true,
+        blockchain: BLOCKCHAIN_TYPE[baseCurrency.toUpperCase()],
+        standard,
+      })
       initialState.partialItems.push({
         name: symbol.toUpperCase(),
         title: symbol.toUpperCase(),
@@ -512,7 +640,7 @@ const updatePartialItems = (state, payload) => ({
 
 const deletedPartialCurrency = (state, payload) => ({
   ...state,
-  partialItems: state.partialItems.filter(item => item.name !== payload),
+  partialItems: state.partialItems.filter((item) => item.name !== payload),
 })
 
 export {

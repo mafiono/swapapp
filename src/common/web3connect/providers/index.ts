@@ -3,7 +3,7 @@ import WalletConnectProvider from './WalletConnectProvider'
 import SUPPORTED_PROVIDERS from './supported'
 
 export const isInjectedEnabled = () => {
-  return (window && window.ethereum)
+  return window && window.ethereum
 }
 
 const _cachedProviders = {}
@@ -13,9 +13,7 @@ const getProviderByName = (web3connect, providerName, newInstance = false) => {
     switch (providerName) {
       case SUPPORTED_PROVIDERS.INJECTED:
         _cachedProviders[providerName] = new InjectedProvider(web3connect, {
-          supportedChainIds: [
-            web3connect._web3ChainId,
-          ],
+          supportedChainIds: [web3connect._web3ChainId],
         })
         return _cachedProviders[providerName]
       case SUPPORTED_PROVIDERS.WALLETCONNECT:

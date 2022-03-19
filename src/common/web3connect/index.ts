@@ -34,10 +34,7 @@ export default class Web3Connect extends EventEmitter {
 
   constructor(options) {
     super()
-    const {
-      web3RPC,
-      web3ChainId,
-    } = options
+    const { web3RPC, web3ChainId } = options
 
     this._web3RPC = web3RPC
     this._web3ChainId = web3ChainId
@@ -92,13 +89,20 @@ export default class Web3Connect extends EventEmitter {
 
   getInjectedTitle() {
     switch (this.getInjectedType()) {
-      case INJECTED_TYPE.NONE: return 'Not installed'
-      case INJECTED_TYPE.UNKNOWN: return 'Injected Web3'
-      case INJECTED_TYPE.OPERA: return 'Opera Crypto Wallet'
-      case INJECTED_TYPE.METAMASK: return 'MetaMask'
-      case INJECTED_TYPE.TRUST: return 'Trust Wallet'
-      case INJECTED_TYPE.LIQUALITY: return 'Liquality Wallet'
-      default: return 'Not installed'
+      case INJECTED_TYPE.NONE:
+        return 'Not installed'
+      case INJECTED_TYPE.UNKNOWN:
+        return 'Injected Web3'
+      case INJECTED_TYPE.OPERA:
+        return 'Opera Crypto Wallet'
+      case INJECTED_TYPE.METAMASK:
+        return 'MetaMask'
+      case INJECTED_TYPE.TRUST:
+        return 'Trust Wallet'
+      case INJECTED_TYPE.LIQUALITY:
+        return 'Liquality Wallet'
+      default:
+        return 'Not installed'
     }
   }
 
@@ -118,20 +122,21 @@ export default class Web3Connect extends EventEmitter {
       if (window.ethereum.isLiquality) return INJECTED_TYPE.LIQUALITY
       if (window.ethereum.isTrust) return INJECTED_TYPE.TRUST
       if (window.ethereum.isMetaMask) return INJECTED_TYPE.METAMASK
-      if ((!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) return INJECTED_TYPE.OPERA
+      if (
+        (!!window.opr && !!window.opr.addons) ||
+        !!window.opera ||
+        navigator.userAgent.indexOf(' OPR/') >= 0
+      )
+        return INJECTED_TYPE.OPERA
 
       return INJECTED_TYPE.UNKNOWN
     }
     return INJECTED_TYPE.NONE
-
   }
 
   _checkIsDAppBrowser() {
     if (isMobile) {
-
-      if (window
-        && window.ethereum
-      ) {
+      if (window && window.ethereum) {
         this._isDAppBrowser = true
       }
     }
@@ -175,18 +180,12 @@ export default class Web3Connect extends EventEmitter {
   _setupEvents() {
     if (this._cachedProvider) {
       this._cachedProvider.on(ConnectorEvent.Update, (data) => {
-        if (data
-          && data.account
-          && data.account !== this._cachedAddress
-        ) {
+        if (data && data.account && data.account !== this._cachedAddress) {
           this._cachedAddress = data.account
           this.emit('accountChange')
           this.emit('updated')
         }
-        if (data
-          && data.chainId
-          && data.chainId !== this._cachedChainId
-        ) {
+        if (data && data.chainId && data.chainId !== this._cachedChainId) {
           this._cachedChainId = data.chainId
           this.emit('chainChanged')
           this.emit('updated')
@@ -242,17 +241,15 @@ export default class Web3Connect extends EventEmitter {
         if (_connector.isLocked()) {
           this._walletLocked = true
         }
-
       }
       return false
     }
     throw new Error(`Not supported provider ${provider}`)
-
   }
 
   getProviders = () => {
     const providers = Object.keys(SUPPORTED_PROVIDERS).map((key) => SUPPORTED_PROVIDERS[key])
-    return (isInjectedEnabled())
+    return isInjectedEnabled()
       ? providers
       : providers.filter((name) => name !== SUPPORTED_PROVIDERS.INJECTED)
   }
@@ -260,12 +257,16 @@ export default class Web3Connect extends EventEmitter {
   getChainId = () => this._cachedChainId
 
   isConnected() {
-    return !!(this._cachedProvider)
+    return !!this._cachedProvider
   }
 
   getNetworksId = () => {
-    const decimalCurrrentId = this._web3ChainId ? Number(new BigNumber(this._web3ChainId).toString(10)) : undefined
-    const dicimalCachedId = this._cachedChainId ? Number(new BigNumber(this._cachedChainId).toString(10)) : undefined
+    const decimalCurrrentId = this._web3ChainId
+      ? Number(new BigNumber(this._web3ChainId).toString(10))
+      : undefined
+    const dicimalCachedId = this._cachedChainId
+      ? Number(new BigNumber(this._cachedChainId).toString(10))
+      : undefined
 
     return {
       decimalCurrrentId,
@@ -276,17 +277,18 @@ export default class Web3Connect extends EventEmitter {
   isCorrectNetwork() {
     const { decimalCurrrentId, dicimalCachedId } = this.getNetworksId()
 
-    const supportedNetwork = config.evmNetworkVersions.includes(decimalCurrrentId)
-      || config.evmNetworkVersions.includes(dicimalCachedId)
+    const supportedNetwork =
+      config.evmNetworkVersions.includes(decimalCurrrentId) ||
+      config.evmNetworkVersions.includes(dicimalCachedId)
 
     return (
-      `${this._web3ChainId}` === `${this._cachedChainId}`
+      `${this._web3ChainId}` === `${this._cachedChainId}` ||
       // @ts-ignore: strictNullChecks
-      || this._web3ChainId === Number.parseInt(this._cachedChainId, 10)
-      || `0x0${this._web3ChainId}` === `${this._cachedChainId}`
-      || `0x${this._web3ChainId}` === `${this._cachedChainId}` // Opera Mobile
-      || supportedNetwork
-      || false
+      this._web3ChainId === Number.parseInt(this._cachedChainId, 10) ||
+      `0x0${this._web3ChainId}` === `${this._cachedChainId}` ||
+      `0x${this._web3ChainId}` === `${this._cachedChainId}` || // Opera Mobile
+      supportedNetwork ||
+      false
     )
   }
 

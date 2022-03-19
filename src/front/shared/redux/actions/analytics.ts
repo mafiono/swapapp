@@ -1,4 +1,4 @@
-const getGtag = () =>  window.gtag || null
+const getGtag = () => window.gtag || null
 
 //@ts-ignore
 const dataEvent = ({ action, label } = {}) => {
@@ -9,7 +9,7 @@ const dataEvent = ({ action, label } = {}) => {
   }
 
   gtag('event', action, {
-    'label': label,
+    label: label,
   })
 }
 
@@ -22,8 +22,8 @@ const balanceEvent = ({ action, currency, balance } = {}) => {
   }
 
   gtag('event', `balance-${action}`, {
-    'currency': currency,
-    'balance': balance,
+    currency: currency,
+    balance: balance,
   })
 }
 
@@ -68,7 +68,6 @@ const getClientId = () => {
   }
   return tracker.get('clientId')
 }
-
 
 export default {
   getTracker,

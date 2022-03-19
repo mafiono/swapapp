@@ -27,9 +27,7 @@ const DashboardLayout = (props: ComponentProps) => {
   return (
     <article className="data-tut-start-widget-tour">
       {window.CUSTOM_LOGO && <img className="cutomLogo" src={window.CUSTOM_LOGO} alt="logo" />}
-      <section
-        styleName={`wallet ${window.CUSTOM_LOGO ? 'hasCusomLogo' : ''}`}
-      >
+      <section styleName={`wallet ${window.CUSTOM_LOGO ? 'hasCusomLogo' : ''}`}>
         <div className="data-tut-store" styleName="walletContent" ref={balanceRef}>
           <div styleName="walletBalance">
             {props.BalanceForm}

@@ -93,23 +93,24 @@ class QuickSwap extends PureComponent<IUniversalObj, ComponentState> {
 
     const isSourceMode = activeSection === Sections.Source
 
-    let {
-      currentCurrencies,
-      receivedList,
-      spendedCurrency,
-      receivedCurrency,
-      wrongNetwork,
-    } = this.returnCurrentAssetState(allCurrencies, activeSection)
+    let { currentCurrencies, receivedList, spendedCurrency, receivedCurrency, wrongNetwork } =
+      this.returnCurrentAssetState(allCurrencies, activeSection)
 
     if (externalConfig.opts.defaultQuickSell) {
-      const defaultSellCurrency = allCurrencies.filter((curData) => curData.value.toUpperCase() === externalConfig.opts.defaultQuickSell.toUpperCase())
+      const defaultSellCurrency = allCurrencies.filter(
+        (curData) =>
+          curData.value.toUpperCase() === externalConfig.opts.defaultQuickSell.toUpperCase()
+      )
       if (defaultSellCurrency.length) {
-        [spendedCurrency] = defaultSellCurrency
+        ;[spendedCurrency] = defaultSellCurrency
         receivedList = this.returnReceivedList(allCurrencies, spendedCurrency)
       }
     }
     if (externalConfig.opts.defaultQuickBuy) {
-      const defaultBuyCurrency = allCurrencies.filter((curData) => curData.value.toUpperCase() === externalConfig.opts.defaultQuickBuy.toUpperCase())
+      const defaultBuyCurrency = allCurrencies.filter(
+        (curData) =>
+          curData.value.toUpperCase() === externalConfig.opts.defaultQuickBuy.toUpperCase()
+      )
       if (defaultBuyCurrency.length) [receivedCurrency] = defaultBuyCurrency
     }
 
@@ -120,13 +121,13 @@ class QuickSwap extends PureComponent<IUniversalObj, ComponentState> {
     // if we have url parameters then show it as default values
     if (!wrongNetwork && path.match(/\/quick/) && params.sell && params.buy) {
       const urlSpendedCurrency = currentCurrencies.find(
-        (item) => item.value.toLowerCase() === params.sell.toLowerCase(),
+        (item) => item.value.toLowerCase() === params.sell.toLowerCase()
       )
       if (!urlSpendedCurrency) history.push(localisedUrl('', `${links.quickSwap}`))
 
       const urlReceivedList = this.returnReceivedList(currentCurrencies, urlSpendedCurrency)
       const urlReceivedCurrency = urlReceivedList.find(
-        (item) => item.value.toLowerCase() === params.buy.toLowerCase(),
+        (item) => item.value.toLowerCase() === params.buy.toLowerCase()
       )
 
       if (!urlReceivedCurrency) history.push(localisedUrl('', `${links.quickSwap}`))
@@ -204,23 +205,20 @@ class QuickSwap extends PureComponent<IUniversalObj, ComponentState> {
 
     const chainId = metamask.getChainId()
     const isCurrentNetworkAvailable = !!availableBlockchains[chainId]
-    const isSpendedCurrencyNetworkAvailable = metamask.isAvailableNetworkByCurrency(spendedCurrency.value)
-    const switchToCorrectNetwork = prevWrongNetwork
-      && (isSpendedCurrencyNetworkAvailable || isCurrentNetworkAvailable)
+    const isSpendedCurrencyNetworkAvailable = metamask.isAvailableNetworkByCurrency(
+      spendedCurrency.value
+    )
+    const switchToCorrectNetwork =
+      prevWrongNetwork && (isSpendedCurrencyNetworkAvailable || isCurrentNetworkAvailable)
     const switchToWrongNetwork = !prevWrongNetwork && !isSpendedCurrencyNetworkAvailable
     const disconnect = prevMetamaskData.isConnected && !metamaskData.isConnected
 
-    let needFullUpdate = (
-      disconnect
-      || (
-        metamaskData.isConnected
-        && (
-          switchToCorrectNetwork
-          || switchToWrongNetwork
-          || prevMetamaskData.address !== metamaskData.address
-        )
-      )
-    )
+    let needFullUpdate =
+      disconnect ||
+      (metamaskData.isConnected &&
+        (switchToCorrectNetwork ||
+          switchToWrongNetwork ||
+          prevMetamaskData.address !== metamaskData.address))
 
     const changeSection = activeSection !== prevActiveSection
 
@@ -231,31 +229,30 @@ class QuickSwap extends PureComponent<IUniversalObj, ComponentState> {
         wrongNetwork,
       } = this.returnCurrentAssetState(currencies, activeSection)
 
-      const haveSpendedCurrencyInList = currentCurrencies.filter(currency => currency.value === spendedCurrency.value).length === 1
+      const haveSpendedCurrencyInList =
+        currentCurrencies.filter((currency) => currency.value === spendedCurrency.value).length ===
+        1
 
-      const needCurrenciesListsUpdate = (
-        newSpendedCurrency.value === spendedCurrency.value
-        || haveSpendedCurrencyInList && !blockReason
-      )
+      const needCurrenciesListsUpdate =
+        newSpendedCurrency.value === spendedCurrency.value ||
+        (haveSpendedCurrencyInList && !blockReason)
 
       if (needCurrenciesListsUpdate) {
-        this.setState(() => ({
-          wrongNetwork,
-          currencies: currentCurrencies,
-        }), this.updateReceivedList)
+        this.setState(
+          () => ({
+            wrongNetwork,
+            currencies: currentCurrencies,
+          }),
+          this.updateReceivedList
+        )
       } else if (!haveSpendedCurrencyInList) {
         needFullUpdate = true
       }
     }
 
     if (needFullUpdate) {
-      const {
-        currentCurrencies,
-        receivedList,
-        spendedCurrency,
-        receivedCurrency,
-        wrongNetwork,
-      } = this.returnCurrentAssetState(currencies, activeSection)
+      const { currentCurrencies, receivedList, spendedCurrency, receivedCurrency, wrongNetwork } =
+        this.returnCurrentAssetState(currencies, activeSection)
 
       this.updateBaseChainWallet(spendedCurrency)
 
@@ -299,7 +296,7 @@ class QuickSwap extends PureComponent<IUniversalObj, ComponentState> {
     }
 
     if (activeSection === Sections.Aggregator) {
-      currencies = currencies.filter(currency => {
+      currencies = currencies.filter((currency) => {
         const { coin, blockchain } = getCoinInfo(currency.value)
         const network = externalConfig.evmNetworks[blockchain || coin]
 
@@ -674,7 +671,7 @@ class QuickSwap extends PureComponent<IUniversalObj, ComponentState> {
 
     let pairAddress = cacheStorageGet(
       'quickswapLiquidityPair',
-      `${externalConfig.entry}_${tokenA}_${tokenB}`,
+      `${externalConfig.entry}_${tokenA}_${tokenB}`
     )
 
     if (!pairAddress) {

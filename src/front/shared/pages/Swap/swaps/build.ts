@@ -4,7 +4,6 @@ import EthTokenToUTXO from '../UTXOSwap/EthTokenToUTXO'
 import UTXOToEthLike from '../UTXOSwap/UTXOToEthLike'
 import EthLikeToUTXO from '../UTXOSwap/EthLikeToUTXO'
 
-
 const UTXO_to_ERC20 = (coinName) => {
   class _UTXO_to_ERC20 extends UTXOToEthToken {
     constructor(props) {
@@ -249,7 +248,6 @@ export {
   ERC20_to_UTXO,
   BEP20_to_UTXO,
   ERC20MATIC_to_UTXO,
-
   UTXO_to_ETH,
   UTXO_to_BNB,
   UTXO_to_MATIC,

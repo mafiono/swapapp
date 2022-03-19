@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js'
 
-
 export enum SwapMode {
   Atomic = 'Atomic',
   Turbo = 'Turbo',
@@ -14,7 +13,7 @@ export enum SwapSide {
 export enum SwapTxStatus {
   Expected = 'Expected',
   Pending = 'Pending',
-  Done = 'Done'
+  Done = 'Done',
 }
 
 export enum SwapStatus {

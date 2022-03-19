@@ -4,7 +4,6 @@ import debug from 'debug'
 
 import request from '../helpers/request'
 
-
 // const MAINNET_PROVIDER = `https://mainnet.infura.io/JCnK5ifEPH9qcQkX0Ahl`
 const TESTNET_PROVIDER = `https://rinkeby.infura.io/v3/5ffc47f65c4042ce847ef66a3fa70d4c`
 
@@ -30,7 +29,6 @@ const filterError = (error) => {
 }
 
 class Ethereum {
-
   core: any
   etherscan: any
 
@@ -44,13 +42,13 @@ class Ethereum {
       this.core = new Web3(_provider)
     }
 
-    this.etherscan = _network === 'testnet'
-      ? `https://api-rinkeby.etherscan.io`
-      : `https://api.etherscan.io`
+    this.etherscan =
+      _network === 'testnet' ? `https://api-rinkeby.etherscan.io` : `https://api.etherscan.io`
   }
 
   fetchBalance(address) {
-    return this.core.eth.getBalance(address)
+    return this.core.eth
+      .getBalance(address)
       .then((wei) => {
         let balance = this.core.utils.fromWei(wei)
 
@@ -74,14 +72,16 @@ class Ethereum {
     // query request
     return request
       .get(url, {
-        cacheResponse: 10*1000,
+        cacheResponse: 10 * 1000,
         queryResponse: true,
       })
       .then((json: any) => JSON.parse(json))
       .then(({ result }) => result)
-      .then(raw => new BigNumber(raw).dividedBy(base).toString())
-      .catch(error => {
-        debug('swap.core:ethereum')(`TokenBalanceError: ${error.statusCode} ${url} - Failed to fetch token balance (${tokenAddress}). Probably too frequent request!`)
+      .then((raw) => new BigNumber(raw).dividedBy(base).toString())
+      .catch((error) => {
+        debug('swap.core:ethereum')(
+          `TokenBalanceError: ${error.statusCode} ${url} - Failed to fetch token balance (${tokenAddress}). Probably too frequent request!`
+        )
 
         return '0'
       })
@@ -105,7 +105,7 @@ class Ethereum {
 
     try {
       return await this.estimateGasPriceEthGasStation(options)
-    } catch(ethGasStationError) {
+    } catch (ethGasStationError) {
       console.error('EstimateFeeError: EthGasStation, falling back to Web3 estimation...')
     }
 
@@ -115,10 +115,14 @@ class Ethereum {
   async estimateGasPriceWeb3({ speed = 'fast' } = {}) {
     const _multiplier = (() => {
       switch (speed) {
-        case 'fast':    return 2
-        case 'normal':  return 1
-        case 'slow':    return 0.5
-        default:      return 1
+        case 'fast':
+          return 2
+        case 'normal':
+          return 1
+        case 'slow':
+          return 0.5
+        default:
+          return 1
       }
     })()
 
@@ -138,10 +142,14 @@ class Ethereum {
   estimateGasPriceEtherChain({ speed = 'fast' } = {}) {
     const _speed = (() => {
       switch (speed) {
-        case 'fast':    return 'fast'
-        case 'normal':  return 'standard'
-        case 'slow':    return 'safeLow'
-        default:      return 'standard'
+        case 'fast':
+          return 'fast'
+        case 'normal':
+          return 'standard'
+        case 'slow':
+          return 'safeLow'
+        default:
+          return 'standard'
       }
     })()
 
@@ -155,17 +163,21 @@ class Ethereum {
         cacheOnFail: true,
       })
       .then((json: string) => JSON.parse(json))
-      .then(fees => new BigNumber(fees[_speed]).multipliedBy(1e9))
-      .catch(error => filterError(error))
+      .then((fees) => new BigNumber(fees[_speed]).multipliedBy(1e9))
+      .catch((error) => filterError(error))
   }
 
   estimateGasPriceEthGasStation({ speed = 'fast' }) {
     const _speed = (() => {
       switch (speed) {
-        case 'fast':    return 'fast'
-        case 'normal':  return 'average'
-        case 'slow':    return 'safeLow'
-        default:      return 'average'
+        case 'fast':
+          return 'fast'
+        case 'normal':
+          return 'average'
+        case 'slow':
+          return 'safeLow'
+        default:
+          return 'average'
       }
     })()
 
@@ -179,8 +191,8 @@ class Ethereum {
         cacheOnFail: true,
       })
       .then((json: any) => JSON.parse(json))
-      .then(fees => new BigNumber(fees[_speed]).dividedBy(10).multipliedBy(1e9))
-      .catch(error => filterError(error))
+      .then((fees) => new BigNumber(fees[_speed]).dividedBy(10).multipliedBy(1e9))
+      .catch((error) => filterError(error))
   }
 }
 
@@ -189,11 +201,7 @@ const testnet = () => new Ethereum('testnet')
 
 const networks = {
   mainnet,
-  testnet
+  testnet,
 }
 
-export {
-  networks,
-  mainnet,
-  testnet
-}
+export { networks, mainnet, testnet }

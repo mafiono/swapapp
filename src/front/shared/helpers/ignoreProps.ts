@@ -1,7 +1,7 @@
 const ignoreProps = (props = {}, ...ignored) => {
   const list = {}
 
-  Object.keys(props).forEach(key => {
+  Object.keys(props).forEach((key) => {
     if (!ignored.includes(key)) {
       list[key] = props[key]
     }
@@ -9,6 +9,5 @@ const ignoreProps = (props = {}, ...ignored) => {
 
   return list
 }
-
 
 export default ignoreProps

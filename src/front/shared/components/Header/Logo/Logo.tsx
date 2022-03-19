@@ -12,7 +12,6 @@ import ThemeTooltip from '../../ui/Tooltip/ThemeTooltip'
 import logoBlack from 'shared/images/logo/logo-black.svg'
 import logoColored from 'shared/images/logo/logo-colored.svg'
 
-
 /* uncomment to debug */
 //window.logoUrl = 'https://wallet.wpmix.net/wp-content/uploads/2020/07/yourlogohere.png'
 //window.logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/640px-Samsung_Logo.svg.png'
@@ -23,32 +22,24 @@ import logoColored from 'shared/images/logo/logo-colored.svg'
 //window.logoUrl = "#"
 //window.LOGO_REDIRECT_LINK = 'https://www.google.com/'
 
-
 const isDark = localStorage.getItem(constants.localStorage.isDark)
 const isMainnet = process.env.MAINNET
 
 @withRouter
 @CSSModules(styles, { allowMultiple: true })
 class Logo extends Component<any, {}> {
-
   render() {
     const {
       intl: { locale },
-    } = this.props;
+    } = this.props
 
     const isCustomLogo = window.logoUrl !== '#'
-    const customLogoUrl = isDark ?
-      window.darkLogoUrl || window.logoUrl
-      :
-      window.logoUrl
+    const customLogoUrl = isDark ? window.darkLogoUrl || window.logoUrl : window.logoUrl
 
     const isCustomLogoLink = window.LOGO_REDIRECT_LINK as boolean
     const customLogoLink = window.LOGO_REDIRECT_LINK
 
-    const imgSrc = isCustomLogo ?
-      customLogoUrl
-      :
-      isMainnet ? logoColored : logoBlack
+    const imgSrc = isCustomLogo ? customLogoUrl : isMainnet ? logoColored : logoBlack
 
     const imgAlt = window.location.hostname
 
@@ -56,11 +47,11 @@ class Logo extends Component<any, {}> {
 
     return (
       <div styleName="logoWrapper">
-        {isCustomLogoLink ?
+        {isCustomLogoLink ? (
           <a href={goToUrl}>
             <img src={imgSrc} alt={imgAlt} />
           </a>
-          :
+        ) : (
           <Fragment>
             <Link to={goToUrl} data-tip data-for="logo">
               <img src={imgSrc} alt={imgAlt} />
@@ -69,9 +60,9 @@ class Logo extends Component<any, {}> {
               <FormattedMessage id="logo29" defaultMessage="Go Home" />
             </ThemeTooltip>
           </Fragment>
-        }
+        )}
       </div>
-    );
+    )
   }
 }
 

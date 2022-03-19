@@ -19,7 +19,7 @@ function returnTokenIcon(name) {
     }
   } catch (error) {
     console.group('%c CurrencyIcon', 'color: red')
-    console.error('can\'t to load currency icon')
+    console.error("can't to load currency icon")
     console.groupEnd()
   }
 }
@@ -32,26 +32,19 @@ type CurrencyIconProps = {
 }
 
 const CurrencyIcon = (props: CurrencyIconProps) => {
-  const { className, style, name: coinName , source } = props
-  const {
-    coin: name,
-    blockchain,
-  } = getCoinInfo(coinName)
+  const { className, style, name: coinName, source } = props
+  const { coin: name, blockchain } = getCoinInfo(coinName)
 
   if (typeof name === 'undefined') {
-    return <p><FormattedMessage id="currencyIcon15" defaultMessage="Error" /></p>
+    return (
+      <p>
+        <FormattedMessage id="currencyIcon15" defaultMessage="Error" />
+      </p>
+    )
   }
 
   if (source) {
-    return (
-      <img
-        styleName="sizeLimit"
-        src={source}
-        style={style}
-        alt="icon"
-        role="image"
-      />
-    )
+    return <img styleName="sizeLimit" src={source} style={style} alt="icon" role="image" />
   }
 
   const tokenIcon = returnTokenIcon(name.toLowerCase())
@@ -83,16 +76,10 @@ const CurrencyIcon = (props: CurrencyIconProps) => {
   }
 
   return (
-    <span
-      className={className}
-      style={style}
-      styleName="text"
-      role="letter"
-    >
+    <span className={className} style={style} styleName="text" role="letter">
       {name.charAt(0).toUpperCase()}
     </span>
   )
 }
-
 
 export default cssModules(CurrencyIcon, styles)

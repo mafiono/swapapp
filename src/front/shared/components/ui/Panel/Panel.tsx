@@ -8,12 +8,8 @@ export default class Panel extends Component<any, any> {
   render() {
     return (
       <section styleName={classNames('panel')}>
-        { this.props.header &&
-          <div styleName="panelHeader">
-            { this.props.header }
-          </div>
-        }
-        { this.props.children }
+        {this.props.header && <div styleName="panelHeader">{this.props.header}</div>}
+        {this.props.children}
       </section>
     )
   }

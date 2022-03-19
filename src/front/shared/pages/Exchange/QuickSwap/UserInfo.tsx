@@ -18,8 +18,7 @@ import { COIN_DECIMALS, MAX_PERCENT } from './constants'
 import { ServiceFee } from './types'
 import config from 'helpers/externalConfig'
 
-
-const onlyEvmWallets = (config?.opts?.ui?.disableInternalWallet) ? true : false
+const onlyEvmWallets = config?.opts?.ui?.disableInternalWallet ? true : false
 
 type ComponentProps = {
   history: any
@@ -126,13 +125,7 @@ function UserInfo(props: ComponentProps) {
   }
 
   const connectWalletButton = (
-    <Button
-      id="connectWalletBtn"
-      brand
-      fullWidth
-      styleName="walletButton"
-      onClick={connectWallet}
-    >
+    <Button id="connectWalletBtn" brand fullWidth styleName="walletButton" onClick={connectWallet}>
       <FormattedMessage id="Exchange_ConnectAddressOption" defaultMessage="Connect Wallet" />
     </Button>
   )
@@ -155,20 +148,20 @@ function UserInfo(props: ComponentProps) {
   return (
     <section styleName="userInfo">
       {onlyEvmWallets ? (
-        <>
-          {!metamask.isConnected() ? (
-            <>{connectWalletButton}</>
-          ) : (
-            <>{walletAddressBlock}</>
-          )}
-        </>
+        <>{!metamask.isConnected() ? <>{connectWalletButton}</> : <>{walletAddressBlock}</>}</>
       ) : (
         <>
           {!metamask.isConnected() && (!isWalletCreated || !mnemonicSaved) && (
             <>{connectWalletButton}</>
           )}
           {!isWalletCreated ? (
-            <Button id="createWalletBtn" styleName="walletButton" gray fullWidth onClick={createWallet}>
+            <Button
+              id="createWalletBtn"
+              styleName="walletButton"
+              gray
+              fullWidth
+              onClick={createWallet}
+            >
               <FormattedMessage id="menu.CreateWallet" defaultMessage="Create wallet" />
             </Button>
           ) : saveSecretPhrase ? (

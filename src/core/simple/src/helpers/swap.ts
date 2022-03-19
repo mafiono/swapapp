@@ -6,37 +6,36 @@ import crypto from 'crypto'
 import history from './history'
 import { on } from './on'
 
-
 export const get = (app, id) => new Swap(id, app)
 
-export const onStep = (swap, _step) => new Promise(async resolve => {
-  if (_step <= swap.flow.state.step)
-    resolve(swap.flow.state.step)
+export const onStep = (swap, _step) =>
+  new Promise(async (resolve) => {
+    if (_step <= swap.flow.state.step) resolve(swap.flow.state.step)
 
-  debug('swap.core:simple:swap')('begin waiting step =', _step, 'on', swap.id)
+    debug('swap.core:simple:swap')('begin waiting step =', _step, 'on', swap.id)
 
-  const enterStep = step => {
-    debug('swap.core:simple:swap')('waiting for', _step, 'now on', step)
+    const enterStep = (step) => {
+      debug('swap.core:simple:swap')('waiting for', _step, 'now on', step)
 
-    if (step === _step) {
-      resolve(step)
+      if (step === _step) {
+        resolve(step)
 
-      swap.off('enter step', enterStep)
+        swap.off('enter step', enterStep)
+      }
     }
-  }
 
-  swap.on('enter step', enterStep)
-})
+    swap.on('enter step', enterStep)
+  })
 
 export const generateSecret = () => crypto.randomBytes(32).toString('hex')
 
 export const start = (swap) =>
-  new Promise(async resolve => {
+  new Promise(async (resolve) => {
     resolve(true)
   })
 
 export const refund = (app, swapID): Promise<boolean> =>
-  new Promise(async resolve => {
+  new Promise(async (resolve) => {
     debug('swap.core:simple:swap')('Swap id =', swapID)
     const swap = get(app, swapID)
 

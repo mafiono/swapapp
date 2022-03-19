@@ -42,8 +42,6 @@
   invoiceEnabled: false, // Allow create invoices
 } */
 
-
-
 window.buildOptions = {
   showWalletBanners: true, // Allow to see banners
   showHowItsWork: true, // Allow show block 'How its work' on exchange page
@@ -70,5 +68,5 @@ window.buildOptions = {
   defaultExchangePair: {
     buy: '{eth}wbtc',
     sell: 'btc',
-  }
+  },
 }

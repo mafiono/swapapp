@@ -2,7 +2,6 @@ import React from 'react'
 
 import { isMobile } from 'react-device-detect'
 
-
 export const color = (step, el) => {
   if (step === el) {
     return 'purple'

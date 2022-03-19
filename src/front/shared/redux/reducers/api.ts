@@ -1,6 +1,5 @@
 import config from 'app-config'
 
-
 export const initialState = {
   servers: config.api,
   checked: false,

@@ -7,18 +7,16 @@ import * as configStorage from '../config/storage'
 import { erc20 } from '../../core/swap.app/util'
 import { FG_COLORS as COLORS, colorString } from 'common/utils/colorString'
 
-
 const debug = _debug('swap.bot')
 const network = configStorage.getNetwork() || process.env.NETWORK || 'testnet'
 
 const {
-  room: {
-    ready,
-  },
+  room: { ready },
 } = helpers
 
 //register unkronw tokens in core
-Object.keys(TOKENS).filter((name) => !Object.keys(constants.COINS).includes(name))
+Object.keys(TOKENS)
+  .filter((name) => !Object.keys(constants.COINS).includes(name))
   .map((name) => {
     erc20.register(name.toLowerCase(), TOKENS[name].decimals)
   })
@@ -26,13 +24,9 @@ Object.keys(TOKENS).filter((name) => !Object.keys(constants.COINS).includes(name
 if (configStorage.hasTradeConfig()) {
   configStorage
     .getCustomERC20()
-    .filter(({name}) => !Object.keys(constants.COINS).includes(name))
+    .filter(({ name }) => !Object.keys(constants.COINS).includes(name))
     .forEach((ercData) => {
-      const {
-        name,
-        address,
-        decimals,
-      } = ercData
+      const { name, address, decimals } = ercData
 
       TOKEN_DECIMALS[name] = decimals
 
@@ -53,7 +47,6 @@ const ERC20TOKENS = Object.keys(TOKENS)
     name: name.toUpperCase(),
     tokenAddress: TOKENS[name].address,
   }))
-
 
 let SwapApp, app, auth, wallet, room, orders, services
 
@@ -80,9 +73,7 @@ try {
     update()
 
     setInterval(() => {
-      console.log(
-        colorString(`Refill order book`, COLORS.GREEN)
-      )
+      console.log(colorString(`Refill order book`, COLORS.GREEN))
       update()
     }, 10 * 60 * 1000)
 
@@ -96,6 +87,4 @@ try {
   handleError(err)
 }
 
-export {
-  SwapApp
-}
+export { SwapApp }

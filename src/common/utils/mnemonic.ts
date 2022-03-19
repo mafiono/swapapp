@@ -20,12 +20,11 @@ const convertMnemonicToValid = (mnemonic) => {
     .join(` `)
 }
 
-
 const getBtcWallet = (network, mnemonic, walletNumber = 0, path) => {
   mnemonic = convertMnemonicToValid(mnemonic)
   const seed = bip39.mnemonicToSeedSync(mnemonic)
   const root = bip32.fromSeed(seed, network)
-  const node = root.derivePath((path) ? path : `m/44'/0'/0'/0/${walletNumber}`)
+  const node = root.derivePath(path ? path : `m/44'/0'/0'/0/${walletNumber}`)
 
   const account = bitcoin.payments.p2pkh({
     pubkey: node.publicKey,
@@ -47,7 +46,7 @@ const getEthLikeWallet = (params) => {
   const validMnemonic = convertMnemonicToValid(mnemonic)
   const seed = bip39.mnemonicToSeedSync(validMnemonic)
   const hdwallet = hdkey.fromMasterSeed(seed)
-  const wallet = hdwallet.derivePath((path) || `m/44'/60'/0'/0/${walletNumber}`).getWallet()
+  const wallet = hdwallet.derivePath(path || `m/44'/60'/0'/0/${walletNumber}`).getWallet()
   const publicKey = wallet.getPublicKey()
   const privateKey = wallet.getPrivateKey()
 
@@ -63,7 +62,7 @@ const getEthLikeWallet = (params) => {
 const getGhostWallet = (network, mnemonic, walletNumber = 0, path) => {
   const seed = bip39.mnemonicToSeedSync(mnemonic)
   const root = bip32.fromSeed(seed, network)
-  const node = root.derivePath((path) || `m/44'/0'/0'/0/${walletNumber}`)
+  const node = root.derivePath(path || `m/44'/0'/0'/0/${walletNumber}`)
 
   const account = bitcoin.payments.p2pkh({
     pubkey: node.publicKey,
@@ -83,7 +82,7 @@ const getGhostWallet = (network, mnemonic, walletNumber = 0, path) => {
 const getNextWallet = (network, mnemonic, walletNumber = 0, path) => {
   const seed = bip39.mnemonicToSeedSync(mnemonic)
   const root = bip32.fromSeed(seed, network)
-  const node = root.derivePath((path) || `m/44'/707'/0'/0/${walletNumber}`)
+  const node = root.derivePath(path || `m/44'/707'/0'/0/${walletNumber}`)
 
   const account = bitcoin.payments.p2pkh({
     pubkey: node.publicKey,
@@ -100,7 +99,8 @@ const getNextWallet = (network, mnemonic, walletNumber = 0, path) => {
   }
 }
 
-const mnemonicIsValid = (mnemonic:string):boolean => bip39.validateMnemonic(convertMnemonicToValid(mnemonic))
+const mnemonicIsValid = (mnemonic: string): boolean =>
+  bip39.validateMnemonic(convertMnemonicToValid(mnemonic))
 
 export {
   getRandomMnemonicWords,

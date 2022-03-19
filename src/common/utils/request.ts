@@ -1,20 +1,23 @@
 import request from 'superagent'
 
-
 const responseCacheStorage = {}
 
 const responseCacheGetKey = (req, opts) => `${opts.method}-${opts.endpoint}`
 
 const responseCacheGet = (req, opts) => {
-  const cacheKey =  responseCacheGetKey(req, opts)
+  const cacheKey = responseCacheGetKey(req, opts)
 
-  if (opts
-    && opts.cacheResponse
-    && responseCacheStorage[cacheKey]
-    && ((responseCacheStorage[cacheKey].cacheResponseCreateTime + responseCacheStorage[cacheKey].cacheResponse) >= new Date().getTime())
+  if (
+    opts &&
+    opts.cacheResponse &&
+    responseCacheStorage[cacheKey] &&
+    responseCacheStorage[cacheKey].cacheResponseCreateTime +
+      responseCacheStorage[cacheKey].cacheResponse >=
+      new Date().getTime()
   ) {
     return responseCacheStorage[cacheKey]
-  } return false
+  }
+  return false
 }
 
 const responseCacheAdd = (req, opts, resData, res) => {
@@ -44,54 +47,52 @@ const createResponseHandler = (req, opts) => {
   }
 
   // no cache - do request
-  return new Promise((fulfill, reject) => req.end((err, res) => {
-    let serverError
+  return new Promise((fulfill, reject) =>
+    req.end((err, res) => {
+      let serverError
 
-    if (opts.sourceError && err) {
-      return reject(err)
-    }
-
-    // Errors
-    if (!res && !err) {
-      serverError = `Connection failed: ${debug}`
-    }
-    else if (!res || res.statusCode >= 500) {
-      serverError = 'We`re having technical issues at that moment. Please try again later'
-    }
-
-    if (serverError) {
-      return reject(new Error(`Connection failed: ${debug}, server error:${serverError}`))
-    }
-
-    if (err) {
-      return reject({ resData: err, res })
-    }
-
-    let { body } = res
-
-
-    if (!body) {
-      try {
-        body = JSON.parse(res.text)
-      }
-      catch (err) {
+      if (opts.sourceError && err) {
         return reject(err)
       }
-    }
 
-    const resData = opts.modifyResult(body)
+      // Errors
+      if (!res && !err) {
+        serverError = `Connection failed: ${debug}`
+      } else if (!res || res.statusCode >= 500) {
+        serverError = 'We`re having technical issues at that moment. Please try again later'
+      }
 
-    // Cache result if needs
-    if (opts.cacheResponse) {
-      responseCacheAdd(req, opts, resData, res)
-    }
+      if (serverError) {
+        return reject(new Error(`Connection failed: ${debug}, server error:${serverError}`))
+      }
 
-    // Resolve
-    //@ts-ignore
-    fulfill(resData, res)
-  }))
+      if (err) {
+        return reject({ resData: err, res })
+      }
+
+      let { body } = res
+
+      if (!body) {
+        try {
+          body = JSON.parse(res.text)
+        } catch (err) {
+          return reject(err)
+        }
+      }
+
+      const resData = opts.modifyResult(body)
+
+      // Cache result if needs
+      if (opts.cacheResponse) {
+        responseCacheAdd(req, opts, resData, res)
+      }
+
+      // Resolve
+      //@ts-ignore
+      fulfill(resData, res)
+    })
+  )
 }
-
 
 const defaultOptions = {
   sameOrigin: false,
@@ -119,7 +120,7 @@ const sendRequest = (options) => {
 
   if (opts.timeout) {
     req.timeout({
-      response: 5000,  // Wait 5 seconds for the server to start sending,
+      response: 5000, // Wait 5 seconds for the server to start sending,
       deadline: 60000, // but allow 1 minute for the file to finish loading.
       ...opts.timeout,
     })
@@ -144,8 +145,10 @@ const sendRequest = (options) => {
   return responseHandler
 }
 
-const requestByMethod = (method) => (endpoint, opts = {}) => sendRequest({ ...opts, endpoint, method })
-
+const requestByMethod =
+  (method) =>
+  (endpoint, opts = {}) =>
+    sendRequest({ ...opts, endpoint, method })
 
 export default {
   get: requestByMethod('get'),

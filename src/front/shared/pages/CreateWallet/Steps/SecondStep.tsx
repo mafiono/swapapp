@@ -13,11 +13,7 @@ import Button from 'components/controls/Button/Button'
 import styles from '../CreateWallet.scss'
 import Explanation from '../Explanation'
 import icons from '../images'
-import Cupture, {
-  subHeaderText1,
-  subHeaderText2,
-  cupture2,
-} from './texts'
+import Cupture, { subHeaderText1, subHeaderText2, cupture2 } from './texts'
 
 function SecondStep(props) {
   const {
@@ -61,7 +57,11 @@ function SecondStep(props) {
     // @ts-ignore
     _protection.fingerprint.btc = true
     // @ts-ignore
-    _activated.nothing.btc = btcData.balance > 0 || (hiddenCoins.length ? !hiddenCoins.includes('BTC') && !hiddenCoins.includes(`BTC:${btcData.address}`) : false)
+    _activated.nothing.btc =
+      btcData.balance > 0 ||
+      (hiddenCoins.length
+        ? !hiddenCoins.includes('BTC') && !hiddenCoins.includes(`BTC:${btcData.address}`)
+        : false)
     // @ts-ignore
     _activated.pin.btc = actions.btcmultisig.checkPINActivated()
     // @ts-ignore
@@ -101,14 +101,13 @@ function SecondStep(props) {
         if (thisComponentInitHelper.current && PublicKeyCredential) {
           // eslint-disable-next-line no-undef
           // @ts-ignore
-          PublicKeyCredential
-            .isUserVerifyingPlatformAuthenticatorAvailable()
-            .then(result => {
+          PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+            .then((result) => {
               if (result) {
                 setFingerprintAvaillable(true)
               }
             })
-            .catch(e => console.error(e))
+            .catch((e) => console.error(e))
         }
       }
     } catch (error) {
@@ -131,7 +130,7 @@ function SecondStep(props) {
 
     if (el.name === 'fingerprint') {
       // eslint-disable-next-line no-alert
-      alert('We don\'t support this type of device for now :(')
+      alert("We don't support this type of device for now :(")
       return null
     }
 
@@ -141,7 +140,7 @@ function SecondStep(props) {
     // if (activated) return
     const colors = border.color
 
-    Object.keys(border.color).forEach(el => {
+    Object.keys(border.color).forEach((el) => {
       if (el !== name) {
         colors[el] = false
       } else {
@@ -153,7 +152,8 @@ function SecondStep(props) {
     setError(null)
   }
 
-  const currencyName = Object.keys(currencies).filter((el) => currencies[el])[0] || 'Cant define currency'
+  const currencyName =
+    Object.keys(currencies).filter((el) => currencies[el])[0] || 'Cant define currency'
   const currencyKey = currencyName.toLowerCase()
 
   const coins = [
@@ -269,14 +269,13 @@ function SecondStep(props) {
 
   return (
     <div>
-      {!isMobile && !forcedCurrencyData
-        && (
-          <div>
-            <Explanation subHeaderText={subHeaderText1()} step={1} notMain>
-              <Cupture />
-            </Explanation>
-          </div>
-        )}
+      {!isMobile && !forcedCurrencyData && (
+        <div>
+          <Explanation subHeaderText={subHeaderText1()} step={1} notMain>
+            <Cupture />
+          </Explanation>
+        </div>
+      )}
       <div>
         <div>
           <Explanation subHeaderText={subHeaderText2()} step={2} isShow={forcedCurrencyData}>
@@ -300,26 +299,30 @@ function SecondStep(props) {
                   styleName={`${cardStyle_}`}
                   id={name}
                   onClick={() => {
-                    if (typeof el.onClickHandler !== 'undefined') { el.onClickHandler() }
+                    if (typeof el.onClickHandler !== 'undefined') {
+                      el.onClickHandler()
+                    }
                     return handleClick(index, el)
                   }}
                 >
                   <div styleName="ind">
-                    {(!enabled || activated)
-                      && (
-                        <em>
-                          {!activated && <FormattedMessage id="createWalletSoon" defaultMessage="Soon!" />}
-                          {activated && <FormattedMessage id="createWalletActivated" defaultMessage="Activated!" />}
-                        </em>
-                      )}
+                    {(!enabled || activated) && (
+                      <em>
+                        {!activated && (
+                          <FormattedMessage id="createWalletSoon" defaultMessage="Soon!" />
+                        )}
+                        {activated && (
+                          <FormattedMessage
+                            id="createWalletActivated"
+                            defaultMessage="Activated!"
+                          />
+                        )}
+                      </em>
+                    )}
                   </div>
                   <div styleName="flex">
                     <div styleName="logo securityIcon">
-                      <img
-                        src={icons[name]}
-                        alt={`${name} icon`}
-                        role="image"
-                      />
+                      <img src={icons[name]} alt={`${name} icon`} role="image" />
                     </div>
                     <ul styleName="currencyInfoList">
                       <li>

@@ -9,7 +9,6 @@ import IntlProviderContainer from './IntlProviderContainer'
 
 import reducers from 'redux/core/reducers'
 
-
 type RootProps = {
   history: typeof history
   store: typeof store

@@ -3,7 +3,6 @@ import { createBrowser, importWallet, timeOut, takeScreenshot, testWallets } fro
 jest.setTimeout(100_000) // ms
 
 describe('History tests', () => {
-
   it('there should be a correct display of balances', async () => {
     const { browser, page } = await createBrowser()
     const arrOfWords = testWallets.eth.seedPhrase.split(' ')
@@ -31,5 +30,4 @@ describe('History tests', () => {
       await browser.close()
     }
   })
-
 })

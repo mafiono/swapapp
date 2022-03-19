@@ -4,11 +4,4 @@ import ModalConductorProvider from './ModalConductorProvider/ModalConductorProvi
 import ModalContainer from './ModalContainer/ModalContainer'
 import ModalBox from './ModalBox/ModalBox'
 
-
-export {
-  Modal,
-  ModalConductor,
-  ModalContainer,
-  ModalBox,
-  ModalConductorProvider,
-}
+export { Modal, ModalConductor, ModalContainer, ModalBox, ModalConductorProvider }

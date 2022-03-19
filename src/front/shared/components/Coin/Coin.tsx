@@ -5,15 +5,15 @@ import CurrencyIcon, { currencyIcons } from 'components/ui/CurrencyIcon/Currency
 import config from 'app-config'
 
 const defaultCurrencyColors = {
-  'btc': 'orange',
+  btc: 'orange',
   'btc (multisig)': 'orange',
   'btc (sms-protected)': 'orange',
   'btc (pin-protected)': 'orange',
-  'matic': '#8247e5',
-  'xdai': '#48a9a6',
-  'usdt': '#33a681',
-  'ghost': 'black',
-  'next': 'white',
+  matic: '#8247e5',
+  xdai: '#48a9a6',
+  usdt: '#33a681',
+  ghost: 'black',
+  next: 'white',
 }
 
 type CoinProps = {
@@ -23,21 +23,17 @@ type CoinProps = {
 }
 
 const Coin = function (props: CoinProps) {
-  const {
-    size = 40,
-    className,
-    name,
-  } = props
+  const { size = 40, className, name } = props
 
   const isIconExist = currencyIcons.includes(name.toLowerCase())
   const iconSource = web3Icons[name]
   let isIconConfigExist = false
 
   if (
-    config?.erc20[name.toLowerCase()]?.icon
-    || config?.bep20[name.toLowerCase()]?.icon
-    || config?.erc20matic[name.toLowerCase()]?.icon
-    || config?.erc20xdai[name.toLowerCase()]?.icon
+    config?.erc20[name.toLowerCase()]?.icon ||
+    config?.bep20[name.toLowerCase()]?.icon ||
+    config?.erc20matic[name.toLowerCase()]?.icon ||
+    config?.erc20xdai[name.toLowerCase()]?.icon
   ) {
     isIconConfigExist = true
   }
@@ -45,7 +41,7 @@ const Coin = function (props: CoinProps) {
   // Coin styles *************************
 
   const style: {
-    [ k: string]: string
+    [k: string]: string
   } = {
     width: `${size}px`,
     height: `${size}px`,
@@ -74,10 +70,10 @@ const Coin = function (props: CoinProps) {
   // *************************************
 
   if (config?.isWidget && window?.widgetEvmLikeTokens?.length) {
-    window.widgetEvmLikeTokens.forEach((token) =>  {
+    window.widgetEvmLikeTokens.forEach((token) => {
       if (token.name.toLowerCase() === name.toLowerCase()) {
         if (token.icon) isIconConfigExist = true
-        if (token.iconBgColor) (style.backgroundColor = token.iconBgColor)
+        if (token.iconBgColor) style.backgroundColor = token.iconBgColor
       }
     })
   }
@@ -100,11 +96,7 @@ const Coin = function (props: CoinProps) {
   }
 
   return (
-    <div
-      styleName={`coin ${iconSource ? 'noColors' : ''}`}
-      className={className}
-      style={style}
-    >
+    <div styleName={`coin ${iconSource ? 'noColors' : ''}`} className={className} style={style}>
       <CurrencyIcon {...currencyIconProps} />
     </div>
   )

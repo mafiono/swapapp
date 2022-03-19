@@ -2,9 +2,10 @@ import config from 'app-config'
 import request from 'common/utils/request'
 import { getState } from 'redux/core'
 
-
 const getApiServer = (provider) => {
-  const { api: { servers } } = getState()
+  const {
+    api: { servers },
+  } = getState()
   return (servers || {})[provider] || config.api[provider]
 }
 

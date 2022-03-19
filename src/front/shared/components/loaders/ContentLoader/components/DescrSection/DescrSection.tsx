@@ -3,7 +3,6 @@ import CSSModules from 'react-css-modules'
 
 import styles from '../../ContentLoader.scss'
 
-
 const DescrSection = () => (
   <div styleName="container descr">
     <div styleName="one" />

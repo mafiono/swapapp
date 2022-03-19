@@ -18,5 +18,7 @@ const _ = (async () => {
   await ready(room)
   console.log('info:', wallet.view())
 
-  getAllInProgress().map(id => get(app, id)).map(swap => start(swap))
+  getAllInProgress()
+    .map((id) => get(app, id))
+    .map((swap) => start(swap))
 })()

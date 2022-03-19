@@ -63,11 +63,18 @@ function ModalForm(props) {
 
         {wrongNetwork && (
           <p styleName="warning">
-            <FormattedMessage id="incorrectNetwork" defaultMessage='Please choose correct network' />
+            <FormattedMessage
+              id="incorrectNetwork"
+              defaultMessage="Please choose correct network"
+            />
           </p>
         )}
 
-        <div styleName={`formWrapper ${wrongNetwork || availableCurrencies[0].notExist ? 'disabled' : ''}`}>
+        <div
+          styleName={`formWrapper ${
+            wrongNetwork || availableCurrencies[0].notExist ? 'disabled' : ''
+          }`}
+        >
           <SelectGroup
             label={<FormattedMessage id="addoffer381" defaultMessage="Sell" />}
             tooltip={

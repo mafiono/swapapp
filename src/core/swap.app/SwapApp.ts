@@ -9,20 +9,19 @@ import SwapRoom from 'swap.room'
 import SwapOrders from 'swap.orders'
 import EventEmitter from 'events'
 
-
 interface SwapAppServices {
-  auth?: SwapAuth,
-  room?: SwapRoom,
-  orders?: SwapOrders,
+  auth?: SwapAuth
+  room?: SwapRoom
+  orders?: SwapOrders
 }
 
 interface SwapAppOptions {
-  network?: string,
-  env: any,
-  services: SwapAppServices | Array<ServiceInterface>,
-  swaps: Array<SwapInterface>,
-  flows: Array<Flow>,
-  whitelistBtc?: Array<string>,
+  network?: string
+  env: any
+  services: SwapAppServices | Array<ServiceInterface>
+  swaps: Array<SwapInterface>
+  flows: Array<Flow>
+  whitelistBtc?: Array<string>
 }
 
 class SwapApp extends EventEmitter {
@@ -41,7 +40,6 @@ class SwapApp extends EventEmitter {
   services: SwapAppServices = {}
   swaps: Array<SwapInterface>
   flows: Array<Flow>
-  
 
   static _swapAppInstance = null
 
@@ -143,21 +141,21 @@ class SwapApp extends EventEmitter {
 
   getActiveSwaps(): Swap[] {
     return this.attachedSwaps.filter((swap: Swap) => {
-      return (swap === null)
-        ? false
-        : !swap.isFinished()
+      return swap === null ? false : !swap.isFinished()
     })
   }
 
   getSwapsByAddress(coin: string, address: string): Swap[] {
     return this.attachedSwaps.filter((swap: Swap) => {
-      if (swap
-        && swap.participant
-        && swap.participant[coin.toLowerCase()]
-        && swap.participant[coin.toLowerCase()].address
-        && swap.participant[coin.toLowerCase()].address.toLowerCase() === address.toLowerCase()
-        && !swap.isFinished()
-      ) return true
+      if (
+        swap &&
+        swap.participant &&
+        swap.participant[coin.toLowerCase()] &&
+        swap.participant[coin.toLowerCase()].address &&
+        swap.participant[coin.toLowerCase()].address.toLowerCase() === address.toLowerCase() &&
+        !swap.isFinished()
+      )
+        return true
       return false
     })
   }
@@ -220,7 +218,9 @@ class SwapApp extends EventEmitter {
       throw new Error('SwapApp swap should contain "_swapName" property')
     }
 
-    const swapKey = (swap.blockchainName) ? `{${swap.blockchainName}}${swap._swapName}` : swap._swapName
+    const swapKey = swap.blockchainName
+      ? `{${swap.blockchainName}}${swap._swapName}`
+      : swap._swapName
 
     if (!Object.values(constants.COINS).includes(swapKey.toUpperCase())) {
       throw new Error(
@@ -285,15 +285,23 @@ class SwapApp extends EventEmitter {
   getEvmLikeAddress(coinType) {
     return this.env.metamask && this.env.metamask.isEnabled() && this.env.metamask.isConnected()
       ? this.env.metamask.getAddress()
-      //@ts-ignore: strictNullChecks
-      : this.services.auth.accounts[coinType].address
+      : //@ts-ignore: strictNullChecks
+        this.services.auth.accounts[coinType].address
   }
 
   // @to-do use directy getEvmLikeAddress in EthLikeSwaps
-  getMyEthAddress() { return this.getEvmLikeAddress(`eth`) }
-  getMyBnbAddress() { return this.getEvmLikeAddress(`bnb`) }
-  getMyMaticAddress() { return this.getEvmLikeAddress(`matic`) }
-  getMyArbitrumAddress() { return this.getEvmLikeAddress(`arbeth`) }
+  getMyEthAddress() {
+    return this.getEvmLikeAddress(`eth`)
+  }
+  getMyBnbAddress() {
+    return this.getEvmLikeAddress(`bnb`)
+  }
+  getMyMaticAddress() {
+    return this.getEvmLikeAddress(`matic`)
+  }
+  getMyArbitrumAddress() {
+    return this.getEvmLikeAddress(`arbeth`)
+  }
 
   getEthWeb3Adapter() {
     return this.env.getWeb3().eth
@@ -344,11 +352,18 @@ class SwapApp extends EventEmitter {
   }
 
   // @to-do use directy getParticipantEvmLikeAddress in EthLikeSwaps
-  getParticipantEthAddress(swap) { return this.getParticipantEvmLikeAddress(`eth`, swap) }
-  getParticipantBnbAddress(swap) { return this.getParticipantEvmLikeAddress(`bnb`, swap) }
-  getParticipantMaticAddress(swap) { return this.getParticipantEvmLikeAddress(`matic`, swap) }
-  getParticipantArbitrumAddress(swap) { return this.getParticipantEvmLikeAddress(`arbeth`, swap) }
-
+  getParticipantEthAddress(swap) {
+    return this.getParticipantEvmLikeAddress(`eth`, swap)
+  }
+  getParticipantBnbAddress(swap) {
+    return this.getParticipantEvmLikeAddress(`bnb`, swap)
+  }
+  getParticipantMaticAddress(swap) {
+    return this.getParticipantEvmLikeAddress(`matic`, swap)
+  }
+  getParticipantArbitrumAddress(swap) {
+    return this.getParticipantEvmLikeAddress(`arbeth`, swap)
+  }
 
   static is(app) {
     return app && app.isSwapApp && app.isSwapApp() && app instanceof SwapApp

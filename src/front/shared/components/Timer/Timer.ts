@@ -37,8 +37,7 @@ export default class TimerButton extends Component<ComponentProps, ComponentStat
 
     if (newTimeLeft <= 0) {
       this.props.handleClick()
-    }
-    else {
+    } else {
       //@ts-ignore: strictNullChecks
       this.timer = setTimeout(this.tick, 1000)
       this.setState({

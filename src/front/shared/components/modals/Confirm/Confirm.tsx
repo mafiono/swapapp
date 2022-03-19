@@ -11,7 +11,6 @@ import { FieldLabel, Input } from 'components/forms'
 import { FormattedMessage, injectIntl, defineMessages } from 'react-intl'
 import WidthContainer from 'components/layout/WidthContainer/WidthContainer'
 
-
 const defaultLanguage = defineMessages({
   title: {
     id: 'confirmDialogDefaultTitle',
@@ -77,12 +76,7 @@ class Confirm extends React.Component<any, any> {
     const {
       intl,
       name,
-      data: {
-        title,
-        message,
-        labelYes,
-        labelNo,
-      },
+      data: { title, message, labelYes, labelNo },
     } = this.props
 
     const labels = {
@@ -107,8 +101,12 @@ class Confirm extends React.Component<any, any> {
               <p styleName="notification">{labels.message}</p>
             </div>
             <div styleName="button-overlay">
-              <Button styleName="button" gray onClick={this.handleCancel}>{labels.no}</Button>
-              <Button styleName="button" blue onClick={this.handleConfirm}>{labels.yes}</Button>
+              <Button styleName="button" gray onClick={this.handleCancel}>
+                {labels.no}
+              </Button>
+              <Button styleName="button" blue onClick={this.handleConfirm}>
+                {labels.yes}
+              </Button>
             </div>
           </div>
         </div>

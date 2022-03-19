@@ -80,11 +80,7 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
     super(props)
 
     const {
-      data: {
-        address,
-        currency,
-        toAddress,
-      },
+      data: { address, currency, toAddress },
       payerAddress = false,
     } = props
 
@@ -92,9 +88,8 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
     const walletData = actions.core.getWallet({ currency })
     const currentDecimals = walletData.decimals
     const { infoAboutCurrency } = walletData
-    const multiplier = infoAboutCurrency && infoAboutCurrency.price_fiat
-      ? infoAboutCurrency.price_fiat
-      : 1
+    const multiplier =
+      infoAboutCurrency && infoAboutCurrency.price_fiat ? infoAboutCurrency.price_fiat : 1
 
     this.state = {
       isToken,
@@ -128,43 +123,43 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
       contact,
       label,
       isShipped,
-      walletData: {
-        currency: currencyOriginal,
-        tokenKey,
-      },
+      walletData: { currency: currencyOriginal, tokenKey },
     } = this.state
 
-    const currency = ((tokenKey) ? tokenKey : currencyOriginal).toUpperCase()
+    const currency = (tokenKey ? tokenKey : currencyOriginal).toUpperCase()
     if (isShipped) return
 
-    this.setState({
-      isShipped: true,
-    }, async () => {
-      try {
-        const message = `${contact}\r\n${label}`
-        const result: any = await actions.invoices.addInvoice({
-          currency,
-          toAddress: address,
-          fromAddress: data.address,
-          amount,
-          contact,
-          label: message,
-          destination,
-        })
-        if (result && result.answer && result.answer === 'ok') {
-          this.handleGoToInvoice(result.invoiceId)
+    this.setState(
+      {
+        isShipped: true,
+      },
+      async () => {
+        try {
+          const message = `${contact}\r\n${label}`
+          const result: any = await actions.invoices.addInvoice({
+            currency,
+            toAddress: address,
+            fromAddress: data.address,
+            amount,
+            contact,
+            label: message,
+            destination,
+          })
+          if (result && result.answer && result.answer === 'ok') {
+            this.handleGoToInvoice(result.invoiceId)
+          }
+          if (data.onReady instanceof Function) {
+            data.onReady()
+          }
+        } catch (error) {
+          this.reportError(error)
         }
-        if (data.onReady instanceof Function) {
-          data.onReady()
-        }
-      } catch (error) {
-        this.reportError(error)
-      }
 
-      this.setState({
-        isShipped: false,
-      })
-    })
+        this.setState({
+          isShipped: false,
+        })
+      }
+    )
   }
 
   reportError = (error) => {
@@ -180,9 +175,7 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
     const {
       isToken,
       address,
-      walletData: {
-        currency,
-      },
+      walletData: { currency },
     } = this.state
     const checkAddress = otherAddress || address
 
@@ -208,13 +201,10 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
       multiplier,
       currentDecimals,
       selectedValue,
-      walletData: {
-        currency: currencyOriginal,
-        tokenKey,
-      },
+      walletData: { currency: currencyOriginal, tokenKey },
     } = this.state
 
-    const currency = ((tokenKey) ? tokenKey : currencyOriginal).toUpperCase()
+    const currency = (tokenKey ? tokenKey : currencyOriginal).toUpperCase()
 
     if (!value) {
       this.setState({
@@ -223,10 +213,7 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
       })
     } else if (selectedValue === currency) {
       this.setState({
-        fiatAmount: new BigNumber(value)
-          .times(multiplier)
-          .dp(2, BigNumber.ROUND_CEIL)
-          .toString(),
+        fiatAmount: new BigNumber(value).times(multiplier).dp(2, BigNumber.ROUND_CEIL).toString(),
         amount: value,
       })
     } else {
@@ -242,11 +229,14 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
 
   handleScan = (data) => {
     if (data) {
-      this.setState({
-        address: data.includes(':') ? data.split(':')[1] : data,
-      }, () => {
-        this.openScan()
-      })
+      this.setState(
+        {
+          address: data.includes(':') ? data.split(':')[1] : data,
+        },
+        () => {
+          this.openScan()
+        }
+      )
     }
   }
 
@@ -268,19 +258,14 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
       error,
       selectedValue,
       toAddressEnabled,
-      walletData: {
-        currency: currencyOriginal,
-        tokenKey,
-      },
+      walletData: { currency: currencyOriginal, tokenKey },
       walletData,
     } = this.state
-    const currency = ((tokenKey) ? tokenKey : currencyOriginal).toUpperCase()
+    const currency = (tokenKey ? tokenKey : currencyOriginal).toUpperCase()
 
     const {
       name,
-      data: {
-        disableClose,
-      },
+      data: { disableClose },
       intl,
     } = this.props
 
@@ -291,7 +276,7 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
       'fiatAmount',
       'amount',
       'contact',
-      'label',
+      'label'
     )
 
     const curList = [
@@ -311,7 +296,8 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
       },
     ]
 
-    const isDisabled = !amount || isShipped || !destination || !contact || (!!address && !this.addressIsCorrect())
+    const isDisabled =
+      !amount || isShipped || !destination || !contact || (!!address && !this.addressIsCorrect())
 
     return (
       <Modal
@@ -393,13 +379,11 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
                 </span>
               </FieldLabel>
               <span styleName="amountTooltip">
-                {
-                  new BigNumber(amount).isGreaterThan(0)
-                    ? selectedValue === currency
-                      ? `~ ${fiatAmount} USD`
-                      : `~ ${amount} ${currency}`
-                    : ''
-                }
+                {new BigNumber(amount).isGreaterThan(0)
+                  ? selectedValue === currency
+                    ? `~ ${fiatAmount} USD`
+                    : `~ ${amount} ${currency}`
+                  : ''}
               </span>
               <Input
                 className={ownStyle.input}
@@ -407,9 +391,11 @@ class InvoiceModal extends React.Component<InvoiceModalProps, InvoiceModalState>
                 onKeyDown={inputReplaceCommaWithDot}
                 pattern="0-9\."
                 withMargin
-                valueLink={selectedValue === currency
-                  ? linked.amount.pipe(this.handleAmount)
-                  : linked.fiatAmount.pipe(this.handleAmount)}
+                valueLink={
+                  selectedValue === currency
+                    ? linked.amount.pipe(this.handleAmount)
+                    : linked.fiatAmount.pipe(this.handleAmount)
+                }
               />
               <CurrencySelect
                 className={dropDownStyles.simpleDropdown}

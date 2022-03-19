@@ -1,7 +1,6 @@
 //@ts-ignore
-import plugins from 'plugins';
+import plugins from 'plugins'
 import config from 'helpers/externalConfig'
-
 
 let isLocalStorageEnabled
 
@@ -17,7 +16,9 @@ const getPluginMethod = (name, data) => {
   if (plugins && plugins[name] && typeof plugins[name] === 'function') {
     return plugins[name](data)
   }
-  throw new Error(`plugin code error or plugin function is not exist, check ${name} function in plugins derectory`)
+  throw new Error(
+    `plugin code error or plugin function is not exist, check ${name} function in plugins derectory`
+  )
 }
 
 const setItem = (key, value, stringify = true) => {

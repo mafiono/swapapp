@@ -7,7 +7,8 @@ import erc20Like from 'common/erc20Like'
 
 // TODO: =================================
 
-const isEthOrEthToken = ({ name }) => Object.keys(config.erc20).concat('eth').includes(name.toLowerCase())
+const isEthOrEthToken = ({ name }) =>
+  Object.keys(config.erc20).concat('eth').includes(name.toLowerCase())
 
 type EstimateFeeOptions = {
   method: string

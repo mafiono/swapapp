@@ -20,9 +20,10 @@ function ServiceLinks({ versionName, versionLink }: ServiceLinksProps) {
         </span>
       )}
       <span>
-        Powered by
-        {' '}
-        <a href={serviceLink} target="_blank" rel="noreferrer">OnOut - no-code tool to create Wallet</a>
+        Powered by{' '}
+        <a href={serviceLink} target="_blank" rel="noreferrer">
+          OnOut - no-code tool to create Wallet
+        </a>
       </span>
     </div>
   )

@@ -5,17 +5,17 @@ import styles from './styles.scss'
 
 /* eslint-disable */
 const Quote = () => {
-  const href = "https://blog.qtum.org/atomic-cross-chain-swap-on-qtum-7e756a890ed7"
+  const href = 'https://blog.qtum.org/atomic-cross-chain-swap-on-qtum-7e756a890ed7'
   return (
     <div styleName="container">
       <div styleName="header">
         &#34;
-      <FormattedMessage
+        <FormattedMessage
           id="Quote"
           defaultMessage="The swap.online project realizes swaps among Bitcoin-like, Ethereum-like, and made a product for users to execute swaps"
         />
         &#34;
-    </div>
+      </div>
       <a href={href} title={href} target="_blank" rel="noopener noreferrer" styleName="href">
         <b>
           — QTUM official Atomic Swap research

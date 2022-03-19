@@ -8,7 +8,7 @@ export default class Seo extends Component<any, any> {
     super(props)
 
     this.state = {
-      seoPage: getSeoPage(props.location.pathname)
+      seoPage: getSeoPage(props.location.pathname),
     }
   }
 

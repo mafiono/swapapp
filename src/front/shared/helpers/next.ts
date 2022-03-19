@@ -10,8 +10,8 @@ const networks = {
   mainnet: {
     messagePrefix: 'Nextcoin Signed Message:\n',
     bip32: {
-      public:  0x0488B21E,
-      private: 0x0488ADE4,
+      public: 0x0488b21e,
+      private: 0x0488ade4,
     },
     pubKeyHash: 75,
     scriptHash: 5,
@@ -29,14 +29,10 @@ const networks = {
   }*/
 }
 
-
-const hasAdminFee = (
-  config
-    && config.opts
-    && config.opts.fee
-    && config.opts.fee.next
-    && config.opts.fee.next.fee
-) ? config.opts.fee.next : false
+const hasAdminFee =
+  config && config.opts && config.opts.fee && config.opts.fee.next && config.opts.fee.next.fee
+    ? config.opts.fee.next
+    : false
 
 /*const network = process.env.MAINNET
   ? networks.mainnet
@@ -55,35 +51,31 @@ const getByteCount = (inputs, outputs) => {
   let outputCount = 0
   // assumes compressed pubkeys in all cases.
   const types = {
-    'inputs': {
+    inputs: {
       'MULTISIG-P2SH': TRANSACTION.MULTISIG_P2SH_IN_SIZE * 4,
-      'MULTISIG-P2WSH': TRANSACTION.MULTISIG_P2WSH_IN_SIZE + (41 * 4),
-      'MULTISIG-P2SH-P2WSH': TRANSACTION.MULTISIG_P2SH_P2WSH_IN_SIZE + (76 * 4),
-      'P2PKH': TRANSACTION.P2PKH_IN_SIZE * 4,
-      'P2WPKH': TRANSACTION.P2WPKH_IN_SIZE + (41 * 4),
-      'P2SH-P2WPKH': TRANSACTION.P2SH_P2WPKH_IN_SIZE + (64 * 4),
+      'MULTISIG-P2WSH': TRANSACTION.MULTISIG_P2WSH_IN_SIZE + 41 * 4,
+      'MULTISIG-P2SH-P2WSH': TRANSACTION.MULTISIG_P2SH_P2WSH_IN_SIZE + 76 * 4,
+      P2PKH: TRANSACTION.P2PKH_IN_SIZE * 4,
+      P2WPKH: TRANSACTION.P2WPKH_IN_SIZE + 41 * 4,
+      'P2SH-P2WPKH': TRANSACTION.P2SH_P2WPKH_IN_SIZE + 64 * 4,
     },
-    'outputs': {
-      'P2SH': TRANSACTION.P2SH_OUT_SIZE * 4,
-      'P2PKH': TRANSACTION.P2PKH_OUT_SIZE * 4,
-      'P2WPKH': TRANSACTION.P2WPKH_OUT_SIZE * 4,
-      'P2WSH': TRANSACTION.P2WSH_OUT_SIZE * 4,
+    outputs: {
+      P2SH: TRANSACTION.P2SH_OUT_SIZE * 4,
+      P2PKH: TRANSACTION.P2PKH_OUT_SIZE * 4,
+      P2WPKH: TRANSACTION.P2WPKH_OUT_SIZE * 4,
+      P2WSH: TRANSACTION.P2WSH_OUT_SIZE * 4,
     },
   }
 
   const checkUInt53 = (n) => {
-    if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0) throw new RangeError('value out of range')
+    if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0)
+      throw new RangeError('value out of range')
   }
 
   const varIntLength = (number) => {
     checkUInt53(number)
 
-    return (
-      number < 0xfd ? 1
-        : number <= 0xffff ? 3
-          : number <= 0xffffffff ? 5
-            : 9
-    )
+    return number < 0xfd ? 1 : number <= 0xffff ? 3 : number <= 0xffffffff ? 5 : 9
   }
 
   Object.keys(inputs).forEach((key) => {
@@ -96,8 +88,8 @@ const getByteCount = (inputs, outputs) => {
       const mAndN = keyParts[1].split('-').map((item) => parseInt(item))
 
       totalWeight += types.inputs[newKey] * inputs[key]
-      const multiplyer = (newKey === 'MULTISIG-P2SH') ? 4 : 1
-      totalWeight += ((73 * mAndN[0]) + (34 * mAndN[1])) * multiplyer * inputs[key]
+      const multiplyer = newKey === 'MULTISIG-P2SH' ? 4 : 1
+      totalWeight += (73 * mAndN[0] + 34 * mAndN[1]) * multiplyer * inputs[key]
     } else {
       totalWeight += types.inputs[key] * inputs[key]
     }
@@ -121,7 +113,14 @@ const getByteCount = (inputs, outputs) => {
 }
 
 //@ts-ignore
-const calculateTxSize = async ({ speed, unspents, address, txOut = 2, method = 'send', fixed } = {}) => {
+const calculateTxSize = async ({
+  speed,
+  unspents,
+  address,
+  txOut = 2,
+  method = 'send',
+  fixed,
+} = {}) => {
   const { TRANSACTION } = constants
   const defaultTxSize = DEFAULT_CURRENCY_PARAMETERS.next.size[method]
 
@@ -129,7 +128,7 @@ const calculateTxSize = async ({ speed, unspents, address, txOut = 2, method = '
     return defaultTxSize
   }
 
-  unspents = unspents || await actions.next.fetchUnspents(address)
+  unspents = unspents || (await actions.next.fetchUnspents(address))
 
   const txIn = unspents.length
   let txSize = defaultTxSize
@@ -142,27 +141,17 @@ const calculateTxSize = async ({ speed, unspents, address, txOut = 2, method = '
   }
 
   if (method === 'send_multisig') {
-    const msuSize = getByteCount(
-      { 'MULTISIG-P2SH-P2WSH:2-2': 1 },
-      { 'P2PKH': (hasAdminFee) ? 3 : 2 }
-    )
+    const msuSize = getByteCount({ 'MULTISIG-P2SH-P2WSH:2-2': 1 }, { P2PKH: hasAdminFee ? 3 : 2 })
     const msutxSize =
-      txIn * msuSize +
-      txOut * TRANSACTION.P2PKH_OUT_SIZE +
-      (TRANSACTION.TX_SIZE + txIn - txOut)
+      txIn * msuSize + txOut * TRANSACTION.P2PKH_OUT_SIZE + (TRANSACTION.TX_SIZE + txIn - txOut)
 
     return msutxSize
   }
 
   if (method === 'send_2fa') {
-    const msSize = getByteCount(
-      { 'MULTISIG-P2SH-P2WSH:2-3': 1 },
-      { 'P2PKH': (hasAdminFee) ? 3 : 2 }
-    )
+    const msSize = getByteCount({ 'MULTISIG-P2SH-P2WSH:2-3': 1 }, { P2PKH: hasAdminFee ? 3 : 2 })
     const mstxSize =
-      txIn * msSize +
-      txOut * TRANSACTION.P2PKH_OUT_SIZE +
-      (TRANSACTION.TX_SIZE + txIn - txOut)
+      txIn * msSize + txOut * TRANSACTION.P2PKH_OUT_SIZE + (TRANSACTION.TX_SIZE + txIn - txOut)
 
     return mstxSize
   }
@@ -183,18 +172,10 @@ type EstimateFeeValueOptions = {
 const estimateFeeValue = async (options: EstimateFeeValueOptions) => {
   let { feeRate, inSatoshis, speed, address, txSize, fixed, method } = options
   const {
-    user: {
-      nextData,
-      nextMultisigSMSData,
-      nextMultisigUserData,
-    },
+    user: { nextData, nextMultisigSMSData, nextMultisigUserData },
   } = getState()
 
-  const txOut = hasAdminFee
-    ? method === 'send'
-      ? 3
-      : 2
-    : 2
+  const txOut = hasAdminFee ? (method === 'send' ? 3 : 2) : 2
 
   if (!address) {
     address = nextData.address
@@ -204,8 +185,8 @@ const estimateFeeValue = async (options: EstimateFeeValueOptions) => {
   }
 
   //@ts-ignore
-  txSize = txSize || await calculateTxSize({ address, speed, fixed, method, txOut })
-  feeRate = feeRate || await estimateFeeRate({ speed })
+  txSize = txSize || (await calculateTxSize({ address, speed, fixed, method, txOut }))
+  feeRate = feeRate || (await estimateFeeRate({ speed }))
 
   const calculatedFeeValue = BigNumber.maximum(
     DUST,
@@ -214,7 +195,7 @@ const estimateFeeValue = async (options: EstimateFeeValueOptions) => {
       //@ts-ignore: strictNullChecks
       .multipliedBy(txSize)
       .div(1024) // divide by one kilobyte
-      .dp(0, BigNumber.ROUND_HALF_EVEN),
+      .dp(0, BigNumber.ROUND_HALF_EVEN)
   )
 
   const finalFeeValue = inSatoshis
@@ -248,13 +229,10 @@ const estimateFeeRate = async ({ speed = 'fast' } = {}) => {
     fast: 'high_fee_per_kb',
   }
 
-
   const apiSpeed = apiSpeeds[speed] || apiSpeeds.normal
   const apiRate = new BigNumber(apiResult[apiSpeed])
 
-  return apiRate.isGreaterThanOrEqualTo(DUST)
-    ? apiRate.toString()
-    : defaultRate[speed]
+  return apiRate.isGreaterThanOrEqualTo(DUST) ? apiRate.toString() : defaultRate[speed]
 }
 
 export default {

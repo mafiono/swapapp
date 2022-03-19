@@ -7,15 +7,6 @@ import Events from './Events'
 import constants from './constants'
 import * as util from './util'
 
-
 export default SwapApp
 
-export {
-  ServiceInterface,
-  SwapInterface,
-  Collection,
-  Events,
-
-  constants,
-  util,
-}
+export { ServiceInterface, SwapInterface, Collection, Events, constants, util }

@@ -23,7 +23,6 @@ import Button from 'components/controls/Button/Button'
 // Incoming swap requests and tooltips (revert)
 import UserTooltip from 'components/Header/UserTooltip/UserTooltip'
 
-
 import { getMenuItems, getMenuItemsMobile } from './config'
 import { localisedUrl } from 'helpers/locale'
 import {
@@ -33,7 +32,7 @@ import {
   user,
   feedback,
   wpLogoutModal,
-  externalConfig as config
+  externalConfig as config,
 } from 'helpers'
 
 import Swap from 'swap.swap'
@@ -108,7 +107,7 @@ class Header extends Component<any, any> {
     actions.modals.open(constants.modals.SaveMnemonicModal, {
       onClose: () => {
         this.clearLocalStorage()
-      }
+      },
     })
   }
 
@@ -122,20 +121,25 @@ class Header extends Component<any, any> {
     const oldUserDidNotSee = isWalletCreate === 'true' && sawWarning !== 'true'
     const newUser = isWalletCreate !== 'true' && sawWarning !== 'true'
 
-    if (oldUserDidNotSee && false) { // Времено отключено
+    if (oldUserDidNotSee && false) {
+      // Времено отключено
       feedback.app.warning('Modal about local storage was opened')
 
       const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
       // user must save a mnemonic phrase if he hasn't done it
-      const modalButton = mnemonic !== '-' ? (
-        <Button empty onClick={this.saveMnemonicAndClearStorage}>
-          <FormattedMessage id="registerSMSMPlaceHolder" defaultMessage="Secret phrase (12 words)" />
-        </Button>
-      ) : (
-        <Button empty onClick={this.clearLocalStorage}>
-          <FormattedMessage id="ClearAndReload" defaultMessage="Clear and reload" />
-        </Button>
-      )
+      const modalButton =
+        mnemonic !== '-' ? (
+          <Button empty onClick={this.saveMnemonicAndClearStorage}>
+            <FormattedMessage
+              id="registerSMSMPlaceHolder"
+              defaultMessage="Secret phrase (12 words)"
+            />
+          </Button>
+        ) : (
+          <Button empty onClick={this.clearLocalStorage}>
+            <FormattedMessage id="ClearAndReload" defaultMessage="Clear and reload" />
+          </Button>
+        )
 
       actions.notifications.show(constants.notifications.Message, {
         message: (
@@ -143,7 +147,12 @@ class Header extends Component<any, any> {
             id="CleanLocalStorage"
             defaultMessage="Oops, looks like the app needs to clean your local storage. Please save your 12 words seed phrase (if you have not saved it before), then clear local storage by clicking on the button and import 12 words seed again. Sorry for the inconvenience. {indent} {button}"
             values={{
-              indent: <><br /><br /></>,
+              indent: (
+                <>
+                  <br />
+                  <br />
+                </>
+              ),
               button: modalButton,
             }}
           />
@@ -253,24 +262,26 @@ class Header extends Component<any, any> {
     const allData = actions.core.getWallets({})
     const widgetCurrencies = user.getWidgetCurrencies()
 
-    let userCurrencies = allData.filter(({ currency: baseCurrency, isToken, tokenKey, address, balance }) => {
-      const currency = ((isToken) ? tokenKey : baseCurrency).toUpperCase()
-      return (
-        (!hiddenCoinsList.includes(currency) &&
-          !hiddenCoinsList.includes(`${currency}:${address}`)) ||
-        balance > 0
-      )
-    })
+    let userCurrencies = allData.filter(
+      ({ currency: baseCurrency, isToken, tokenKey, address, balance }) => {
+        const currency = (isToken ? tokenKey : baseCurrency).toUpperCase()
+        return (
+          (!hiddenCoinsList.includes(currency) &&
+            !hiddenCoinsList.includes(`${currency}:${address}`)) ||
+          balance > 0
+        )
+      }
+    )
 
     if (isWidgetBuild) {
-      userCurrencies = allData.filter(
-        ({ currency: baseCurrency, isToken, tokenKey, address }) => {
-          const currency = ((isToken) ? tokenKey : baseCurrency).toUpperCase()
-          return !hiddenCoinsList.includes(currency) && !hiddenCoinsList.includes(`${currency}:${address}`)
-        }
-      )
+      userCurrencies = allData.filter(({ currency: baseCurrency, isToken, tokenKey, address }) => {
+        const currency = (isToken ? tokenKey : baseCurrency).toUpperCase()
+        return (
+          !hiddenCoinsList.includes(currency) && !hiddenCoinsList.includes(`${currency}:${address}`)
+        )
+      })
       userCurrencies = userCurrencies.filter(({ currency: baseCurrency, isToken, tokenKey }) => {
-        const currency = ((isToken) ? tokenKey : baseCurrency).toUpperCase()
+        const currency = (isToken ? tokenKey : baseCurrency).toUpperCase()
         return widgetCurrencies.includes(currency)
       })
     }
@@ -287,14 +298,23 @@ class Header extends Component<any, any> {
       case isWidgetBuild && !wasOnWidgetWalletLs:
         tourEvent = this.openWidgetWalletTour
         break
-      case !metamask.isConnected() && !userCurrencies.length && isWalletPage && !config.opts.plugins.backupPlugin && !config.opts.ui.disableInternalWallet:
+      case !metamask.isConnected() &&
+        !userCurrencies.length &&
+        isWalletPage &&
+        !config.opts.plugins.backupPlugin &&
+        !config.opts.ui.disableInternalWallet:
         this.openCreateWallet({ onClose: tourEvent })
         break
       default:
         return
     }
 
-    if (!didOpenWalletCreate && isWalletPage && !config.opts.plugins.backupPlugin && !config.opts.ui.disableInternalWallet) {
+    if (
+      !didOpenWalletCreate &&
+      isWalletPage &&
+      !config.opts.plugins.backupPlugin &&
+      !config.opts.ui.disableInternalWallet
+    ) {
       this.openCreateWallet({ onClose: tourEvent })
       return
     }
@@ -362,11 +382,11 @@ class Header extends Component<any, any> {
     if (wasDark) {
       localStorage.removeItem(constants.localStorage.isDark)
       localStorage.setItem(constants.localStorage.isLight, 'true')
-      dataset.scheme = "default"
+      dataset.scheme = 'default'
     } else {
       localStorage.removeItem(constants.localStorage.isLight)
       localStorage.setItem(constants.localStorage.isDark, 'true')
-      dataset.scheme = "dark"
+      dataset.scheme = 'dark'
     }
 
     this.setState(() => ({ themeSwapAnimation: false }))
@@ -382,9 +402,7 @@ class Header extends Component<any, any> {
       toggle,
       history,
       intl: { locale },
-      location: {
-        pathname,
-      },
+      location: { pathname },
     } = this.props
 
     actions.core.acceptRequest(orderId, participantPeer)
@@ -394,9 +412,9 @@ class Header extends Component<any, any> {
       toggle()
     }
 
-
-    if ((pathname.substr(0, links.marketmaker.length) === links.marketmaker)
-      || (pathname.substr(0, links.marketmaker_short) === links.marketmaker_short)
+    if (
+      pathname.substr(0, links.marketmaker.length) === links.marketmaker ||
+      pathname.substr(0, links.marketmaker_short) === links.marketmaker_short
     ) {
       const swap = new Swap(orderId, SwapApp.shared())
       actions.core.rememberSwap(swap)
@@ -451,9 +469,10 @@ class Header extends Component<any, any> {
             <WalletConnect />
           ) : null}
 
-          {window.WPSO_selected_theme !== 'only_light' && window.WPSO_selected_theme !== 'only_dark' && (
-            <ThemeSwitcher onClick={this.handleToggleTheme} />
-          )}
+          {window.WPSO_selected_theme !== 'only_light' &&
+            window.WPSO_selected_theme !== 'only_dark' && (
+              <ThemeSwitcher onClick={this.handleToggleTheme} />
+            )}
 
           {isLogoutPossible && ( // some wordpress plugin cases
             <div styleName="logoutWrapper" onClick={this.handleLogout}>

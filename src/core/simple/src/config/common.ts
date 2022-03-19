@@ -4,7 +4,7 @@ const common: any = {
   swapRoom: {
     roomName: 'testnet.swap.online',
     EXPERIMENTAL: {
-      pubsub: true
+      pubsub: true,
     },
     config: {
       Addresses: {
@@ -19,6 +19,5 @@ const common: any = {
     },
   },
 }
-
 
 export { common }

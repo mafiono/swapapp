@@ -16,8 +16,7 @@ import ContentLoader from 'components/loaders/ContentLoader/ContentLoader'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import linksManager from 'helpers/links'
 
-
-const disableInternalWallet = (config?.opts?.ui?.disableInternalWallet) ? true : false
+const disableInternalWallet = config?.opts?.ui?.disableInternalWallet ? true : false
 
 type WallerSliderProps = {
   intl?: { [key: string]: any }
@@ -108,10 +107,7 @@ class WallerSlider extends React.Component<WallerSliderProps, WallerSliderState>
   }
 
   getBanners = () => {
-    if (
-      window &&
-      window.bannersOnMainPage !== undefined
-    ) {
+    if (window && window.bannersOnMainPage !== undefined) {
       // Используем банеры, которые были определены в index.html (используется в виджете вордпресса)
       const widgetBanners = window.bannersOnMainPage.length ? window.bannersOnMainPage : []
 

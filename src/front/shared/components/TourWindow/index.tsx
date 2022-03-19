@@ -6,11 +6,20 @@ import CSSModules from 'react-css-modules'
 
 import styles from './styles.scss'
 
-
 const Tooltip = (props) => {
-  const { continuous, index, isLastStep, step, backProps, primaryProps, skipProps, tooltipProps, closeTour } = props
+  const {
+    continuous,
+    index,
+    isLastStep,
+    step,
+    backProps,
+    primaryProps,
+    skipProps,
+    tooltipProps,
+    closeTour,
+  } = props
 
-  const click = e => {
+  const click = (e) => {
     skipProps.onClick(e)
     closeTour()
   }
@@ -38,10 +47,11 @@ const Tooltip = (props) => {
           </button>
         )}
         <button {...primaryProps} onClick={clickPrimary}>
-          {continuous && !isLastStep ?
+          {continuous && !isLastStep ? (
             <FormattedMessage id="nextTourWindow" defaultMessage="Next" />
-            :
-            <FormattedMessage id="closeTourWindow" defaultMessage="Close" />}
+          ) : (
+            <FormattedMessage id="closeTourWindow" defaultMessage="Close" />
+          )}
         </button>
       </div>
     </div>

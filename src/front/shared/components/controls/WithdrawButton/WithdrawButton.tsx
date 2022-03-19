@@ -10,17 +10,12 @@ type ComponentProps = {
 }
 
 const WithdrawButton = (props: ComponentProps) => {
-  const {
-    onClick,
-    children,
-    disable,
-    ...rest
-  } = props
+  const { onClick, children, disable, ...rest } = props
 
   const doNothing = () => undefined
 
   const styleName = cx('withdrawButton', {
-    'disable': disable,
+    disable: disable,
   })
 
   return (

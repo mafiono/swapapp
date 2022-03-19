@@ -8,7 +8,7 @@ export default {
     networkVersion: 4,
     chainName: 'Rinkeby Test Network',
     rpcUrls: [web3.provider],
-    blockExplorerUrls: [link.etherscan]
+    blockExplorerUrls: [link.etherscan],
   },
   BNB: {
     currency: 'BNB',
@@ -16,7 +16,7 @@ export default {
     networkVersion: 97,
     chainName: 'Binance Smart Chain Testnet',
     rpcUrls: [web3.binance_provider],
-    blockExplorerUrls: [link.bscscan]
+    blockExplorerUrls: [link.bscscan],
   },
   MATIC: {
     currency: 'MATIC',
@@ -24,7 +24,7 @@ export default {
     networkVersion: 80001,
     chainName: 'Matic Mumbai Testnet',
     rpcUrls: [web3.matic_provider],
-    blockExplorerUrls: [link.maticscan]
+    blockExplorerUrls: [link.maticscan],
   },
   ARBETH: {
     currency: 'ARBETH',
@@ -32,7 +32,7 @@ export default {
     networkVersion: 421611,
     chainName: 'Arbitrum Testnet',
     rpcUrls: [web3.arbitrum_provider],
-    blockExplorerUrls: [link.arbitrum]
+    blockExplorerUrls: [link.arbitrum],
   },
   XDAI: {
     currency: 'XDAI',
@@ -40,6 +40,6 @@ export default {
     networkVersion: 77,
     chainName: 'Sokol testnet',
     rpcUrls: [web3.xdai_provider],
-    blockExplorerUrls: [link.xdai]
+    blockExplorerUrls: [link.xdai],
   },
 }

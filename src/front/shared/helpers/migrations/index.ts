@@ -18,28 +18,45 @@ export const migrate = () => {
     console.log('Your storage is up-to-date')
     return Promise.resolve()
   }
-  console.log(`Your current storage revision is ${revision}, need to run ${migrations.length - revision} migrations`)
+  console.log(
+    `Your current storage revision is ${revision}, need to run ${
+      migrations.length - revision
+    } migrations`
+  )
 
-  return migrations.splice(revision).reduce((queue, migration) =>
-    queue.then(() => new Promise((resolve, reject) => {
-      try {
-        migration.run()
-          .then(() => {
-            console.log(`Migration "${migration.name}" (#${revision + 1}) successfully done.`)
-            revision++
-            resolve()
-          }).catch(e => {
-            console.error(e)
-            reject(`Migration "${migration.name}" (#${revision + 1}) is failed.`)
-          })
-      } catch (e) {
-        console.error(e)
-        reject(`Migration "${migration.name}" (#${revision + 1}) is failed.`)
-      }
-    }
-    )), Promise.resolve()).then(() => {
-    console.log('All migrations done.')
-  }).catch(e => console.error(e))
+  return migrations
+    .splice(revision)
+    .reduce(
+      (queue, migration) =>
+        queue.then(
+          () =>
+            new Promise((resolve, reject) => {
+              try {
+                migration
+                  .run()
+                  .then(() => {
+                    console.log(
+                      `Migration "${migration.name}" (#${revision + 1}) successfully done.`
+                    )
+                    revision++
+                    resolve()
+                  })
+                  .catch((e) => {
+                    console.error(e)
+                    reject(`Migration "${migration.name}" (#${revision + 1}) is failed.`)
+                  })
+              } catch (e) {
+                console.error(e)
+                reject(`Migration "${migration.name}" (#${revision + 1}) is failed.`)
+              }
+            })
+        ),
+      Promise.resolve()
+    )
+    .then(() => {
+      console.log('All migrations done.')
+    })
+    .catch((e) => console.error(e))
     .finally(() => {
       localStorage.setItem(constants.localStorage.storageRevision, revision)
     })

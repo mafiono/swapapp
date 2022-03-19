@@ -3,7 +3,6 @@ import InputMask from 'react-input-mask'
 import cx from 'classnames'
 import { ignoreProps } from 'helpers'
 
-
 const setValue = (x, e) => e.target.value
 const setBoolValue = (x, e) => Boolean(e.target.checked)
 
@@ -13,26 +12,19 @@ const validationClasses = ({ className, invalidClass, requiredClass }, value, er
     [requiredClass || 'required']: Boolean(error && value === ''),
   })
 
-
 const Input = (props) => {
   const { valueLink, checkedLink, pattern, mask, maskChar, maskReplace, onChange, ...rest } = props
   const link = valueLink || checkedLink
 
   switch (props.type) {
     case 'checkbox':
-      return (
-        <input
-          {...rest}
-          checked={Boolean(link.value)}
-          onChange={link.action(setBoolValue)}
-        />
-      )
+      return <input {...rest} checked={Boolean(link.value)} onChange={link.action(setBoolValue)} />
     case 'radio':
       return (
         <input
           {...rest}
           checked={link.value === props.value}
-          onChange={e => {
+          onChange={(e) => {
             if (e.target.checked) {
               link.set(props.value)
             }
@@ -59,7 +51,12 @@ const Input = (props) => {
             if (val.length === 1 && val === '.') {
               val = '0.'
             }
-            if (x.match(/\./g) && val.match(/\./g) && x.match(/\./g).length === 1 && val.match(/\./g).length > 1) {
+            if (
+              x.match(/\./g) &&
+              val.match(/\./g) &&
+              x.match(/\./g).length === 1 &&
+              val.match(/\./g).length > 1
+            ) {
               val = x
             }
           }
@@ -67,8 +64,7 @@ const Input = (props) => {
           if (mask && val) {
             if (maskReplace) {
               return val.replace(maskReplace, '')
-            }
-            else if (maskReplace !== null && maskReplace !== false) {
+            } else if (maskReplace !== null && maskReplace !== false) {
               return val.replace(/[^0-9]+/g, '')
             }
           }
@@ -88,10 +84,9 @@ const Input = (props) => {
 }
 
 class NumberInput extends Component<any, any> {
-
-   onKeyPress: any
-   value: any
-   error: any
+  onKeyPress: any
+  value: any
+  error: any
 
   constructor() {
     //@ts-ignore
@@ -107,11 +102,7 @@ class NumberInput extends Component<any, any> {
         return
       }
 
-      if (
-        charCode
-        && (charCode < 48 || charCode > 57)
-        && allowedCharCodes.indexOf(charCode) < 0
-      ) {
+      if (charCode && (charCode < 48 || charCode > 57) && allowedCharCodes.indexOf(charCode) < 0) {
         event.preventDefault()
       }
     }
@@ -157,7 +148,7 @@ class NumberInput extends Component<any, any> {
     this.setValue(value)
 
     if (value && !isNaN(asNumber)) {
-      this.props.valueLink.update(x => {
+      this.props.valueLink.update((x) => {
         // Update link if value is changed
         if (asNumber !== Number(x)) {
           return asNumber
@@ -209,11 +200,7 @@ const TextArea = ({ valueLink, ...props }) => (
  *     </Select>
  */
 const Select = ({ valueLink, children, ...props }) => (
-  <select
-    {...props}
-    value={valueLink.value}
-    onChange={valueLink.action(setValue)}
-  >
+  <select {...props} value={valueLink.value} onChange={valueLink.action(setValue)}>
     {children}
   </select>
 )
@@ -226,7 +213,7 @@ const Select = ({ valueLink, children, ...props }) => (
  */
 const Radio = ({ className = 'radio', checkedLink, children }) => (
   <div
-    className={cx(className, { 'selected': checkedLink.value })}
+    className={cx(className, { selected: checkedLink.value })}
     onClick={checkedLink.action(() => true)}
   >
     {children}
@@ -241,19 +228,11 @@ const Radio = ({ className = 'radio', checkedLink, children }) => (
  */
 const Checkbox = ({ className = 'checkbox', checkedLink, children }) => (
   <div
-    className={cx(className, { 'selected': checkedLink.value })}
-    onClick={checkedLink.action(x => !x)}
+    className={cx(className, { selected: checkedLink.value })}
+    onClick={checkedLink.action((x) => !x)}
   >
     {children}
   </div>
 )
 
-
-export {
-  Input,
-  TextArea,
-  Select,
-  Radio,
-  Checkbox,
-  NumberInput,
-}
+export { Input, TextArea, Select, Radio, Checkbox, NumberInput }

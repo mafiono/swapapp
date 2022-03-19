@@ -12,12 +12,10 @@ import styles from './styles.scss'
 
 const { disableInternalWallet } = config.opts.ui
 
-const NETWORK = process.env.MAINNET
-  ? 'MAINNET'
-  : 'TESTNET'
+const NETWORK = process.env.MAINNET ? 'MAINNET' : 'TESTNET'
 
-const hasOwnBeforeTabs = (config?.opts?.ui?.faq?.before && (config.opts.ui.faq.before.length > 0))
-const hasOwnAfterTabs = (config?.opts?.ui?.faq?.after && (config.opts.ui.faq.after.length > 0))
+const hasOwnBeforeTabs = config?.opts?.ui?.faq?.before && config.opts.ui.faq.before.length > 0
+const hasOwnAfterTabs = config?.opts?.ui?.faq?.after && config.opts.ui.faq.after.length > 0
 
 const beforeTabs = {}
 const beforeTabsIds = {}
@@ -45,9 +43,10 @@ const tabsIdsDictionary = {
   ...afterTabsIds,
 }
 
-
 const FAQ = function (props) {
-  const { intl: { formatMessage } } = props
+  const {
+    intl: { formatMessage },
+  } = props
   const [tabsVisibility, setTabsVisibility] = useState({
     ...beforeTabs,
     FIRST_TAB: false,
@@ -73,10 +72,8 @@ const FAQ = function (props) {
     }
   }
 
-  const convertToGwei = (value) => new BigNumber(value)
-    .dividedBy(1e9)
-    .dp(2, BigNumber.ROUND_HALF_CEIL)
-    .toNumber()
+  const convertToGwei = (value) =>
+    new BigNumber(value).dividedBy(1e9).dp(2, BigNumber.ROUND_HALF_CEIL).toNumber()
 
   const [fees, setFees] = useState({
     btc: 0,
@@ -193,17 +190,24 @@ const FAQ = function (props) {
     return tabsData.map((tabData, tabIndex) => {
       return (
         <article className={styles.tab}>
-          <span className={styles.tab__header} onClick={() => handleTabClick(`${prefix}_TAB_${tabIndex}`)}>
-            <div className={cx({
-              [styles.chrest]: true,
-              [styles.chrest_active]: tabsVisibility[`${prefix}_TAB_${tabIndex}`],
-            })} />
+          <span
+            className={styles.tab__header}
+            onClick={() => handleTabClick(`${prefix}_TAB_${tabIndex}`)}
+          >
+            <div
+              className={cx({
+                [styles.chrest]: true,
+                [styles.chrest_active]: tabsVisibility[`${prefix}_TAB_${tabIndex}`],
+              })}
+            />
             {tabData.title}
           </span>
-          <div className={cx({
-            [styles.tab__content]: true,
-            [styles.tab__content_active]: tabsVisibility[`${prefix}_TAB_${tabIndex}`],
-          })}>
+          <div
+            className={cx({
+              [styles.tab__content]: true,
+              [styles.tab__content_active]: tabsVisibility[`${prefix}_TAB_${tabIndex}`],
+            })}
+          >
             {tabData.content}
           </div>
         </article>
@@ -217,24 +221,27 @@ const FAQ = function (props) {
         <FormattedMessage id="MainFAQHeader" defaultMessage="FAQ" />
       </h5>
       <div className={styles.faQuestions__tabsContainer}>
-        {hasOwnBeforeTabs && (
-          <>
-            {renderTabs(config.opts.ui.faq.before, `BEFORE`)}
-          </>
-        )}
+        {hasOwnBeforeTabs && <>{renderTabs(config.opts.ui.faq.before, `BEFORE`)}</>}
         {!disableInternalWallet && (
           <article className={styles.tab}>
             <span className={styles.tab__header} onClick={() => handleTabClick('FIRST_TAB')}>
-              <div className={cx({
-                [styles.chrest]: true,
-                [styles.chrest_active]: tabsVisibility.FIRST_TAB,
-              })} />
-              <FormattedMessage id="MainFAQ1_header" defaultMessage="How are my private keys stored?" />
+              <div
+                className={cx({
+                  [styles.chrest]: true,
+                  [styles.chrest_active]: tabsVisibility.FIRST_TAB,
+                })}
+              />
+              <FormattedMessage
+                id="MainFAQ1_header"
+                defaultMessage="How are my private keys stored?"
+              />
             </span>
-            <div className={cx({
-              [styles.tab__content]: true,
-              [styles.tab__content_active]: tabsVisibility.FIRST_TAB,
-            })}>
+            <div
+              className={cx({
+                [styles.tab__content]: true,
+                [styles.tab__content_active]: tabsVisibility.FIRST_TAB,
+              })}
+            >
               <FormattedMessage
                 id="MainFAQ1_content"
                 defaultMessage={`
@@ -248,18 +255,25 @@ const FAQ = function (props) {
 
         <article className={styles.tab}>
           <span className={styles.tab__header} onClick={() => handleTabClick('SECOND_TAB')}>
-            <div className={cx({
-              [styles.chrest]: true,
-              [styles.chrest_active]: tabsVisibility.SECOND_TAB,
-            })} />
+            <div
+              className={cx({
+                [styles.chrest]: true,
+                [styles.chrest_active]: tabsVisibility.SECOND_TAB,
+              })}
+            />
             <FormattedMessage id="MainFAQ2_header" defaultMessage="What are the fees involved?" />
           </span>
-          <div className={cx({
-            [styles.tab__content]: true,
-            [styles.tab__content_active]: tabsVisibility.SECOND_TAB,
-          })}>
+          <div
+            className={cx({
+              [styles.tab__content]: true,
+              [styles.tab__content_active]: tabsVisibility.SECOND_TAB,
+            })}
+          >
             <p>
-              <FormattedMessage id="MainFAQ2_content" defaultMessage="You pay the standard TX (miners fees) for all transactions you conduct on the platform." />
+              <FormattedMessage
+                id="MainFAQ2_content"
+                defaultMessage="You pay the standard TX (miners fees) for all transactions you conduct on the platform."
+              />
             </p>
             <p>
               <FormattedMessage
@@ -276,7 +290,10 @@ const FAQ = function (props) {
               />
             </p>
             <p>
-              <FormattedMessage id="MainFAQ2_content2" defaultMessage="NOTE: You can easily check the ‘miners fees’ required for each respective coin by simply googling them." />
+              <FormattedMessage
+                id="MainFAQ2_content2"
+                defaultMessage="NOTE: You can easily check the ‘miners fees’ required for each respective coin by simply googling them."
+              />
             </p>
 
             <p className={styles.feeInfoTitle}>
@@ -288,19 +305,17 @@ const FAQ = function (props) {
 
               return (
                 <div className={styles.descriptionFee} key={index}>
-                  <span>
-                    {ticker}
-                    :
-                  </span>
-                  {' '}
+                  <span>{ticker}:</span>{' '}
                   {fee ? (
                     <span>
-                      <b>{fee}</b>
-                      {' '}
-                      {unit}
-                      {' '}
+                      <b>{fee}</b> {unit}{' '}
                       {sourceLink && (
-                        <a className={styles.link} href={sourceLink} target="_blank" rel="noreferrer">
+                        <a
+                          className={styles.link}
+                          href={sourceLink}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           <FormattedMessage id="FAQFeeApiLink" defaultMessage="(source)" />
                         </a>
                       )}
@@ -323,23 +338,19 @@ const FAQ = function (props) {
 
               return (
                 <p className={styles.descriptionFee} key={index}>
-                  <span>
-                    {ticker}
-                    :
-                  </span>
-                  {' '}
-                  {percentFee
-                    ? (
-                      <span>
-                        {`${percentFee.fee}%, `}
-                        <FormattedMessage id="FAQServiceFeeDescription" defaultMessage="no less than" />
-                        {' '}
-                        <b>{adminFee.calc(ticker, null)}</b>
-                        {' '}
-                        {ticker}
-                      </span>
-                    )
-                    : <span>0%</span>}
+                  <span>{ticker}:</span>{' '}
+                  {percentFee ? (
+                    <span>
+                      {`${percentFee.fee}%, `}
+                      <FormattedMessage
+                        id="FAQServiceFeeDescription"
+                        defaultMessage="no less than"
+                      />{' '}
+                      <b>{adminFee.calc(ticker, null)}</b> {ticker}
+                    </span>
+                  ) : (
+                    <span>0%</span>
+                  )}
                 </p>
               )
             })}
@@ -348,16 +359,20 @@ const FAQ = function (props) {
 
         <article className={styles.tab}>
           <span className={styles.tab__header} onClick={() => handleTabClick('THIRD_TAB')}>
-            <div className={cx({
-              [styles.chrest]: true,
-              [styles.chrest_active]: tabsVisibility.THIRD_TAB,
-            })} />
+            <div
+              className={cx({
+                [styles.chrest]: true,
+                [styles.chrest_active]: tabsVisibility.THIRD_TAB,
+              })}
+            />
             <FormattedMessage id="MainFAQ3_header" defaultMessage="Why mining fee is too high?" />
           </span>
-          <div className={cx({
-            [styles.tab__content]: true,
-            [styles.tab__content_active]: tabsVisibility.THIRD_TAB,
-          })}>
+          <div
+            className={cx({
+              [styles.tab__content]: true,
+              [styles.tab__content_active]: tabsVisibility.THIRD_TAB,
+            })}
+          >
             <p>
               <FormattedMessage
                 id="MainFAQ3_content"
@@ -390,15 +405,14 @@ const FAQ = function (props) {
               />
             </p>
             <p>
-              <FormattedMessage id="MainFAQ3_content4" defaultMessage="There might be other causes of higher blockchain fees, but we've listed the most common ones." />
+              <FormattedMessage
+                id="MainFAQ3_content4"
+                defaultMessage="There might be other causes of higher blockchain fees, but we've listed the most common ones."
+              />
             </p>
           </div>
         </article>
-        {hasOwnAfterTabs && (
-          <>
-            {renderTabs(config.opts.ui.faq.after, `AFTER`)}
-          </>
-        )}
+        {hasOwnAfterTabs && <>{renderTabs(config.opts.ui.faq.after, `AFTER`)}</>}
       </div>
     </div>
   )

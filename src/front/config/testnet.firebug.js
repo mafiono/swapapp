@@ -2,7 +2,6 @@ import baseConfig from './default'
 import config from './testnet'
 import moment from 'moment-with-locales-es6'
 
-
 export default {
   env: 'development',
   entry: 'testnet',

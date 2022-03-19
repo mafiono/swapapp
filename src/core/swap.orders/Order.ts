@@ -3,9 +3,7 @@ import SwapApp from 'swap.app'
 import BigNumber from 'bignumber.js'
 import events from './events'
 
-
 class Order {
-
   id: string
   isMy: any
   isTurbo: boolean
@@ -45,34 +43,33 @@ class Order {
    * @param {number}  data.sellAmount
    */
   constructor(app, parentCollection, data) {
-    this.id             = data.id
-    this.isMy           = null
+    this.id = data.id
+    this.isMy = null
     //@ts-ignore: strictNullChecks
-    this.isTurbo        = null
-    this.owner          = null
-    this.participant    = null
-    this.buyCurrency    = null
-    this.buyBlockchain  = null
-    this.exchangeRate   = null
-    this.sellCurrency   = null
+    this.isTurbo = null
+    this.owner = null
+    this.participant = null
+    this.buyCurrency = null
+    this.buyBlockchain = null
+    this.exchangeRate = null
+    this.sellCurrency = null
     this.sellBlockchain = null
-    this.buyAmount      = null
-    this.sellAmount     = null
+    this.buyAmount = null
+    this.sellAmount = null
 
-    this.collection       = parentCollection
-    this.requests         = [] // income requests
-    this.isRequested      = false // outcome request status
-    this.isProcessing     = false // if swap isProcessing
-    this.isPartial        = false
-    this.isHidden         = false
+    this.collection = parentCollection
+    this.requests = [] // income requests
+    this.isRequested = false // outcome request status
+    this.isProcessing = false // if swap isProcessing
+    this.isPartial = false
+    this.isHidden = false
 
-    this.partialHandler   = {
+    this.partialHandler = {
       buyAmount: () => false,
       sellAmount: () => false,
     }
 
     this.destination = null
-
 
     this._attachSwapApp(app)
 
@@ -91,64 +88,76 @@ class Order {
   }
 
   _onMount() {
-    this.app.services.room.on('request swap', ({ orderId, participant, participantMetadata, destination }) => {
-      if (orderId === this.id /*&& this.requests.length < 10*/ && !this.requests.find(({ participant: { peer } }) => peer === participant.peer)) {
-        let reputation = 0
+    this.app.services.room.on(
+      'request swap',
+      ({ orderId, participant, participantMetadata, destination }) => {
+        if (
+          orderId === this.id /*&& this.requests.length < 10*/ &&
+          !this.requests.find(({ participant: { peer } }) => peer === participant.peer)
+        ) {
+          let reputation = 0
 
-        try {
-          // todo: check other blockchains
-          if (participant.eth.address === participantMetadata.address || participant.btc.address === participantMetadata.address) {
-            reputation = this.app.env.swapsExplorer.getVerifiedReputation(participantMetadata)
+          try {
+            // todo: check other blockchains
+            if (
+              participant.eth.address === participantMetadata.address ||
+              participant.btc.address === participantMetadata.address
+            ) {
+              reputation = this.app.env.swapsExplorer.getVerifiedReputation(participantMetadata)
+            }
+          } catch (err) {
+            debug('swap.core:order')(err)
           }
-        } catch (err) {
-          debug('swap.core:order')(err)
+
+          this.requests.push({
+            participant,
+            destination,
+            reputation,
+            isPartial: false,
+          })
+
+          events.dispatch('new order request', {
+            orderId,
+            participant,
+            destination,
+            participantMetadata,
+          })
         }
-
-        this.requests.push({
-          participant,
-          destination,
-          reputation,
-          isPartial: false,
-        })
-
-        events.dispatch('new order request', {
-          orderId,
-          participant,
-          destination,
-          participantMetadata,
-        })
       }
-    })
+    )
 
-    this.app.services.room.on('request partial fulfilment', ({ orderId, participant, participantMetadata, destination, updatedOrder }) => {
-      console.log('<- request partial fulfilment')
-      if (orderId === this.id) {
-        const { buyAmount, sellAmount } = updatedOrder
+    this.app.services.room.on(
+      'request partial fulfilment',
+      ({ orderId, participant, participantMetadata, destination, updatedOrder }) => {
+        console.log('<- request partial fulfilment')
+        if (orderId === this.id) {
+          const { buyAmount, sellAmount } = updatedOrder
 
-        // todo: add check reputation like as 'request swap'
-        let reputation = 0
+          // todo: add check reputation like as 'request swap'
+          let reputation = 0
 
-        const filteredUpdatedOrder = {
-          buyAmount,
-          sellAmount,
+          const filteredUpdatedOrder = {
+            buyAmount,
+            sellAmount,
+          }
+
+          this.requests.push({
+            participant,
+            destination,
+            updatedOrder: filteredUpdatedOrder,
+          })
+
+          events.dispatch('new partial fulfilment request', {
+            orderId,
+            participant,
+            updatedOrder: filteredUpdatedOrder,
+          })
+
+          this._autoReplyToPartial('buyAmount', filteredUpdatedOrder, participant)
+          this._autoReplyToPartial('sellAmount', filteredUpdatedOrder, participant)
         }
-
-        this.requests.push({
-          participant,
-          destination,
-          updatedOrder: filteredUpdatedOrder,
-        })
-
-        events.dispatch('new partial fulfilment request', {
-          orderId,
-          participant,
-          updatedOrder: filteredUpdatedOrder,
-        })
-
-        this._autoReplyToPartial('buyAmount', filteredUpdatedOrder, participant)
-        this._autoReplyToPartial('sellAmount', filteredUpdatedOrder, participant)
       }
-    })
+    )
   }
 
   _update(values) {
@@ -208,13 +217,10 @@ class Order {
   sendRequest(callback, requestOptions) {
     const self = this
 
-    const {
-      address: destinationAddress,
-      participantMetadata,
-    } = requestOptions
+    const { address: destinationAddress, participantMetadata } = requestOptions
 
     if (this.app.services.room.peer === this.owner.peer) {
-      console.warn('You are the owner of this Order. You can\'t send request to yourself.')
+      console.warn("You are the owner of this Order. You can't send request to yourself.")
       return
     }
 
@@ -273,7 +279,9 @@ class Order {
   }
 
   acceptRequest(participantPeer) {
-    const { participant, destination } = this.requests.find(({ participant: { peer } }) => peer === participantPeer)
+    const { participant, destination } = this.requests.find(
+      ({ participant: { peer } }) => peer === participantPeer
+    )
 
     const { address } = destination
 
@@ -339,14 +347,11 @@ class Order {
     const self = this
 
     if (this.app.services.room.peer === this.owner.peer) {
-      console.error('You are the owner of this Order. You can\'t send request to yourself.')
+      console.error("You are the owner of this Order. You can't send request to yourself.")
       return
     }
 
-    const {
-      address: destinationAddress,
-      participantMetadata,
-    } = requestOptions
+    const { address: destinationAddress, participantMetadata } = requestOptions
 
     const participant = this.app.services.auth.getPublicData()
 
@@ -365,47 +370,50 @@ class Order {
       },
     })
 
-    this.app.services.room.on('accept partial fulfilment', function ({ orderId, newOrderId, newOrder }) {
-      console.log('<- accept partial fulfilment')
-      if (orderId === self.id) {
-        this.unsubscribe()
-        //console.log('orderId', orderId)
-        //console.log('newOrderId', newOrderId)
-        // locate new order
-        //console.log('collection = ', self.collection)
-        const newOrder = self.collection.getByKey(newOrderId)
+    this.app.services.room.on(
+      'accept partial fulfilment',
+      function ({ orderId, newOrderId, newOrder }) {
+        console.log('<- accept partial fulfilment')
+        if (orderId === self.id) {
+          this.unsubscribe()
+          //console.log('orderId', orderId)
+          //console.log('newOrderId', newOrderId)
+          // locate new order
+          //console.log('collection = ', self.collection)
+          const newOrder = self.collection.getByKey(newOrderId)
 
-        if (!newOrder) {
-          console.error('Party created no order with id =', newOrderId)
-          return callback(null, false)
-        }
+          if (!newOrder) {
+            console.error('Party created no order with id =', newOrderId)
+            return callback(null, false)
+          }
 
-        // check that values match updatedOrder and old order
-        const ok = newOrder.buyCurrency === self.buyCurrency
-                && newOrder.sellCurrency === self.sellCurrency
+          // check that values match updatedOrder and old order
+          const ok =
+            newOrder.buyCurrency === self.buyCurrency && newOrder.sellCurrency === self.sellCurrency
 
-        if (!ok) {
-          return callback(newOrder, false)
-        }
+          if (!ok) {
+            return callback(newOrder, false)
+          }
 
-        // if condition to check is not given,
-        // we need logic on client app side
-        if (typeof conditionHandler !== 'function') {
-          // TODO: pass destination and participantMetadata
-          return callback(newOrder)
-        }
+          // if condition to check is not given,
+          // we need logic on client app side
+          if (typeof conditionHandler !== 'function') {
+            // TODO: pass destination and participantMetadata
+            return callback(newOrder)
+          }
 
-        // else, we can start swap automatically
-        const newOrderIsGood = conditionHandler(self, newOrder)
+          // else, we can start swap automatically
+          const newOrderIsGood = conditionHandler(self, newOrder)
 
-        if (newOrderIsGood) {
-          // request that new order
-          newOrder.sendRequest(accepted => callback(newOrder, accepted), requestOptions)
-        } else {
-          callback(newOrder, false)
+          if (newOrderIsGood) {
+            // request that new order
+            newOrder.sendRequest((accepted) => callback(newOrder, accepted), requestOptions)
+          } else {
+            callback(newOrder, false)
+          }
         }
       }
-    })
+    )
 
     this.app.services.room.on('decline partial fulfilment', function ({ orderId }) {
       console.log('<- decline partial fulfilment')
@@ -416,7 +424,6 @@ class Order {
         callback(null, false)
       }
     })
-
   }
 
   /**
@@ -447,7 +454,7 @@ class Order {
       buyBlockchain,
       sellCurrency,
       sellBlockchain,
-      isTurbo
+      isTurbo,
     })
 
     console.log('new order = ', newOrder)
@@ -504,9 +511,6 @@ class Order {
 
     return this
   }
-
-
 }
-
 
 export default Order

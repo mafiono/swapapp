@@ -22,7 +22,7 @@ export enum BG_COLORS {
 
 export enum STYLES {
   BRIGHT = '\x1b[1m',
-  DIM = "\x1b[2m",
+  DIM = '\x1b[2m',
   UNDERSCORE = '\x1b[4m',
   BLINK = '\x1b[5m',
   REVERSE = '\x1b[7m',
@@ -32,9 +32,9 @@ export enum STYLES {
 const OP_RESET = '\x1b[0m'
 
 interface formatStringOptions {
-  color: FG_COLORS,
-  bg?: BG_COLORS,
-  styles?: Array<STYLES>,
+  color: FG_COLORS
+  bg?: BG_COLORS
+  styles?: Array<STYLES>
 }
 
 export const colorString = (string: string, options: formatStringOptions | FG_COLORS): string => {
@@ -50,5 +50,3 @@ export const colorString = (string: string, options: formatStringOptions | FG_CO
   }
   return `${ret}${string}${OP_RESET}`
 }
-
-

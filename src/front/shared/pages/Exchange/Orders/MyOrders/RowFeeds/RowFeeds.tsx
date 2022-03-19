@@ -17,24 +17,23 @@ import { localisedUrl } from 'helpers/locale'
 import BigNumber from 'bignumber.js'
 import TurboIcon from 'shared/components/ui/TurboIcon/TurboIcon'
 
-
 @withRouter
 @CSSModules(styles, { allowMultiple: true })
 class RowFeeds extends Component<any, any> {
-
   static propTypes = {
     row: PropTypes.object,
   }
 
   generateOfferUrl = () => {
-    const { row: { id } } = this.props
+    const {
+      row: { id },
+    } = this.props
 
     const currentUrl = window.location.href
 
-    const offerUrl = currentUrl.includes(`/${id}`) ?
-      currentUrl // if already entered
-      :
-      `${currentUrl}/${id}`
+    const offerUrl = currentUrl.includes(`/${id}`)
+      ? currentUrl // if already entered
+      : `${currentUrl}/${id}`
 
     return offerUrl
   }
@@ -45,41 +44,53 @@ class RowFeeds extends Component<any, any> {
 
   render() {
     const {
-      row: { requests, buyAmount, buyCurrency, sellAmount, sellCurrency, exchangeRate, id, isTurbo },
-      declineRequest, acceptRequest, removeOrder, intl: { locale },
+      row: {
+        requests,
+        buyAmount,
+        buyCurrency,
+        sellAmount,
+        sellCurrency,
+        exchangeRate,
+        id,
+        isTurbo,
+      },
+      declineRequest,
+      acceptRequest,
+      removeOrder,
+      intl: { locale },
     } = this.props
 
-    const rate = exchangeRate ? new BigNumber(exchangeRate) : new BigNumber(buyAmount).div(sellAmount)
+    const rate = exchangeRate
+      ? new BigNumber(exchangeRate)
+      : new BigNumber(buyAmount).div(sellAmount)
 
-    const swapUri = isTurbo ?
-      `${links.turboSwap}/${id}`
-      :
-      `${links.atomicSwap}/${id}`
+    const swapUri = isTurbo ? `${links.turboSwap}/${id}` : `${links.atomicSwap}/${id}`
 
     return (
       <tr key={this.props.key}>
         <td styleName="with-icon rowData">
           <Coins names={[sellCurrency, buyCurrency]} size={25} />
-          {isTurbo &&
-            <TurboIcon />
-          }
+          {isTurbo && <TurboIcon />}
         </td>
-        <td styleName='rowData'>
-          <span className='sellAmountOrders' styleName="value">{sellAmount.toFixed(5)}</span>
-          {' '}
+        <td styleName="rowData">
+          <span className="sellAmountOrders" styleName="value">
+            {sellAmount.toFixed(5)}
+          </span>{' '}
           <span styleName="currency">{this.renderCoinName(sellCurrency)}</span>
         </td>
-        <td styleName='rowData'>
-          <span className='buyAmountOrders' styleName="value">{buyAmount.toFixed(5)}</span>
-          {' '}
+        <td styleName="rowData">
+          <span className="buyAmountOrders" styleName="value">
+            {buyAmount.toFixed(5)}
+          </span>{' '}
           <span styleName="currency">{this.renderCoinName(buyCurrency)}</span>
         </td>
-        <td styleName='rowData'>
-          <span styleName="value">{rate.toFixed(5)}</span>
-          {' '}
-          <span styleName="currency">{`${this.renderCoinName(buyCurrency)}/${this.renderCoinName(sellCurrency)}`}</span>
+        <td styleName="rowData">
+          <span styleName="value">{rate.toFixed(5)}</span>{' '}
+          <span styleName="currency">{`${this.renderCoinName(buyCurrency)}/${this.renderCoinName(
+            sellCurrency
+          )}`}</span>
         </td>
-        <td styleName='rowData'>
+        <td styleName="rowData">
           <div styleName="buttons">
             <div>
               <Copy text={this.generateOfferUrl()}>
@@ -88,19 +99,26 @@ class RowFeeds extends Component<any, any> {
                 </div>
               </Copy>
             </div>
-            {Boolean(requests && requests.length) ?
+            {Boolean(requests && requests.length) ? (
               <div>
-                <div styleName="delete" onClick={() => declineRequest(id, requests[0].participant.peer)} >
+                <div
+                  styleName="delete"
+                  onClick={() => declineRequest(id, requests[0].participant.peer)}
+                >
                   <FormattedMessage id="RowHistoryCancelInvoice" defaultMessage="Decline" />
                 </div>
                 <Link to={swapUri}>
-                  <div styleName="accept" onClick={() => acceptRequest(id, requests[0].participant.peer)} >
+                  <div
+                    styleName="accept"
+                    onClick={() => acceptRequest(id, requests[0].participant.peer)}
+                  >
                     <FormattedMessage id="RowFeeds81" defaultMessage="Accept" />
                   </div>
                 </Link>
               </div>
-              : <RemoveButton onClick={() => removeOrder(id)} brand={true} />
-            }
+            ) : (
+              <RemoveButton onClick={() => removeOrder(id)} brand={true} />
+            )}
           </div>
         </td>
       </tr>

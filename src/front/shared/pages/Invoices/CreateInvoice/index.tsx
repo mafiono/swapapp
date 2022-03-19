@@ -4,7 +4,7 @@ import { constants } from 'helpers'
 import { localisedUrl } from 'helpers/locale'
 import { injectIntl } from 'react-intl'
 import actions from 'redux/actions'
-import { links }    from 'helpers'
+import { links } from 'helpers'
 
 type CreateInvoiceProps = {
   history: IUniversalObj
@@ -12,31 +12,24 @@ type CreateInvoiceProps = {
   data: IUniversalObj
 }
 
-@connect(({
-  user: {
-    btcData,
-    ethData,
-    bnbData,
-    maticData,
-    arbethData,
-    xdaiData,
-    ghostData,
-    nextData,
-  },
-}) => {
-  return {
-    data: {
-      btc: btcData,
-      eth: ethData,
-      bnb: bnbData,
-      matic: maticData,
-      arbeth: arbethData,
-      xdai: xdaiData,
-      ghost: ghostData,
-      next: nextData,
+@connect(
+  ({
+    user: { btcData, ethData, bnbData, maticData, arbethData, xdaiData, ghostData, nextData },
+  }) => {
+    return {
+      data: {
+        btc: btcData,
+        eth: ethData,
+        bnb: bnbData,
+        matic: maticData,
+        arbeth: arbethData,
+        xdai: xdaiData,
+        ghost: ghostData,
+        next: nextData,
+      },
     }
   }
-})
+)
 class CreateInvoice extends PureComponent<CreateInvoiceProps> {
   constructor(props) {
     super(props)
@@ -45,10 +38,7 @@ class CreateInvoice extends PureComponent<CreateInvoiceProps> {
   async componentDidMount() {
     let {
       match: {
-        params: {
-          type,
-          wallet,
-        },
+        params: { type, wallet },
       },
       data,
     } = this.props
@@ -71,8 +61,7 @@ class CreateInvoice extends PureComponent<CreateInvoiceProps> {
       })
 
       console.log(type)
-      await actions.user.getInfoAboutCurrency([type.toUpperCase()]);
-
+      await actions.user.getInfoAboutCurrency([type.toUpperCase()])
     } else {
       this.props.history.push(localisedUrl(links.notFound))
     }

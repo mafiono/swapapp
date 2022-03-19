@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js'
 
 import fetchPrice from '../../../app/actions/fetchPrice'
 
-
 describe('Fetch Price', () => {
   it('should fetch price as a bignumber', async () => {
     const price = await fetchPrice('ETH-BTC')

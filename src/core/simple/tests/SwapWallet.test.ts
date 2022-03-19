@@ -9,7 +9,7 @@ const {
 
 const { room, wallet } = swap.setup({})
 
-beforeAll(done => {
+beforeAll((done) => {
   ready(room).then(done)
 })
 

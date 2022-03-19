@@ -7,16 +7,13 @@ import config from 'app-config'
 import { constants, localStorage } from 'helpers'
 import feedback from 'shared/helpers/feedback'
 
-
 const isWidgetBuild = config && config.isWidget
 
 export default class PreventMultiTabs extends Component<any, any> {
   constructor(props) {
     super(props)
 
-    const preventSwitch = localStorage.getItem(
-      constants.localStorage.preventSwitch
-    )
+    const preventSwitch = localStorage.getItem(constants.localStorage.preventSwitch)
 
     if (!preventSwitch) {
       // auto switch
@@ -44,10 +41,7 @@ export default class PreventMultiTabs extends Component<any, any> {
       //@ts-ignore */
       <WidthContainer>
         <h1>
-          <FormattedMessage
-            id="PreventMultiTabs"
-            defaultMessage="Such error, many tabs"
-          />
+          <FormattedMessage id="PreventMultiTabs" defaultMessage="Such error, many tabs" />
         </h1>
         {isWidgetBuild && (
           <FormattedMessage

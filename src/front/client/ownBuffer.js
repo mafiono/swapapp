@@ -13,7 +13,7 @@ for (var i = 0, len = code.length; i < len; ++i) {
 revLookup['-'.charCodeAt(0)] = 62
 revLookup['_'.charCodeAt(0)] = 63
 
-function getLens (b64) {
+function getLens(b64) {
   var len = b64.length
 
   if (len % 4 > 0) {
@@ -25,26 +25,24 @@ function getLens (b64) {
   var validLen = b64.indexOf('=')
   if (validLen === -1) validLen = len
 
-  var placeHoldersLen = validLen === len
-    ? 0
-    : 4 - (validLen % 4)
+  var placeHoldersLen = validLen === len ? 0 : 4 - (validLen % 4)
 
   return [validLen, placeHoldersLen]
 }
 
 // base64 is 4/3 + up to two characters of the original data
-function byteLength (b64) {
+function byteLength(b64) {
   var lens = getLens(b64)
   var validLen = lens[0]
   var placeHoldersLen = lens[1]
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+  return ((validLen + placeHoldersLen) * 3) / 4 - placeHoldersLen
 }
 
-function _byteLength (b64, validLen, placeHoldersLen) {
-  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+function _byteLength(b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3) / 4 - placeHoldersLen
 }
 
-function toByteArray (b64) {
+function toByteArray(b64) {
   var tmp
   var lens = getLens(b64)
   var validLen = lens[0]
@@ -55,9 +53,7 @@ function toByteArray (b64) {
   var curByte = 0
 
   // if there are placeholders, only get up to the last complete 4 chars
-  var len = placeHoldersLen > 0
-    ? validLen - 4
-    : validLen
+  var len = placeHoldersLen > 0 ? validLen - 4 : validLen
 
   var i
   for (i = 0; i < len; i += 4) {
@@ -66,16 +62,14 @@ function toByteArray (b64) {
       (revLookup[b64.charCodeAt(i + 1)] << 12) |
       (revLookup[b64.charCodeAt(i + 2)] << 6) |
       revLookup[b64.charCodeAt(i + 3)]
-    arr[curByte++] = (tmp >> 16) & 0xFF
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
+    arr[curByte++] = (tmp >> 16) & 0xff
+    arr[curByte++] = (tmp >> 8) & 0xff
+    arr[curByte++] = tmp & 0xff
   }
 
   if (placeHoldersLen === 2) {
-    tmp =
-      (revLookup[b64.charCodeAt(i)] << 2) |
-      (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[curByte++] = tmp & 0xFF
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xff
   }
 
   if (placeHoldersLen === 1) {
@@ -83,34 +77,33 @@ function toByteArray (b64) {
       (revLookup[b64.charCodeAt(i)] << 10) |
       (revLookup[b64.charCodeAt(i + 1)] << 4) |
       (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[curByte++] = (tmp >> 8) & 0xFF
-    arr[curByte++] = tmp & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xff
+    arr[curByte++] = tmp & 0xff
   }
 
   return arr
 }
 
-function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] +
-    lookup[num >> 12 & 0x3F] +
-    lookup[num >> 6 & 0x3F] +
-    lookup[num & 0x3F]
+function tripletToBase64(num) {
+  return (
+    lookup[(num >> 18) & 0x3f] +
+    lookup[(num >> 12) & 0x3f] +
+    lookup[(num >> 6) & 0x3f] +
+    lookup[num & 0x3f]
+  )
 }
 
-function encodeChunk (uint8, start, end) {
+function encodeChunk(uint8, start, end) {
   var tmp
   var output = []
   for (var i = start; i < end; i += 3) {
-    tmp =
-      ((uint8[i] << 16) & 0xFF0000) +
-      ((uint8[i + 1] << 8) & 0xFF00) +
-      (uint8[i + 2] & 0xFF)
+    tmp = ((uint8[i] << 16) & 0xff0000) + ((uint8[i + 1] << 8) & 0xff00) + (uint8[i + 2] & 0xff)
     output.push(tripletToBase64(tmp))
   }
   return output.join('')
 }
 
-function fromByteArray (uint8) {
+function fromByteArray(uint8) {
   var tmp
   var len = uint8.length
   var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
@@ -119,135 +112,126 @@ function fromByteArray (uint8) {
 
   // go through the array every three bytes, we'll deal with trailing stuff later
   for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+    parts.push(encodeChunk(uint8, i, i + maxChunkLength > len2 ? len2 : i + maxChunkLength))
   }
 
   // pad the end with zeros, but make sure to not forget the extra bytes
   if (extraBytes === 1) {
     tmp = uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 2] +
-      lookup[(tmp << 4) & 0x3F] +
-      '=='
-    )
+    parts.push(lookup[tmp >> 2] + lookup[(tmp << 4) & 0x3f] + '==')
   } else if (extraBytes === 2) {
     tmp = (uint8[len - 2] << 8) + uint8[len - 1]
-    parts.push(
-      lookup[tmp >> 10] +
-      lookup[(tmp >> 4) & 0x3F] +
-      lookup[(tmp << 2) & 0x3F] +
-      '='
-    )
+    parts.push(lookup[tmp >> 10] + lookup[(tmp >> 4) & 0x3f] + lookup[(tmp << 2) & 0x3f] + '=')
   }
 
   return parts.join('')
 }
 
- function ieee754Read (buffer, offset, isLE, mLen, nBytes) {
-    let e, m
-    const eLen = (nBytes * 8) - mLen - 1
-    const eMax = (1 << eLen) - 1
-    const eBias = eMax >> 1
-    let nBits = -7
-    let i = isLE ? (nBytes - 1) : 0
-    const d = isLE ? -1 : 1
-    let s = buffer[offset + i]
+function ieee754Read(buffer, offset, isLE, mLen, nBytes) {
+  let e, m
+  const eLen = nBytes * 8 - mLen - 1
+  const eMax = (1 << eLen) - 1
+  const eBias = eMax >> 1
+  let nBits = -7
+  let i = isLE ? nBytes - 1 : 0
+  const d = isLE ? -1 : 1
+  let s = buffer[offset + i]
 
+  i += d
+
+  e = s & ((1 << -nBits) - 1)
+  s >>= -nBits
+  nBits += eLen
+  while (nBits > 0) {
+    e = e * 256 + buffer[offset + i]
     i += d
-
-    e = s & ((1 << (-nBits)) - 1)
-    s >>= (-nBits)
-    nBits += eLen
-    while (nBits > 0) {
-      e = (e * 256) + buffer[offset + i]
-      i += d
-      nBits -= 8
-    }
-
-    m = e & ((1 << (-nBits)) - 1)
-    e >>= (-nBits)
-    nBits += mLen
-    while (nBits > 0) {
-      m = (m * 256) + buffer[offset + i]
-      i += d
-      nBits -= 8
-    }
-
-    if (e === 0) {
-      e = 1 - eBias
-    } else if (e === eMax) {
-      return m ? NaN : ((s ? -1 : 1) * Infinity)
-    } else {
-      m = m + Math.pow(2, mLen)
-      e = e - eBias
-    }
-    return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+    nBits -= 8
   }
 
-  function ieee754Write (buffer, value, offset, isLE, mLen, nBytes) {
-    let e, m, c
-    let eLen = (nBytes * 8) - mLen - 1
-    const eMax = (1 << eLen) - 1
-    const eBias = eMax >> 1
-    const rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-    let i = isLE ? 0 : (nBytes - 1)
-    const d = isLE ? 1 : -1
-    const s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+  m = e & ((1 << -nBits) - 1)
+  e >>= -nBits
+  nBits += mLen
+  while (nBits > 0) {
+    m = m * 256 + buffer[offset + i]
+    i += d
+    nBits -= 8
+  }
 
-    value = Math.abs(value)
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : (s ? -1 : 1) * Infinity
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
 
-    if (isNaN(value) || value === Infinity) {
-      m = isNaN(value) ? 1 : 0
+function ieee754Write(buffer, value, offset, isLE, mLen, nBytes) {
+  let e, m, c
+  let eLen = nBytes * 8 - mLen - 1
+  const eMax = (1 << eLen) - 1
+  const eBias = eMax >> 1
+  const rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0
+  let i = isLE ? 0 : nBytes - 1
+  const d = isLE ? 1 : -1
+  const s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
       e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      e = Math.floor(Math.log(value) / Math.LN2)
-      if (value * (c = Math.pow(2, -e)) < 1) {
-        e--
-        c *= 2
-      }
-      if (e + eBias >= 1) {
-        value += rt / c
-      } else {
-        value += rt * Math.pow(2, 1 - eBias)
-      }
-      if (value * c >= 2) {
-        e++
-        c /= 2
-      }
-
-      if (e + eBias >= eMax) {
-        m = 0
-        e = eMax
-      } else if (e + eBias >= 1) {
-        m = ((value * c) - 1) * Math.pow(2, mLen)
-        e = e + eBias
-      } else {
-        m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-        e = 0
-      }
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
-
-    while (mLen >= 8) {
-      buffer[offset + i] = m & 0xff
-      i += d
-      m /= 256
-      mLen -= 8
-    }
-
-    e = (e << mLen) | m
-    eLen += mLen
-    while (eLen > 0) {
-      buffer[offset + i] = e & 0xff
-      i += d
-      e /= 256
-      eLen -= 8
-    }
-
-    buffer[offset + i - d] |= s * 128
   }
+
+  while (mLen >= 8) {
+    buffer[offset + i] = m & 0xff
+    i += d
+    m /= 256
+    mLen -= 8
+  }
+
+  e = (e << mLen) | m
+  eLen += mLen
+  while (eLen > 0) {
+    buffer[offset + i] = e & 0xff
+    i += d
+    e /= 256
+    eLen -= 8
+  }
+
+  buffer[offset + i - d] |= s * 128
+}
 
 const customInspectSymbol =
-  (typeof Symbol === 'function' && typeof Symbol['for'] === 'function') // eslint-disable-line dot-notation
+  typeof Symbol === 'function' && typeof Symbol['for'] === 'function' // eslint-disable-line dot-notation
     ? Symbol['for']('nodejs.util.inspect.custom') // eslint-disable-line dot-notation
     : null
 
@@ -270,19 +254,26 @@ const K_MAX_LENGTH = 0x7fffffff
  */
 OwnBuffer.TYPED_ARRAY_SUPPORT = typedArraySupport()
 
-if (!OwnBuffer.TYPED_ARRAY_SUPPORT && typeof console !== 'undefined' &&
-    typeof console.error === 'function') {
+if (
+  !OwnBuffer.TYPED_ARRAY_SUPPORT &&
+  typeof console !== 'undefined' &&
+  typeof console.error === 'function'
+) {
   console.error(
     'This browser lacks typed array (Uint8Array) support which is required by ' +
-    '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.'
+      '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.'
   )
 }
 
-function typedArraySupport () {
+function typedArraySupport() {
   // Can typed array instances can be augmented?
   try {
     const arr = new Uint8Array(1)
-    const proto = { foo: function () { return 42 } }
+    const proto = {
+      foo: function () {
+        return 42
+      },
+    }
     Object.setPrototypeOf(proto, Uint8Array.prototype)
     Object.setPrototypeOf(arr, proto)
     return arr.foo() === 42
@@ -296,7 +287,7 @@ Object.defineProperty(OwnBuffer.prototype, 'parent', {
   get: function () {
     if (!OwnBuffer.isBuffer(this)) return undefined
     return this.buffer
-  }
+  },
 })
 
 Object.defineProperty(OwnBuffer.prototype, 'offset', {
@@ -304,10 +295,10 @@ Object.defineProperty(OwnBuffer.prototype, 'offset', {
   get: function () {
     if (!OwnBuffer.isBuffer(this)) return undefined
     return this.byteOffset
-  }
+  },
 })
 
-function createBuffer (length) {
+function createBuffer(length) {
   if (length > K_MAX_LENGTH) {
     throw new RangeError('The value "' + length + '" is invalid for option "size"')
   }
@@ -327,13 +318,11 @@ function createBuffer (length) {
  * The `Uint8Array` prototype remains unmodified.
  */
 
-function OwnBuffer (arg, encodingOrOffset, length) {
+function OwnBuffer(arg, encodingOrOffset, length) {
   // Common case.
   if (typeof arg === 'number') {
     if (typeof encodingOrOffset === 'string') {
-      throw new TypeError(
-        'The "string" argument must be of type string. Received type number'
-      )
+      throw new TypeError('The "string" argument must be of type string. Received type number')
     }
     return allocUnsafe(arg)
   }
@@ -342,7 +331,7 @@ function OwnBuffer (arg, encodingOrOffset, length) {
 
 OwnBuffer.poolSize = 8192 // not used by this implementation
 
-function from (value, encodingOrOffset, length) {
+function from(value, encodingOrOffset, length) {
   if (typeof value === 'string') {
     return fromString(value, encodingOrOffset)
   }
@@ -354,25 +343,24 @@ function from (value, encodingOrOffset, length) {
   if (value == null) {
     throw new TypeError(
       'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
-      'or Array-like Object. Received type ' + (typeof value)
+        'or Array-like Object. Received type ' +
+        typeof value
     )
   }
 
-  if (isInstance(value, ArrayBuffer) ||
-      (value && isInstance(value.buffer, ArrayBuffer))) {
+  if (isInstance(value, ArrayBuffer) || (value && isInstance(value.buffer, ArrayBuffer))) {
     return fromArrayBuffer(value, encodingOrOffset, length)
   }
 
-  if (typeof SharedArrayBuffer !== 'undefined' &&
-      (isInstance(value, SharedArrayBuffer) ||
-      (value && isInstance(value.buffer, SharedArrayBuffer)))) {
+  if (
+    typeof SharedArrayBuffer !== 'undefined' &&
+    (isInstance(value, SharedArrayBuffer) || (value && isInstance(value.buffer, SharedArrayBuffer)))
+  ) {
     return fromArrayBuffer(value, encodingOrOffset, length)
   }
 
   if (typeof value === 'number') {
-    throw new TypeError(
-      'The "value" argument must not be of type number. Received type number'
-    )
+    throw new TypeError('The "value" argument must not be of type number. Received type number')
   }
 
   const valueOf = value.valueOf && value.valueOf()
@@ -383,14 +371,18 @@ function from (value, encodingOrOffset, length) {
   const b = fromObject(value)
   if (b) return b
 
-  if (typeof Symbol !== 'undefined' && Symbol.toPrimitive != null &&
-      typeof value[Symbol.toPrimitive] === 'function') {
+  if (
+    typeof Symbol !== 'undefined' &&
+    Symbol.toPrimitive != null &&
+    typeof value[Symbol.toPrimitive] === 'function'
+  ) {
     return OwnBuffer.from(value[Symbol.toPrimitive]('string'), encodingOrOffset, length)
   }
 
   throw new TypeError(
     'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
-    'or Array-like Object. Received type ' + (typeof value)
+      'or Array-like Object. Received type ' +
+      typeof value
   )
 }
 
@@ -411,7 +403,7 @@ OwnBuffer.from = function (value, encodingOrOffset, length) {
 Object.setPrototypeOf(OwnBuffer.prototype, Uint8Array.prototype)
 Object.setPrototypeOf(OwnBuffer, Uint8Array)
 
-function assertSize (size) {
+function assertSize(size) {
   if (typeof size !== 'number') {
     throw new TypeError('"size" argument must be of type number')
   } else if (size < 0) {
@@ -419,7 +411,7 @@ function assertSize (size) {
   }
 }
 
-function alloc (size, fill, encoding) {
+function alloc(size, fill, encoding) {
   assertSize(size)
   if (size <= 0) {
     return createBuffer(size)
@@ -443,7 +435,7 @@ OwnBuffer.alloc = function (size, fill, encoding) {
   return alloc(size, fill, encoding)
 }
 
-function allocUnsafe (size) {
+function allocUnsafe(size) {
   assertSize(size)
   return createBuffer(size < 0 ? 0 : checked(size) | 0)
 }
@@ -461,7 +453,7 @@ OwnBuffer.allocUnsafeSlow = function (size) {
   return allocUnsafe(size)
 }
 
-function fromString (string, encoding) {
+function fromString(string, encoding) {
   if (typeof encoding !== 'string' || encoding === '') {
     encoding = 'utf8'
   }
@@ -485,7 +477,7 @@ function fromString (string, encoding) {
   return buf
 }
 
-function fromArrayLike (array) {
+function fromArrayLike(array) {
   const length = array.length < 0 ? 0 : checked(array.length) | 0
   const buf = createBuffer(length)
   for (let i = 0; i < length; i += 1) {
@@ -494,7 +486,7 @@ function fromArrayLike (array) {
   return buf
 }
 
-function fromArrayView (arrayView) {
+function fromArrayView(arrayView) {
   if (isInstance(arrayView, Uint8Array)) {
     const copy = new Uint8Array(arrayView)
     return fromArrayBuffer(copy.buffer, copy.byteOffset, copy.byteLength)
@@ -502,7 +494,7 @@ function fromArrayView (arrayView) {
   return fromArrayLike(arrayView)
 }
 
-function fromArrayBuffer (array, byteOffset, length) {
+function fromArrayBuffer(array, byteOffset, length) {
   if (byteOffset < 0 || array.byteLength < byteOffset) {
     throw new RangeError('"offset" is outside of buffer bounds')
   }
@@ -526,7 +518,7 @@ function fromArrayBuffer (array, byteOffset, length) {
   return buf
 }
 
-function fromObject (obj) {
+function fromObject(obj) {
   if (OwnBuffer.isBuffer(obj)) {
     const len = checked(obj.length) | 0
     const buf = createBuffer(len)
@@ -551,35 +543,37 @@ function fromObject (obj) {
   }
 }
 
-function checked (length) {
+function checked(length) {
   // Note: cannot use `length < K_MAX_LENGTH` here because that fails when
   // length is NaN (which is otherwise coerced to zero.)
   if (length >= K_MAX_LENGTH) {
-    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                        'size: 0x' + K_MAX_LENGTH.toString(16) + ' bytes')
+    throw new RangeError(
+      'Attempt to allocate Buffer larger than maximum ' +
+        'size: 0x' +
+        K_MAX_LENGTH.toString(16) +
+        ' bytes'
+    )
   }
   return length | 0
 }
 
-function SlowBuffer (length) {
-  if (+length != length) { // eslint-disable-line eqeqeq
+function SlowBuffer(length) {
+  if (+length != length) {
+    // eslint-disable-line eqeqeq
     length = 0
   }
   return OwnBuffer.alloc(+length)
 }
 
-OwnBuffer.isBuffer = function isBuffer (b) {
-  return b != null && b._isBuffer === true &&
-    b !== OwnBuffer.prototype // so OwnBuffer.isBuffer(OwnBuffer.prototype) will be false
+OwnBuffer.isBuffer = function isBuffer(b) {
+  return b != null && b._isBuffer === true && b !== OwnBuffer.prototype // so OwnBuffer.isBuffer(OwnBuffer.prototype) will be false
 }
 
-OwnBuffer.compare = function compare (a, b) {
+OwnBuffer.compare = function compare(a, b) {
   if (isInstance(a, Uint8Array)) a = OwnBuffer.from(a, a.offset, a.byteLength)
   if (isInstance(b, Uint8Array)) b = OwnBuffer.from(b, b.offset, b.byteLength)
   if (!OwnBuffer.isBuffer(a) || !OwnBuffer.isBuffer(b)) {
-    throw new TypeError(
-      'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
-    )
+    throw new TypeError('The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array')
   }
 
   if (a === b) return 0
@@ -600,7 +594,7 @@ OwnBuffer.compare = function compare (a, b) {
   return 0
 }
 
-OwnBuffer.isEncoding = function isEncoding (encoding) {
+OwnBuffer.isEncoding = function isEncoding(encoding) {
   switch (String(encoding).toLowerCase()) {
     case 'hex':
     case 'utf8':
@@ -619,7 +613,7 @@ OwnBuffer.isEncoding = function isEncoding (encoding) {
   }
 }
 
-OwnBuffer.concat = function concat (list, length) {
+OwnBuffer.concat = function concat(list, length) {
   if (!Array.isArray(list)) {
     throw new TypeError('"list" argument must be an Array of Buffers')
   }
@@ -645,11 +639,7 @@ OwnBuffer.concat = function concat (list, length) {
         if (!OwnBuffer.isBuffer(buf)) buf = OwnBuffer.from(buf)
         buf.copy(buffer, pos)
       } else {
-        Uint8Array.prototype.set.call(
-          buffer,
-          buf,
-          pos
-        )
+        Uint8Array.prototype.set.call(buffer, buf, pos)
       }
     } else if (!OwnBuffer.isBuffer(buf)) {
       throw new TypeError('"list" argument must be an Array of Buffers')
@@ -661,7 +651,7 @@ OwnBuffer.concat = function concat (list, length) {
   return buffer
 }
 
-function byteLength (string, encoding) {
+function byteLength(string, encoding) {
   if (OwnBuffer.isBuffer(string)) {
     return string.length
   }
@@ -671,12 +661,13 @@ function byteLength (string, encoding) {
   if (typeof string !== 'string') {
     throw new TypeError(
       'The "string" argument must be one of type string, Buffer, or ArrayOwnBuffer. ' +
-      'Received type ' + typeof string
+        'Received type ' +
+        typeof string
     )
   }
 
   const len = string.length
-  const mustMatch = (arguments.length > 2 && arguments[2] === true)
+  const mustMatch = arguments.length > 2 && arguments[2] === true
   if (!mustMatch && len === 0) return 0
 
   // Use a for loop to avoid recursion
@@ -710,7 +701,7 @@ function byteLength (string, encoding) {
 }
 OwnBuffer.byteLength = byteLength
 
-function slowToString (encoding, start, end) {
+function slowToString(encoding, start, end) {
   let loweredCase = false
 
   // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
@@ -788,13 +779,13 @@ function slowToString (encoding, start, end) {
 // See: https://github.com/feross/buffer/issues/154
 OwnBuffer.prototype._isBuffer = true
 
-function swap (b, n, m) {
+function swap(b, n, m) {
   const i = b[n]
   b[n] = b[m]
   b[m] = i
 }
 
-OwnBuffer.prototype.swap16 = function swap16 () {
+OwnBuffer.prototype.swap16 = function swap16() {
   const len = this.length
   if (len % 2 !== 0) {
     throw new RangeError('Buffer size must be a multiple of 16-bits')
@@ -805,7 +796,7 @@ OwnBuffer.prototype.swap16 = function swap16 () {
   return this
 }
 
-OwnBuffer.prototype.swap32 = function swap32 () {
+OwnBuffer.prototype.swap32 = function swap32() {
   const len = this.length
   if (len % 4 !== 0) {
     throw new RangeError('Buffer size must be a multiple of 32-bits')
@@ -817,7 +808,7 @@ OwnBuffer.prototype.swap32 = function swap32 () {
   return this
 }
 
-OwnBuffer.prototype.swap64 = function swap64 () {
+OwnBuffer.prototype.swap64 = function swap64() {
   const len = this.length
   if (len % 8 !== 0) {
     throw new RangeError('Buffer size must be a multiple of 64-bits')
@@ -831,7 +822,7 @@ OwnBuffer.prototype.swap64 = function swap64 () {
   return this
 }
 
-OwnBuffer.prototype.toString = function toString () {
+OwnBuffer.prototype.toString = function toString() {
   const length = this.length
   if (length === 0) return ''
   if (arguments.length === 0) return utf8Slice(this, 0, length)
@@ -840,16 +831,18 @@ OwnBuffer.prototype.toString = function toString () {
 
 OwnBuffer.prototype.toLocaleString = OwnBuffer.prototype.toString
 
-OwnBuffer.prototype.equals = function equals (b) {
+OwnBuffer.prototype.equals = function equals(b) {
   if (!OwnBuffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
   if (this === b) return true
   return OwnBuffer.compare(this, b) === 0
 }
 
-OwnBuffer.prototype.inspect = function inspect () {
+OwnBuffer.prototype.inspect = function inspect() {
   let str = ''
   const max = INSPECT_MAX_BYTES
-  str = this.toString('hex', 0, max).replace(/(.{2})/g, '$1 ').trim()
+  str = this.toString('hex', 0, max)
+    .replace(/(.{2})/g, '$1 ')
+    .trim()
   if (this.length > max) str += ' ... '
   return '<Buffer ' + str + '>'
 }
@@ -857,14 +850,15 @@ if (customInspectSymbol) {
   OwnBuffer.prototype[customInspectSymbol] = OwnBuffer.prototype.inspect
 }
 
-OwnBuffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+OwnBuffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
   if (isInstance(target, Uint8Array)) {
     target = OwnBuffer.from(target, target.offset, target.byteLength)
   }
   if (!OwnBuffer.isBuffer(target)) {
     throw new TypeError(
       'The "target" argument must be one of type Buffer or Uint8Array. ' +
-      'Received type ' + (typeof target)
+        'Received type ' +
+        typeof target
     )
   }
 
@@ -931,7 +925,7 @@ OwnBuffer.prototype.compare = function compare (target, start, end, thisStart, t
 // - byteOffset - an index into `buffer`; will be clamped to an int32
 // - encoding - an optional encoding, relevant is val is a string
 // - dir - true for indexOf, false for lastIndexOf
-function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
   // Empty buffer means no match
   if (OwnBuffer.length === 0) return -1
 
@@ -947,7 +941,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
   byteOffset = +byteOffset // Coerce to Number.
   if (numberIsNaN(byteOffset)) {
     // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
-    byteOffset = dir ? 0 : (OwnBuffer.length - 1)
+    byteOffset = dir ? 0 : OwnBuffer.length - 1
   }
 
   // Normalize byteOffset: negative offsets start from the end of the buffer
@@ -973,7 +967,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
     }
     return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
   } else if (typeof val === 'number') {
-    val = val & 0xFF // Search for a byte value [0-255]
+    val = val & 0xff // Search for a byte value [0-255]
     if (typeof Uint8Array.prototype.indexOf === 'function') {
       if (dir) {
         return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
@@ -987,15 +981,19 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
   throw new TypeError('val must be string, number or Buffer')
 }
 
-function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
   let indexSize = 1
   let arrLength = arr.length
   let valLength = val.length
 
   if (encoding !== undefined) {
     encoding = String(encoding).toLowerCase()
-    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-        encoding === 'utf16le' || encoding === 'utf-16le') {
+    if (
+      encoding === 'ucs2' ||
+      encoding === 'ucs-2' ||
+      encoding === 'utf16le' ||
+      encoding === 'utf-16le'
+    ) {
       if (arr.length < 2 || val.length < 2) {
         return -1
       }
@@ -1006,7 +1004,7 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
     }
   }
 
-  function read (buf, i) {
+  function read(buf, i) {
     if (indexSize === 1) {
       return buf[i]
     } else {
@@ -1043,19 +1041,19 @@ function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
   return -1
 }
 
-OwnBuffer.prototype.includes = function includes (val, byteOffset, encoding) {
+OwnBuffer.prototype.includes = function includes(val, byteOffset, encoding) {
   return this.indexOf(val, byteOffset, encoding) !== -1
 }
 
-OwnBuffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+OwnBuffer.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
   return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
 }
 
-OwnBuffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+OwnBuffer.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
   return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
 }
 
-function hexWrite (buf, string, offset, length) {
+function hexWrite(buf, string, offset, length) {
   offset = Number(offset) || 0
   const remaining = buf.length - offset
   if (!length) {
@@ -1081,34 +1079,34 @@ function hexWrite (buf, string, offset, length) {
   return i
 }
 
-function utf8Write (buf, string, offset, length) {
+function utf8Write(buf, string, offset, length) {
   return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
 }
 
-function asciiWrite (buf, string, offset, length) {
+function asciiWrite(buf, string, offset, length) {
   return blitBuffer(asciiToBytes(string), buf, offset, length)
 }
 
-function base64Write (buf, string, offset, length) {
+function base64Write(buf, string, offset, length) {
   return blitBuffer(base64ToBytes(string), buf, offset, length)
 }
 
-function ucs2Write (buf, string, offset, length) {
+function ucs2Write(buf, string, offset, length) {
   return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
 }
 
-OwnBuffer.prototype.write = function write (string, offset, length, encoding) {
+OwnBuffer.prototype.write = function write(string, offset, length, encoding) {
   // Buffer#write(string)
   if (offset === undefined) {
     encoding = 'utf8'
     length = this.length
     offset = 0
-  // Buffer#write(string, encoding)
+    // Buffer#write(string, encoding)
   } else if (length === undefined && typeof offset === 'string') {
     encoding = offset
     length = this.length
     offset = 0
-  // Buffer#write(string, offset[, length][, encoding])
+    // Buffer#write(string, offset[, length][, encoding])
   } else if (isFinite(offset)) {
     offset = offset >>> 0
     if (isFinite(length)) {
@@ -1119,9 +1117,7 @@ OwnBuffer.prototype.write = function write (string, offset, length, encoding) {
       length = undefined
     }
   } else {
-    throw new Error(
-      'OwnBuffer.write(string, encoding, offset[, length]) is no longer supported'
-    )
+    throw new Error('OwnBuffer.write(string, encoding, offset[, length]) is no longer supported')
   }
 
   const remaining = this.length - offset
@@ -1166,14 +1162,14 @@ OwnBuffer.prototype.write = function write (string, offset, length, encoding) {
   }
 }
 
-OwnBuffer.prototype.toJSON = function toJSON () {
+OwnBuffer.prototype.toJSON = function toJSON() {
   return {
     type: 'Buffer',
-    data: Array.prototype.slice.call(this._arr || this, 0)
+    data: Array.prototype.slice.call(this._arr || this, 0),
   }
 }
 
-function base64Slice (buf, start, end) {
+function base64Slice(buf, start, end) {
   if (start === 0 && end === buf.length) {
     return fromByteArray(buf)
   } else {
@@ -1181,7 +1177,7 @@ function base64Slice (buf, start, end) {
   }
 }
 
-function utf8Slice (buf, start, end) {
+function utf8Slice(buf, start, end) {
   end = Math.min(buf.length, end)
   const res = []
 
@@ -1189,13 +1185,7 @@ function utf8Slice (buf, start, end) {
   while (i < end) {
     const firstByte = buf[i]
     let codePoint = null
-    let bytesPerSequence = (firstByte > 0xEF)
-      ? 4
-      : (firstByte > 0xDF)
-          ? 3
-          : (firstByte > 0xBF)
-              ? 2
-              : 1
+    let bytesPerSequence = firstByte > 0xef ? 4 : firstByte > 0xdf ? 3 : firstByte > 0xbf ? 2 : 1
 
     if (i + bytesPerSequence <= end) {
       let secondByte, thirdByte, fourthByte, tempCodePoint
@@ -1208,9 +1198,9 @@ function utf8Slice (buf, start, end) {
           break
         case 2:
           secondByte = buf[i + 1]
-          if ((secondByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
-            if (tempCodePoint > 0x7F) {
+          if ((secondByte & 0xc0) === 0x80) {
+            tempCodePoint = ((firstByte & 0x1f) << 0x6) | (secondByte & 0x3f)
+            if (tempCodePoint > 0x7f) {
               codePoint = tempCodePoint
             }
           }
@@ -1218,9 +1208,10 @@ function utf8Slice (buf, start, end) {
         case 3:
           secondByte = buf[i + 1]
           thirdByte = buf[i + 2]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
-            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+          if ((secondByte & 0xc0) === 0x80 && (thirdByte & 0xc0) === 0x80) {
+            tempCodePoint =
+              ((firstByte & 0xf) << 0xc) | ((secondByte & 0x3f) << 0x6) | (thirdByte & 0x3f)
+            if (tempCodePoint > 0x7ff && (tempCodePoint < 0xd800 || tempCodePoint > 0xdfff)) {
               codePoint = tempCodePoint
             }
           }
@@ -1229,9 +1220,17 @@ function utf8Slice (buf, start, end) {
           secondByte = buf[i + 1]
           thirdByte = buf[i + 2]
           fourthByte = buf[i + 3]
-          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
-            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
-            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+          if (
+            (secondByte & 0xc0) === 0x80 &&
+            (thirdByte & 0xc0) === 0x80 &&
+            (fourthByte & 0xc0) === 0x80
+          ) {
+            tempCodePoint =
+              ((firstByte & 0xf) << 0x12) |
+              ((secondByte & 0x3f) << 0xc) |
+              ((thirdByte & 0x3f) << 0x6) |
+              (fourthByte & 0x3f)
+            if (tempCodePoint > 0xffff && tempCodePoint < 0x110000) {
               codePoint = tempCodePoint
             }
           }
@@ -1241,13 +1240,13 @@ function utf8Slice (buf, start, end) {
     if (codePoint === null) {
       // we did not generate a valid codePoint so insert a
       // replacement char (U+FFFD) and advance only 1 byte
-      codePoint = 0xFFFD
+      codePoint = 0xfffd
       bytesPerSequence = 1
-    } else if (codePoint > 0xFFFF) {
+    } else if (codePoint > 0xffff) {
       // encode to utf16 (surrogate pair dance)
       codePoint -= 0x10000
-      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
-      codePoint = 0xDC00 | codePoint & 0x3FF
+      res.push(((codePoint >>> 10) & 0x3ff) | 0xd800)
+      codePoint = 0xdc00 | (codePoint & 0x3ff)
     }
 
     res.push(codePoint)
@@ -1262,7 +1261,7 @@ function utf8Slice (buf, start, end) {
 // We go 1 magnitude less, for safety
 const MAX_ARGUMENTS_LENGTH = 0x1000
 
-function decodeCodePointsArray (codePoints) {
+function decodeCodePointsArray(codePoints) {
   const len = codePoints.length
   if (len <= MAX_ARGUMENTS_LENGTH) {
     return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
@@ -1272,25 +1271,22 @@ function decodeCodePointsArray (codePoints) {
   let res = ''
   let i = 0
   while (i < len) {
-    res += String.fromCharCode.apply(
-      String,
-      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
-    )
+    res += String.fromCharCode.apply(String, codePoints.slice(i, (i += MAX_ARGUMENTS_LENGTH)))
   }
   return res
 }
 
-function asciiSlice (buf, start, end) {
+function asciiSlice(buf, start, end) {
   let ret = ''
   end = Math.min(buf.length, end)
 
   for (let i = start; i < end; ++i) {
-    ret += String.fromCharCode(buf[i] & 0x7F)
+    ret += String.fromCharCode(buf[i] & 0x7f)
   }
   return ret
 }
 
-function latin1Slice (buf, start, end) {
+function latin1Slice(buf, start, end) {
   let ret = ''
   end = Math.min(buf.length, end)
 
@@ -1300,7 +1296,7 @@ function latin1Slice (buf, start, end) {
   return ret
 }
 
-function hexSlice (buf, start, end) {
+function hexSlice(buf, start, end) {
   const len = buf.length
 
   if (!start || start < 0) start = 0
@@ -1313,17 +1309,17 @@ function hexSlice (buf, start, end) {
   return out
 }
 
-function utf16leSlice (buf, start, end) {
+function utf16leSlice(buf, start, end) {
   const bytes = buf.slice(start, end)
   let res = ''
   // If bytes.length is odd, the last 8 bits must be ignored (same as node.js)
   for (let i = 0; i < bytes.length - 1; i += 2) {
-    res += String.fromCharCode(bytes[i] + (bytes[i + 1] * 256))
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
   }
   return res
 }
 
-OwnBuffer.prototype.slice = function slice (start, end) {
+OwnBuffer.prototype.slice = function slice(start, end) {
   const len = this.length
   start = ~~start
   end = end === undefined ? len : ~~end
@@ -1352,15 +1348,18 @@ OwnBuffer.prototype.slice = function slice (start, end) {
 }
 
 /*
-* Need to make sure that buffer isn't trying to write out of bounds.
-*/
-function checkOffset (offset, ext, length) {
-  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset(offset, ext, length) {
+  if (offset % 1 !== 0 || offset < 0) throw new RangeError('offset is not uint')
   if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
 }
 
-OwnBuffer.prototype.readUintLE =
-OwnBuffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+OwnBuffer.prototype.readUintLE = OwnBuffer.prototype.readUIntLE = function readUIntLE(
+  offset,
+  byteLength,
+  noAssert
+) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
   if (!noAssert) checkOffset(offset, byteLength, this.length)
@@ -1375,8 +1374,11 @@ OwnBuffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAsse
   return val
 }
 
-OwnBuffer.prototype.readUintBE =
-OwnBuffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+OwnBuffer.prototype.readUintBE = OwnBuffer.prototype.readUIntBE = function readUIntBE(
+  offset,
+  byteLength,
+  noAssert
+) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
   if (!noAssert) {
@@ -1392,50 +1394,60 @@ OwnBuffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAsse
   return val
 }
 
-OwnBuffer.prototype.readUint8 =
-OwnBuffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+OwnBuffer.prototype.readUint8 = OwnBuffer.prototype.readUInt8 = function readUInt8(
+  offset,
+  noAssert
+) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 1, this.length)
   return this[offset]
 }
 
-OwnBuffer.prototype.readUint16LE =
-OwnBuffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+OwnBuffer.prototype.readUint16LE = OwnBuffer.prototype.readUInt16LE = function readUInt16LE(
+  offset,
+  noAssert
+) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 2, this.length)
   return this[offset] | (this[offset + 1] << 8)
 }
 
-OwnBuffer.prototype.readUint16BE =
-OwnBuffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+OwnBuffer.prototype.readUint16BE = OwnBuffer.prototype.readUInt16BE = function readUInt16BE(
+  offset,
+  noAssert
+) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 2, this.length)
   return (this[offset] << 8) | this[offset + 1]
 }
 
-OwnBuffer.prototype.readUint32LE =
-OwnBuffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+OwnBuffer.prototype.readUint32LE = OwnBuffer.prototype.readUInt32LE = function readUInt32LE(
+  offset,
+  noAssert
+) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 4, this.length)
 
-  return ((this[offset]) |
-      (this[offset + 1] << 8) |
-      (this[offset + 2] << 16)) +
-      (this[offset + 3] * 0x1000000)
+  return (
+    (this[offset] | (this[offset + 1] << 8) | (this[offset + 2] << 16)) +
+    this[offset + 3] * 0x1000000
+  )
 }
 
-OwnBuffer.prototype.readUint32BE =
-OwnBuffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+OwnBuffer.prototype.readUint32BE = OwnBuffer.prototype.readUInt32BE = function readUInt32BE(
+  offset,
+  noAssert
+) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 4, this.length)
 
-  return (this[offset] * 0x1000000) +
-    ((this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    this[offset + 3])
+  return (
+    this[offset] * 0x1000000 +
+    ((this[offset + 1] << 16) | (this[offset + 2] << 8) | this[offset + 3])
+  )
 }
 
-OwnBuffer.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64LE (offset) {
+OwnBuffer.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64LE(offset) {
   offset = offset >>> 0
   validateNumber(offset, 'offset')
   const first = this[offset]
@@ -1444,20 +1456,14 @@ OwnBuffer.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64L
     boundsError(offset, this.length - 8)
   }
 
-  const lo = first +
-    this[++offset] * 2 ** 8 +
-    this[++offset] * 2 ** 16 +
-    this[++offset] * 2 ** 24
+  const lo = first + this[++offset] * 2 ** 8 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 24
 
-  const hi = this[++offset] +
-    this[++offset] * 2 ** 8 +
-    this[++offset] * 2 ** 16 +
-    last * 2 ** 24
+  const hi = this[++offset] + this[++offset] * 2 ** 8 + this[++offset] * 2 ** 16 + last * 2 ** 24
 
   return BigInt(lo) + (BigInt(hi) << BigInt(32))
 })
 
-OwnBuffer.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64BE (offset) {
+OwnBuffer.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64BE(offset) {
   offset = offset >>> 0
   validateNumber(offset, 'offset')
   const first = this[offset]
@@ -1466,20 +1472,14 @@ OwnBuffer.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64B
     boundsError(offset, this.length - 8)
   }
 
-  const hi = first * 2 ** 24 +
-    this[++offset] * 2 ** 16 +
-    this[++offset] * 2 ** 8 +
-    this[++offset]
+  const hi = first * 2 ** 24 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + this[++offset]
 
-  const lo = this[++offset] * 2 ** 24 +
-    this[++offset] * 2 ** 16 +
-    this[++offset] * 2 ** 8 +
-    last
+  const lo = this[++offset] * 2 ** 24 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + last
 
   return (BigInt(hi) << BigInt(32)) + BigInt(lo)
 })
 
-OwnBuffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+OwnBuffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
   if (!noAssert) checkOffset(offset, byteLength, this.length)
@@ -1497,7 +1497,7 @@ OwnBuffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert
   return val
 }
 
-OwnBuffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+OwnBuffer.prototype.readIntBE = function readIntBE(offset, byteLength, noAssert) {
   offset = offset >>> 0
   byteLength = byteLength >>> 0
   if (!noAssert) checkOffset(offset, byteLength, this.length)
@@ -1515,48 +1515,46 @@ OwnBuffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert
   return val
 }
 
-OwnBuffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+OwnBuffer.prototype.readInt8 = function readInt8(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 1, this.length)
-  if (!(this[offset] & 0x80)) return (this[offset])
-  return ((0xff - this[offset] + 1) * -1)
+  if (!(this[offset] & 0x80)) return this[offset]
+  return (0xff - this[offset] + 1) * -1
 }
 
-OwnBuffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+OwnBuffer.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 2, this.length)
   const val = this[offset] | (this[offset + 1] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
+  return val & 0x8000 ? val | 0xffff0000 : val
 }
 
-OwnBuffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+OwnBuffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 2, this.length)
   const val = this[offset + 1] | (this[offset] << 8)
-  return (val & 0x8000) ? val | 0xFFFF0000 : val
+  return val & 0x8000 ? val | 0xffff0000 : val
 }
 
-OwnBuffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+OwnBuffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 4, this.length)
 
-  return (this[offset]) |
-    (this[offset + 1] << 8) |
-    (this[offset + 2] << 16) |
-    (this[offset + 3] << 24)
+  return (
+    this[offset] | (this[offset + 1] << 8) | (this[offset + 2] << 16) | (this[offset + 3] << 24)
+  )
 }
 
-OwnBuffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+OwnBuffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 4, this.length)
 
-  return (this[offset] << 24) |
-    (this[offset + 1] << 16) |
-    (this[offset + 2] << 8) |
-    (this[offset + 3])
+  return (
+    (this[offset] << 24) | (this[offset + 1] << 16) | (this[offset + 2] << 8) | this[offset + 3]
+  )
 }
 
-OwnBuffer.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE (offset) {
+OwnBuffer.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE(offset) {
   offset = offset >>> 0
   validateNumber(offset, 'offset')
   const first = this[offset]
@@ -1565,19 +1563,16 @@ OwnBuffer.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE 
     boundsError(offset, this.length - 8)
   }
 
-  const val = this[offset + 4] +
-    this[offset + 5] * 2 ** 8 +
-    this[offset + 6] * 2 ** 16 +
-    (last << 24) // Overflow
+  const val =
+    this[offset + 4] + this[offset + 5] * 2 ** 8 + this[offset + 6] * 2 ** 16 + (last << 24) // Overflow
 
-  return (BigInt(val) << BigInt(32)) +
-    BigInt(first +
-    this[++offset] * 2 ** 8 +
-    this[++offset] * 2 ** 16 +
-    this[++offset] * 2 ** 24)
+  return (
+    (BigInt(val) << BigInt(32)) +
+    BigInt(first + this[++offset] * 2 ** 8 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 24)
+  )
 })
 
-OwnBuffer.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE (offset) {
+OwnBuffer.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE(offset) {
   offset = offset >>> 0
   validateNumber(offset, 'offset')
   const first = this[offset]
@@ -1586,50 +1581,54 @@ OwnBuffer.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE 
     boundsError(offset, this.length - 8)
   }
 
-  const val = (first << 24) + // Overflow
+  const val =
+    (first << 24) + // Overflow
     this[++offset] * 2 ** 16 +
     this[++offset] * 2 ** 8 +
     this[++offset]
 
-  return (BigInt(val) << BigInt(32)) +
-    BigInt(this[++offset] * 2 ** 24 +
-    this[++offset] * 2 ** 16 +
-    this[++offset] * 2 ** 8 +
-    last)
+  return (
+    (BigInt(val) << BigInt(32)) +
+    BigInt(this[++offset] * 2 ** 24 + this[++offset] * 2 ** 16 + this[++offset] * 2 ** 8 + last)
+  )
 })
 
-OwnBuffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+OwnBuffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 4, this.length)
   return ieee754Read(this, offset, true, 23, 4)
 }
 
-OwnBuffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+OwnBuffer.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 4, this.length)
   return ieee754Read(this, offset, false, 23, 4)
 }
 
-OwnBuffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+OwnBuffer.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 8, this.length)
   return ieee754Read(this, offset, true, 52, 8)
 }
 
-OwnBuffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+OwnBuffer.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
   offset = offset >>> 0
   if (!noAssert) checkOffset(offset, 8, this.length)
   return ieee754Read(this, offset, false, 52, 8)
 }
 
-function checkInt (buf, value, offset, ext, max, min) {
+function checkInt(buf, value, offset, ext, max, min) {
   if (!OwnBuffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
   if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
   if (offset + ext > buf.length) throw new RangeError('Index out of range')
 }
 
-OwnBuffer.prototype.writeUintLE =
-OwnBuffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+OwnBuffer.prototype.writeUintLE = OwnBuffer.prototype.writeUIntLE = function writeUIntLE(
+  value,
+  offset,
+  byteLength,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   byteLength = byteLength >>> 0
@@ -1640,16 +1639,20 @@ OwnBuffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLengt
 
   let mul = 1
   let i = 0
-  this[offset] = value & 0xFF
+  this[offset] = value & 0xff
   while (++i < byteLength && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
+    this[offset + i] = (value / mul) & 0xff
   }
 
   return offset + byteLength
 }
 
-OwnBuffer.prototype.writeUintBE =
-OwnBuffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+OwnBuffer.prototype.writeUintBE = OwnBuffer.prototype.writeUIntBE = function writeUIntBE(
+  value,
+  offset,
+  byteLength,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   byteLength = byteLength >>> 0
@@ -1660,68 +1663,83 @@ OwnBuffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLengt
 
   let i = byteLength - 1
   let mul = 1
-  this[offset + i] = value & 0xFF
+  this[offset + i] = value & 0xff
   while (--i >= 0 && (mul *= 0x100)) {
-    this[offset + i] = (value / mul) & 0xFF
+    this[offset + i] = (value / mul) & 0xff
   }
 
   return offset + byteLength
 }
 
-OwnBuffer.prototype.writeUint8 =
-OwnBuffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+OwnBuffer.prototype.writeUint8 = OwnBuffer.prototype.writeUInt8 = function writeUInt8(
+  value,
+  offset,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
-  this[offset] = (value & 0xff)
+  this[offset] = value & 0xff
   return offset + 1
 }
 
-OwnBuffer.prototype.writeUint16LE =
-OwnBuffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+OwnBuffer.prototype.writeUint16LE = OwnBuffer.prototype.writeUInt16LE = function writeUInt16LE(
+  value,
+  offset,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
+  this[offset] = value & 0xff
+  this[offset + 1] = value >>> 8
   return offset + 2
 }
 
-OwnBuffer.prototype.writeUint16BE =
-OwnBuffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+OwnBuffer.prototype.writeUint16BE = OwnBuffer.prototype.writeUInt16BE = function writeUInt16BE(
+  value,
+  offset,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
-  this[offset] = (value >>> 8)
-  this[offset + 1] = (value & 0xff)
+  this[offset] = value >>> 8
+  this[offset + 1] = value & 0xff
   return offset + 2
 }
 
-OwnBuffer.prototype.writeUint32LE =
-OwnBuffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+OwnBuffer.prototype.writeUint32LE = OwnBuffer.prototype.writeUInt32LE = function writeUInt32LE(
+  value,
+  offset,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  this[offset + 3] = (value >>> 24)
-  this[offset + 2] = (value >>> 16)
-  this[offset + 1] = (value >>> 8)
-  this[offset] = (value & 0xff)
+  this[offset + 3] = value >>> 24
+  this[offset + 2] = value >>> 16
+  this[offset + 1] = value >>> 8
+  this[offset] = value & 0xff
   return offset + 4
 }
 
-OwnBuffer.prototype.writeUint32BE =
-OwnBuffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+OwnBuffer.prototype.writeUint32BE = OwnBuffer.prototype.writeUInt32BE = function writeUInt32BE(
+  value,
+  offset,
+  noAssert
+) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
-  this[offset] = (value >>> 24)
-  this[offset + 1] = (value >>> 16)
-  this[offset + 2] = (value >>> 8)
-  this[offset + 3] = (value & 0xff)
+  this[offset] = value >>> 24
+  this[offset + 1] = value >>> 16
+  this[offset + 2] = value >>> 8
+  this[offset + 3] = value & 0xff
   return offset + 4
 }
 
-function wrtBigUInt64LE (buf, value, offset, min, max) {
+function wrtBigUInt64LE(buf, value, offset, min, max) {
   checkIntBI(value, min, max, buf, offset, 7)
 
   let lo = Number(value & BigInt(0xffffffff))
@@ -1732,7 +1750,7 @@ function wrtBigUInt64LE (buf, value, offset, min, max) {
   buf[offset++] = lo
   lo = lo >> 8
   buf[offset++] = lo
-  let hi = Number(value >> BigInt(32) & BigInt(0xffffffff))
+  let hi = Number((value >> BigInt(32)) & BigInt(0xffffffff))
   buf[offset++] = hi
   hi = hi >> 8
   buf[offset++] = hi
@@ -1743,7 +1761,7 @@ function wrtBigUInt64LE (buf, value, offset, min, max) {
   return offset
 }
 
-function wrtBigUInt64BE (buf, value, offset, min, max) {
+function wrtBigUInt64BE(buf, value, offset, min, max) {
   checkIntBI(value, min, max, buf, offset, 7)
 
   let lo = Number(value & BigInt(0xffffffff))
@@ -1754,7 +1772,7 @@ function wrtBigUInt64BE (buf, value, offset, min, max) {
   buf[offset + 5] = lo
   lo = lo >> 8
   buf[offset + 4] = lo
-  let hi = Number(value >> BigInt(32) & BigInt(0xffffffff))
+  let hi = Number((value >> BigInt(32)) & BigInt(0xffffffff))
   buf[offset + 3] = hi
   hi = hi >> 8
   buf[offset + 2] = hi
@@ -1765,19 +1783,25 @@ function wrtBigUInt64BE (buf, value, offset, min, max) {
   return offset + 8
 }
 
-OwnBuffer.prototype.writeBigUInt64LE = defineBigIntMethod(function writeBigUInt64LE (value, offset = 0) {
+OwnBuffer.prototype.writeBigUInt64LE = defineBigIntMethod(function writeBigUInt64LE(
+  value,
+  offset = 0
+) {
   return wrtBigUInt64LE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'))
 })
 
-OwnBuffer.prototype.writeBigUInt64BE = defineBigIntMethod(function writeBigUInt64BE (value, offset = 0) {
+OwnBuffer.prototype.writeBigUInt64BE = defineBigIntMethod(function writeBigUInt64BE(
+  value,
+  offset = 0
+) {
   return wrtBigUInt64BE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'))
 })
 
-OwnBuffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+OwnBuffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) {
-    const limit = Math.pow(2, (8 * byteLength) - 1)
+    const limit = Math.pow(2, 8 * byteLength - 1)
 
     checkInt(this, value, offset, byteLength, limit - 1, -limit)
   }
@@ -1785,22 +1809,22 @@ OwnBuffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength,
   let i = 0
   let mul = 1
   let sub = 0
-  this[offset] = value & 0xFF
+  this[offset] = value & 0xff
   while (++i < byteLength && (mul *= 0x100)) {
     if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
       sub = 1
     }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+    this[offset + i] = (((value / mul) >> 0) - sub) & 0xff
   }
 
   return offset + byteLength
 }
 
-OwnBuffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+OwnBuffer.prototype.writeIntBE = function writeIntBE(value, offset, byteLength, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) {
-    const limit = Math.pow(2, (8 * byteLength) - 1)
+    const limit = Math.pow(2, 8 * byteLength - 1)
 
     checkInt(this, value, offset, byteLength, limit - 1, -limit)
   }
@@ -1808,118 +1832,136 @@ OwnBuffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength,
   let i = byteLength - 1
   let mul = 1
   let sub = 0
-  this[offset + i] = value & 0xFF
+  this[offset + i] = value & 0xff
   while (--i >= 0 && (mul *= 0x100)) {
     if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
       sub = 1
     }
-    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+    this[offset + i] = (((value / mul) >> 0) - sub) & 0xff
   }
 
   return offset + byteLength
 }
 
-OwnBuffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+OwnBuffer.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
   if (value < 0) value = 0xff + value + 1
-  this[offset] = (value & 0xff)
+  this[offset] = value & 0xff
   return offset + 1
 }
 
-OwnBuffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+OwnBuffer.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
+  this[offset] = value & 0xff
+  this[offset + 1] = value >>> 8
   return offset + 2
 }
 
-OwnBuffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+OwnBuffer.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
-  this[offset] = (value >>> 8)
-  this[offset + 1] = (value & 0xff)
+  this[offset] = value >>> 8
+  this[offset + 1] = value & 0xff
   return offset + 2
 }
 
-OwnBuffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+OwnBuffer.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
-  this[offset] = (value & 0xff)
-  this[offset + 1] = (value >>> 8)
-  this[offset + 2] = (value >>> 16)
-  this[offset + 3] = (value >>> 24)
+  this[offset] = value & 0xff
+  this[offset + 1] = value >>> 8
+  this[offset + 2] = value >>> 16
+  this[offset + 3] = value >>> 24
   return offset + 4
 }
 
-OwnBuffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+OwnBuffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
   if (value < 0) value = 0xffffffff + value + 1
-  this[offset] = (value >>> 24)
-  this[offset + 1] = (value >>> 16)
-  this[offset + 2] = (value >>> 8)
-  this[offset + 3] = (value & 0xff)
+  this[offset] = value >>> 24
+  this[offset + 1] = value >>> 16
+  this[offset + 2] = value >>> 8
+  this[offset + 3] = value & 0xff
   return offset + 4
 }
 
-OwnBuffer.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE (value, offset = 0) {
-  return wrtBigUInt64LE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'))
+OwnBuffer.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE(
+  value,
+  offset = 0
+) {
+  return wrtBigUInt64LE(
+    this,
+    value,
+    offset,
+    -BigInt('0x8000000000000000'),
+    BigInt('0x7fffffffffffffff')
+  )
 })
 
-OwnBuffer.prototype.writeBigInt64BE = defineBigIntMethod(function writeBigInt64BE (value, offset = 0) {
-  return wrtBigUInt64BE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'))
+OwnBuffer.prototype.writeBigInt64BE = defineBigIntMethod(function writeBigInt64BE(
+  value,
+  offset = 0
+) {
+  return wrtBigUInt64BE(
+    this,
+    value,
+    offset,
+    -BigInt('0x8000000000000000'),
+    BigInt('0x7fffffffffffffff')
+  )
 })
 
-function checkIEEE754 (buf, value, offset, ext, max, min) {
+function checkIEEE754(buf, value, offset, ext, max, min) {
   if (offset + ext > buf.length) throw new RangeError('Index out of range')
   if (offset < 0) throw new RangeError('Index out of range')
 }
 
-function writeFloat (buf, value, offset, littleEndian, noAssert) {
+function writeFloat(buf, value, offset, littleEndian, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) {
-    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e38, -3.4028234663852886e38)
   }
   ieee754Write(buf, value, offset, littleEndian, 23, 4)
   return offset + 4
 }
 
-OwnBuffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+OwnBuffer.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
   return writeFloat(this, value, offset, true, noAssert)
 }
 
-OwnBuffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+OwnBuffer.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
   return writeFloat(this, value, offset, false, noAssert)
 }
 
-function writeDouble (buf, value, offset, littleEndian, noAssert) {
+function writeDouble(buf, value, offset, littleEndian, noAssert) {
   value = +value
   offset = offset >>> 0
   if (!noAssert) {
-    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157e308, -1.7976931348623157e308)
   }
   ieee754Write(buf, value, offset, littleEndian, 52, 8)
   return offset + 8
 }
 
-OwnBuffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+OwnBuffer.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
   return writeDouble(this, value, offset, true, noAssert)
 }
 
-OwnBuffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+OwnBuffer.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
   return writeDouble(this, value, offset, false, noAssert)
 }
 
 // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=OwnBuffer.length)
-OwnBuffer.prototype.copy = function copy (target, targetStart, start, end) {
+OwnBuffer.prototype.copy = function copy(target, targetStart, start, end) {
   if (!OwnBuffer.isBuffer(target)) throw new TypeError('argument should be a Buffer')
   if (!start) start = 0
   if (!end && end !== 0) end = this.length
@@ -1950,11 +1992,7 @@ OwnBuffer.prototype.copy = function copy (target, targetStart, start, end) {
     // Use built-in when available, missing from IE11
     this.copyWithin(targetStart, start, end)
   } else {
-    Uint8Array.prototype.set.call(
-      target,
-      this.subarray(start, end),
-      targetStart
-    )
+    Uint8Array.prototype.set.call(target, this.subarray(start, end), targetStart)
   }
 
   return len
@@ -1964,7 +2002,7 @@ OwnBuffer.prototype.copy = function copy (target, targetStart, start, end) {
 //    OwnBuffer.fill(number[, offset[, end]])
 //    OwnBuffer.fill(buffer[, offset[, end]])
 //    OwnBuffer.fill(string[, offset[, end]][, encoding])
-OwnBuffer.prototype.fill = function fill (val, start, end, encoding) {
+OwnBuffer.prototype.fill = function fill(val, start, end, encoding) {
   // Handle string cases:
   if (typeof val === 'string') {
     if (typeof start === 'string') {
@@ -1983,8 +2021,7 @@ OwnBuffer.prototype.fill = function fill (val, start, end, encoding) {
     }
     if (val.length === 1) {
       const code = val.charCodeAt(0)
-      if ((encoding === 'utf8' && code < 128) ||
-          encoding === 'latin1') {
+      if ((encoding === 'utf8' && code < 128) || encoding === 'latin1') {
         // Fast path: If `val` fits into a single byte, use that numeric value.
         val = code
       }
@@ -2015,13 +2052,10 @@ OwnBuffer.prototype.fill = function fill (val, start, end, encoding) {
       this[i] = val
     }
   } else {
-    const bytes = OwnBuffer.isBuffer(val)
-      ? val
-      : OwnBuffer.from(val, encoding)
+    const bytes = OwnBuffer.isBuffer(val) ? val : OwnBuffer.from(val, encoding)
     const len = bytes.length
     if (len === 0) {
-      throw new TypeError('The value "' + val +
-        '" is invalid for argument "value"')
+      throw new TypeError('The value "' + val + '" is invalid for argument "value"')
     }
     for (i = 0; i < end - start; ++i) {
       this[i + start] = bytes[i % len]
@@ -2036,15 +2070,15 @@ OwnBuffer.prototype.fill = function fill (val, start, end, encoding) {
 
 // Simplified versions from Node, changed for Buffer-only usage
 const errors = {}
-function E (sym, getMessage, Base) {
+function E(sym, getMessage, Base) {
   errors[sym] = class NodeError extends Base {
-    constructor () {
+    constructor() {
       super()
 
       Object.defineProperty(this, 'message', {
         value: getMessage.apply(this, arguments),
         writable: true,
-        configurable: true
+        configurable: true,
       })
 
       // Add the error code to the name to include it in the stack trace.
@@ -2056,38 +2090,45 @@ function E (sym, getMessage, Base) {
       delete this.name
     }
 
-    get code () {
+    get code() {
       return sym
     }
 
-    set code (value) {
+    set code(value) {
       Object.defineProperty(this, 'code', {
         configurable: true,
         enumerable: true,
         value,
-        writable: true
+        writable: true,
       })
     }
 
-    toString () {
+    toString() {
       return `${this.name} [${sym}]: ${this.message}`
     }
   }
 }
 
-E('ERR_BUFFER_OUT_OF_BOUNDS',
+E(
+  'ERR_BUFFER_OUT_OF_BOUNDS',
   function (name) {
     if (name) {
       return `${name} is outside of buffer bounds`
     }
 
     return 'Attempt to access memory outside buffer bounds'
-  }, RangeError)
-E('ERR_INVALID_ARG_TYPE',
+  },
+  RangeError
+)
+E(
+  'ERR_INVALID_ARG_TYPE',
   function (name, actual) {
     return `The "${name}" argument must be of type number. Received type ${typeof actual}`
-  }, TypeError)
-E('ERR_OUT_OF_RANGE',
+  },
+  TypeError
+)
+E(
+  'ERR_OUT_OF_RANGE',
   function (str, range, input) {
     let msg = `The value of "${str}" is out of range.`
     let received = input
@@ -2102,9 +2143,11 @@ E('ERR_OUT_OF_RANGE',
     }
     msg += ` It must be ${range}. Received ${received}`
     return msg
-  }, RangeError)
+  },
+  RangeError
+)
 
-function addNumericalSeparator (val) {
+function addNumericalSeparator(val) {
   let res = ''
   let i = val.length
   const start = val[0] === '-' ? 1 : 0
@@ -2117,14 +2160,14 @@ function addNumericalSeparator (val) {
 // CHECK FUNCTIONS
 // ===============
 
-function checkBounds (buf, offset, byteLength) {
+function checkBounds(buf, offset, byteLength) {
   validateNumber(offset, 'offset')
   if (buf[offset] === undefined || buf[offset + byteLength] === undefined) {
     boundsError(offset, buf.length - (byteLength + 1))
   }
 }
 
-function checkIntBI (value, min, max, buf, offset, byteLength) {
+function checkIntBI(value, min, max, buf, offset, byteLength) {
   if (value > max || value < min) {
     const n = typeof min === 'bigint' ? 'n' : ''
     let range
@@ -2132,8 +2175,9 @@ function checkIntBI (value, min, max, buf, offset, byteLength) {
       if (min === 0 || min === BigInt(0)) {
         range = `>= 0${n} and < 2${n} ** ${(byteLength + 1) * 8}${n}`
       } else {
-        range = `>= -(2${n} ** ${(byteLength + 1) * 8 - 1}${n}) and < 2 ** ` +
-                `${(byteLength + 1) * 8 - 1}${n}`
+        range =
+          `>= -(2${n} ** ${(byteLength + 1) * 8 - 1}${n}) and < 2 ** ` +
+          `${(byteLength + 1) * 8 - 1}${n}`
       }
     } else {
       range = `>= ${min}${n} and <= ${max}${n}`
@@ -2143,13 +2187,13 @@ function checkIntBI (value, min, max, buf, offset, byteLength) {
   checkBounds(buf, offset, byteLength)
 }
 
-function validateNumber (value, name) {
+function validateNumber(value, name) {
   if (typeof value !== 'number') {
     throw new errors.ERR_INVALID_ARG_TYPE(name, 'number', value)
   }
 }
 
-function boundsError (value, length, type) {
+function boundsError(value, length, type) {
   if (Math.floor(value) !== value) {
     validateNumber(value, type)
     throw new errors.ERR_OUT_OF_RANGE(type || 'offset', 'an integer', value)
@@ -2159,9 +2203,7 @@ function boundsError (value, length, type) {
     throw new errors.ERR_BUFFER_OUT_OF_BOUNDS()
   }
 
-  throw new errors.ERR_OUT_OF_RANGE(type || 'offset',
-                                    `>= ${type ? 1 : 0} and <= ${length}`,
-                                    value)
+  throw new errors.ERR_OUT_OF_RANGE(type || 'offset', `>= ${type ? 1 : 0} and <= ${length}`, value)
 }
 
 // HELPER FUNCTIONS
@@ -2169,7 +2211,7 @@ function boundsError (value, length, type) {
 
 const INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g
 
-function base64clean (str) {
+function base64clean(str) {
   // Node takes equal signs as end of the Base64 encoding
   str = str.split('=')[0]
   // Node strips out invalid characters like \n and \t from the string, base64-js does not
@@ -2183,7 +2225,7 @@ function base64clean (str) {
   return str
 }
 
-function utf8ToBytes (string, units) {
+function utf8ToBytes(string, units) {
   units = units || Infinity
   let codePoint
   const length = string.length
@@ -2194,17 +2236,17 @@ function utf8ToBytes (string, units) {
     codePoint = string.charCodeAt(i)
 
     // is surrogate component
-    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+    if (codePoint > 0xd7ff && codePoint < 0xe000) {
       // last char was a lead
       if (!leadSurrogate) {
         // no lead yet
-        if (codePoint > 0xDBFF) {
+        if (codePoint > 0xdbff) {
           // unexpected trail
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          if ((units -= 3) > -1) bytes.push(0xef, 0xbf, 0xbd)
           continue
         } else if (i + 1 === length) {
           // unpaired lead
-          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          if ((units -= 3) > -1) bytes.push(0xef, 0xbf, 0xbd)
           continue
         }
 
@@ -2215,17 +2257,17 @@ function utf8ToBytes (string, units) {
       }
 
       // 2 leads in a row
-      if (codePoint < 0xDC00) {
-        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+      if (codePoint < 0xdc00) {
+        if ((units -= 3) > -1) bytes.push(0xef, 0xbf, 0xbd)
         leadSurrogate = codePoint
         continue
       }
 
       // valid surrogate pair
-      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+      codePoint = (((leadSurrogate - 0xd800) << 10) | (codePoint - 0xdc00)) + 0x10000
     } else if (leadSurrogate) {
       // valid bmp char, but last char was a lead
-      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+      if ((units -= 3) > -1) bytes.push(0xef, 0xbf, 0xbd)
     }
 
     leadSurrogate = null
@@ -2236,24 +2278,21 @@ function utf8ToBytes (string, units) {
       bytes.push(codePoint)
     } else if (codePoint < 0x800) {
       if ((units -= 2) < 0) break
-      bytes.push(
-        codePoint >> 0x6 | 0xC0,
-        codePoint & 0x3F | 0x80
-      )
+      bytes.push((codePoint >> 0x6) | 0xc0, (codePoint & 0x3f) | 0x80)
     } else if (codePoint < 0x10000) {
       if ((units -= 3) < 0) break
       bytes.push(
-        codePoint >> 0xC | 0xE0,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
+        (codePoint >> 0xc) | 0xe0,
+        ((codePoint >> 0x6) & 0x3f) | 0x80,
+        (codePoint & 0x3f) | 0x80
       )
     } else if (codePoint < 0x110000) {
       if ((units -= 4) < 0) break
       bytes.push(
-        codePoint >> 0x12 | 0xF0,
-        codePoint >> 0xC & 0x3F | 0x80,
-        codePoint >> 0x6 & 0x3F | 0x80,
-        codePoint & 0x3F | 0x80
+        (codePoint >> 0x12) | 0xf0,
+        ((codePoint >> 0xc) & 0x3f) | 0x80,
+        ((codePoint >> 0x6) & 0x3f) | 0x80,
+        (codePoint & 0x3f) | 0x80
       )
     } else {
       throw new Error('Invalid code point')
@@ -2263,16 +2302,16 @@ function utf8ToBytes (string, units) {
   return bytes
 }
 
-function asciiToBytes (str) {
+function asciiToBytes(str) {
   const byteArray = []
   for (let i = 0; i < str.length; ++i) {
     // Node's code seems to be doing this and not & 0x7F..
-    byteArray.push(str.charCodeAt(i) & 0xFF)
+    byteArray.push(str.charCodeAt(i) & 0xff)
   }
   return byteArray
 }
 
-function utf16leToBytes (str, units) {
+function utf16leToBytes(str, units) {
   let c, hi, lo
   const byteArray = []
   for (let i = 0; i < str.length; ++i) {
@@ -2288,14 +2327,14 @@ function utf16leToBytes (str, units) {
   return byteArray
 }
 
-function base64ToBytes (str) {
+function base64ToBytes(str) {
   return toByteArray(base64clean(str))
 }
 
-function blitBuffer (src, dst, offset, length) {
+function blitBuffer(src, dst, offset, length) {
   let i
   for (i = 0; i < length; ++i) {
-    if ((i + offset >= dst.length) || (i >= src.length)) break
+    if (i + offset >= dst.length || i >= src.length) break
     dst[i + offset] = src[i]
   }
   return i
@@ -2304,12 +2343,16 @@ function blitBuffer (src, dst, offset, length) {
 // ArrayBuffer or Uint8Array objects from other contexts (i.e. iframes) do not pass
 // the `instanceof` check but they should be treated as of that type.
 // See: https://github.com/feross/buffer/issues/166
-function isInstance (obj, type) {
-  return obj instanceof type ||
-    (obj != null && obj.constructor != null && obj.constructor.name != null &&
+function isInstance(obj, type) {
+  return (
+    obj instanceof type ||
+    (obj != null &&
+      obj.constructor != null &&
+      obj.constructor.name != null &&
       obj.constructor.name === type.name)
+  )
 }
-function numberIsNaN (obj) {
+function numberIsNaN(obj) {
   // For IE11 support
   return obj !== obj // eslint-disable-line no-self-compare
 }
@@ -2329,11 +2372,11 @@ const hexSliceLookupTable = (function () {
 })()
 
 // Return not function with Error if BigInt not supported
-function defineBigIntMethod (fn) {
+function defineBigIntMethod(fn) {
   return typeof BigInt === 'undefined' ? BufferBigIntNotDefined : fn
 }
 
-function BufferBigIntNotDefined () {
+function BufferBigIntNotDefined() {
   throw new Error('BigInt not supported')
 }
 

@@ -4,16 +4,13 @@ import Flow from './Flow'
 import { BigNumber } from 'bignumber.js'
 import * as cryptoLib from 'crypto'
 
-
 class AtomicAB2UTXO extends Flow {
-
   //@ts-ignore: strictNullChecks
   utxoCoin: string = null
   isUTXOSide: boolean = false
 
   abBlockchain: any // @to-do - make inmlementation for ABswap
   utxoBlockchain: any // @to-do - make implementation for UTXOSwap
-
 
   constructor(swap) {
     super(swap)
@@ -46,89 +43,83 @@ class AtomicAB2UTXO extends Flow {
     if (!this.isTakerMakerModel) return
     if (this.isTaker()) {
       flow.swap.room.on('request utxo script', () => {
-        const {
-          utxoScriptValues,
-          secretHash,
-          secret,
-        } = flow.state
+        const { utxoScriptValues, secretHash, secret } = flow.state
         if (secret && secretHash) {
           flow.swap.room.sendMessage({
             event: 'utxo script generated',
             data: {
               utxoScriptValues,
               secretHash,
-            }
+            },
           })
         }
       })
     } else {
       flow.swap.room.on('utxo script generated', (data) => {
-        const {
-          utxoScriptValues,
-          secretHash,
-        } = data
+        const { utxoScriptValues, secretHash } = data
 
-        flow.setState({
-          utxoScriptValues,
-          secretHash,
-        }, true)
+        flow.setState(
+          {
+            utxoScriptValues,
+            secretHash,
+          },
+          true
+        )
       })
     }
   }
 
   getStepNumbers() {
     switch (true) {
-      case ( // Это не модель taker-maker - сторона utxo, или это taker-maker, сторона utxo, и это taker (создает первый utxo скрипт)
-        (!this.isTakerMakerModel && this.isUTXOSide)
-        ||
-        (this.isTakerMakerModel && this.isUTXOSide && this.isTaker())
-      ): return {
-          'sign': 1,
+      case // Это не модель taker-maker - сторона utxo, или это taker-maker, сторона utxo, и это taker (создает первый utxo скрипт)
+      (!this.isTakerMakerModel && this.isUTXOSide) ||
+        (this.isTakerMakerModel && this.isUTXOSide && this.isTaker()):
+        return {
+          sign: 1,
           'submit-secret': 2,
           'sync-balance': 3,
           'lock-utxo': 4,
           'wait-lock-eth': 5,
           'withdraw-eth': 6,
-          'finish': 7,
-          'end': 8,
+          finish: 7,
+          end: 8,
         }
-      case ( // Это не модель taker-maker - сторона ab, или это taker-maker, сторона ab, и это maker (ждет создание utxo скрипта)
-        (!this.isTakerMakerModel && !this.isUTXOSide)
-        ||
-        (this.isTakerMakerModel && !this.isUTXOSide && this.isMaker())
-      ): return {
-          'sign': 1,
+      case // Это не модель taker-maker - сторона ab, или это taker-maker, сторона ab, и это maker (ждет создание utxo скрипта)
+      (!this.isTakerMakerModel && !this.isUTXOSide) ||
+        (this.isTakerMakerModel && !this.isUTXOSide && this.isMaker()):
+        return {
+          sign: 1,
           'wait-lock-utxo': 2,
           'verify-script': 3,
           'sync-balance': 4,
           'lock-eth': 5,
           'wait-withdraw-eth': 6, // aka getSecret
           'withdraw-utxo': 7,
-          'finish': 8,
-          'end': 9,
+          finish: 8,
+          end: 9,
         }
-      case ( // Это модель taker-maker, сторона ab, мы taker - создаем контракт ab
-        this.isTakerMakerModel && !this.isUTXOSide && this.isTaker()
-      ): return {
-          'sign': 1,
+      case // Это модель taker-maker, сторона ab, мы taker - создаем контракт ab
+      this.isTakerMakerModel && !this.isUTXOSide && this.isTaker():
+        return {
+          sign: 1,
           'sync-balance': 2,
           'lock-eth': 3,
           'wait-lock-utxo': 4,
           'withdraw-utxo': 5,
-          'finish': 6,
-          'end': 7,
+          finish: 6,
+          end: 7,
         }
-      case ( // Это модель taker-maker, сторона utxo, мы maker - ждем создание контракта ab
-        this.isTakerMakerModel && this.isUTXOSide && this.isMaker()
-      ): return {
-          'sign': 1,
+      case // Это модель taker-maker, сторона utxo, мы maker - ждем создание контракта ab
+      this.isTakerMakerModel && this.isUTXOSide && this.isMaker():
+        return {
+          sign: 1,
           'sync-balance': 2,
           'wait-lock-eth': 3,
           'lock-utxo': 4,
           'wait-withdraw-utxo': 5,
           'withdraw-eth': 6,
-          'finish': 7,
-          'end': 8,
+          finish: 7,
+          end: 8,
         }
     }
   }
@@ -138,15 +129,16 @@ class AtomicAB2UTXO extends Flow {
       this.swap.room.sendMessage({
         event: 'swap sign',
       })
-      this.setState({
-        isParticipantSigned: true,
-      }, true)
+      this.setState(
+        {
+          isParticipantSigned: true,
+        },
+        true
+      )
     })
 
     const isSignOk = await util.helpers.repeatAsyncUntilResult(() => {
-      const {
-        isParticipantSigned,
-      } = this.state
+      const { isParticipantSigned } = this.state
 
       this.swap.processMetamask()
       this.swap.room.sendMessage({
@@ -173,10 +165,12 @@ class AtomicAB2UTXO extends Flow {
         this.tryRefund()
       })
 
-      this.setState({
-        isParticipantSigned: true,
-      }, true)
-
+      this.setState(
+        {
+          isParticipantSigned: true,
+        },
+        true
+      )
     })
 
     this.swap.room.once('swap exists', () => {
@@ -189,9 +183,7 @@ class AtomicAB2UTXO extends Flow {
     })
 
     const isSignOk = await util.helpers.repeatAsyncUntilResult(() => {
-      const {
-        isParticipantSigned,
-      } = this.state
+      const { isParticipantSigned } = this.state
 
       this.swap.processMetamask()
       this.swap.room.sendMessage({
@@ -208,19 +200,25 @@ class AtomicAB2UTXO extends Flow {
 
   waitUTXOScriptCreated() {
     const flow = this
-    this.swap.room.on('create utxo script', ({ scriptValues, utxoScriptCreatingTransactionHash }) => {
-      const { step } = flow.state
+    this.swap.room.on(
+      'create utxo script',
+      ({ scriptValues, utxoScriptCreatingTransactionHash }) => {
+        const { step } = flow.state
 
-      if (step >= 3) {
-        return
+        if (step >= 3) {
+          return
+        }
+
+        flow.finishStep(
+          {
+            secretHash: scriptValues.secretHash,
+            utxoScriptValues: scriptValues,
+            utxoScriptCreatingTransactionHash,
+          },
+          { step: 'wait-lock-utxo', silentError: true }
+        )
       }
-
-      flow.finishStep({
-        secretHash: scriptValues.secretHash,
-        utxoScriptValues: scriptValues,
-        utxoScriptCreatingTransactionHash,
-      }, { step: 'wait-lock-utxo', silentError: true })
-    })
+    )
 
     this.swap.room.sendMessage({
       event: 'request utxo script',
@@ -228,28 +226,18 @@ class AtomicAB2UTXO extends Flow {
   }
 
   async waitUTXOScriptFunded(): Promise<boolean> {
-    const {
-      isUTXOScriptOk: isFunded,
-    } = this.state
+    const { isUTXOScriptOk: isFunded } = this.state
     if (isFunded) return true
 
     const flow = this
-    const {
-      participant,
-      buyAmount,
-      sellAmount,
-      waitConfirm,
-    } = flow.swap
+    const { participant, buyAmount, sellAmount, waitConfirm } = flow.swap
 
     const { secretHash } = this.state
 
     const utcNow = () => Math.floor(Date.now() / 1000)
 
     const isUTXOScriptOk = await util.helpers.repeatAsyncUntilResult(async (stopRepeat) => {
-      const {
-        utxoScriptValues,
-      } = flow.state
-
+      const { utxoScriptValues } = flow.state
 
       const scriptCheckError = await this.utxoBlockchain.checkScript(utxoScriptValues, {
         value: buyAmount,
@@ -263,15 +251,17 @@ class AtomicAB2UTXO extends Flow {
 
       if (scriptCheckError) {
         if (/Expected script lockTime/.test(scriptCheckError)) {
-          console.error(`${this.utxoCoin} script check error: ${this.utxoCoin} was refunded`, scriptCheckError)
+          console.error(
+            `${this.utxoCoin} script check error: ${this.utxoCoin} was refunded`,
+            scriptCheckError
+          )
           console.log('>>>>> STOP SWAP PROCESS - FAIL CHECK SCRIPT LOCK TIME')
           flow.stopSwapProcess()
           stopRepeat()
         } else if (/Expected script value/.test(scriptCheckError)) {
           console.warn(`${this.utxoCoin} script check: waiting balance`)
         } else if (
-          /Can be replace by fee. Wait confirm/.test(scriptCheckError)
-          ||
+          /Can be replace by fee. Wait confirm/.test(scriptCheckError) ||
           /Wait confirm tx/.test(scriptCheckError)
         ) {
           flow.swap.room.sendMessage({
@@ -291,9 +281,12 @@ class AtomicAB2UTXO extends Flow {
     if (!isUTXOScriptOk) {
       return false
     } else {
-      flow.setState({
-        isUTXOScriptOk,
-      }, true)
+      flow.setState(
+        {
+          isUTXOScriptOk,
+        },
+        true
+      )
       return true
     }
   }
@@ -313,17 +306,18 @@ class AtomicAB2UTXO extends Flow {
       throw new Error(`No script, cannot verify`)
     }
 
-    this.finishStep({
-      utxoScriptVerified: true,
-    }, { step: 'verify-script' })
+    this.finishStep(
+      {
+        utxoScriptVerified: true,
+      },
+      { step: 'verify-script' }
+    )
 
     return true
   }
 
   getScriptCreateTx() {
-    const {
-      utxoScriptCreatingTransactionHash,
-    } = this.state
+    const { utxoScriptCreatingTransactionHash } = this.state
     return utxoScriptCreatingTransactionHash
   }
 
@@ -358,7 +352,6 @@ class AtomicAB2UTXO extends Flow {
       console.log('>>>>> STOP SWAP PROCESS - SWAP EXIST ON SIGN')
       this.stopSwapProcess()
     } else {
-
       this.setState({
         isSignFetching: true,
       })
@@ -379,9 +372,12 @@ class AtomicAB2UTXO extends Flow {
         event: 'swap sign',
       })
 
-      this.finishStep({
-        isMeSigned: true,
-      }, { step: 'sign', silentError: true })
+      this.finishStep(
+        {
+          isMeSigned: true,
+        },
+        { step: 'sign', silentError: true }
+      )
 
       return true
     }
@@ -399,7 +395,7 @@ class AtomicAB2UTXO extends Flow {
       withdrawRequestAccepted: true,
     })
 
-    this.swap.room.once('do withdraw', async ({secret}) => {
+    this.swap.room.once('do withdraw', async ({ secret }) => {
       try {
         const data = {
           participantAddress: this.app.getParticipantEthAddress(flow.swap),
@@ -411,7 +407,7 @@ class AtomicAB2UTXO extends Flow {
             event: 'withdraw ready',
             data: {
               ethSwapWithdrawTransactionHash: hash,
-            }
+            },
           })
         })
       } catch (err) {
@@ -420,7 +416,7 @@ class AtomicAB2UTXO extends Flow {
     })
 
     this.swap.room.sendMessage({
-      event: 'accept withdraw request'
+      event: 'accept withdraw request',
     })
   }
 
@@ -452,7 +448,7 @@ class AtomicAB2UTXO extends Flow {
         event: 'do withdraw',
         data: {
           secret: flow.state.secret,
-        }
+        },
       })
     })
 
@@ -470,12 +466,12 @@ class AtomicAB2UTXO extends Flow {
 
         const destinationAddress = this.swap.destinationBuyAddress
         //@ts-ignore: strictNullChecks
-        const destAddress = (destinationAddress) ? destinationAddress : this.app.services.auth.accounts.btc.getAddress()
+        const destAddress = destinationAddress
+          ? destinationAddress
+          : this.app.services.auth.accounts.btc.getAddress()
 
         const hasWithdraw = await this.utxoBlockchain.checkWithdraw(scriptAddress)
-        if (hasWithdraw
-          && hasWithdraw.address.toLowerCase() !== destAddress.toLowerCase()
-        ) {
+        if (hasWithdraw && hasWithdraw.address.toLowerCase() !== destAddress.toLowerCase()) {
           return true
         }
       }
@@ -485,7 +481,9 @@ class AtomicAB2UTXO extends Flow {
 
   generateSecret() {
     const secret = cryptoLib.randomBytes(32).toString('hex')
-    const secretHash = this.app.env.bitcoin.crypto.ripemd160(Buffer.from(secret, 'hex')).toString('hex')
+    const secretHash = this.app.env.bitcoin.crypto
+      .ripemd160(Buffer.from(secret, 'hex'))
+      .toString('hex')
     const _secret = `0x${secret.replace(/^0x/, '')}`
 
     return {
@@ -495,23 +493,23 @@ class AtomicAB2UTXO extends Flow {
   }
 
   submitSecret() {
-    const {
-      isParticipantSigned,
-    } = this.state
+    const { isParticipantSigned } = this.state
     // @to-do - check destinationBuyAddress
-    if (this.state.secret) { return }
+    if (this.state.secret) {
+      return
+    }
     if (isParticipantSigned) {
-      const {
-        secret,
-        secretHash,
-      } = this.generateSecret()
+      const { secret, secretHash } = this.generateSecret()
 
       /* Secret hash generated - create BTC script - and only after this notify other part */
-      this.createWorkUTXOScript(secretHash);
-      this.finishStep({
-        secret,
-        secretHash,
-      }, { step: 'submit-secret' })
+      this.createWorkUTXOScript(secretHash)
+      this.finishStep(
+        {
+          secret,
+          secretHash,
+        },
+        { step: 'submit-secret' }
+      )
     } else {
       if (!this.state.isParticipantSigned) {
         throw new Error(`Cannot proceed: participant not signed. step=${this.state.step}`)
@@ -531,12 +529,16 @@ class AtomicAB2UTXO extends Flow {
     const getLockTime = () => utcNow() + 60 * 60 * 3 // 3 hours from now
 
     const scriptValues = {
-      secretHash:         secretHash,
+      secretHash: secretHash,
       //@ts-ignore: strictNullChecks
-      ownerPublicKey:     (isOwner) ? this.app.services.auth.accounts[this.utxoCoin].getPublicKey() : participant[this.utxoCoin].publicKey,
+      ownerPublicKey: isOwner
+        ? this.app.services.auth.accounts[this.utxoCoin].getPublicKey()
+        : participant[this.utxoCoin].publicKey,
       //@ts-ignore: strictNullChecks
-      recipientPublicKey: (isOwner) ? participant[this.utxoCoin].publicKey : this.app.services.auth.accounts[this.utxoCoin].getPublicKey(),
-      lockTime:           getLockTime(),
+      recipientPublicKey: isOwner
+        ? participant[this.utxoCoin].publicKey
+        : this.app.services.auth.accounts[this.utxoCoin].getPublicKey(),
+      lockTime: getLockTime(),
     }
 
     const { scriptAddress } = this.utxoBlockchain.createScript(scriptValues)
@@ -545,14 +547,12 @@ class AtomicAB2UTXO extends Flow {
       scriptAddress: scriptAddress,
       utxoScriptValues: scriptValues,
       scriptBalance: 0,
-      scriptUnspendBalance: 0
+      scriptUnspendBalance: 0,
     })
   }
 
   async syncBalance(): Promise<void> {
-    return (this.isUTXOSide)
-      ? this.syncBalanceUTXO()
-      : this.syncBalanceAB()
+    return this.isUTXOSide ? this.syncBalanceUTXO() : this.syncBalanceAB()
   }
 
   async syncBalanceAB(): Promise<void> {
@@ -562,9 +562,7 @@ class AtomicAB2UTXO extends Flow {
       isBalanceFetching: true,
     })
 
-    const balance = await this.abBlockchain.fetchBalance(
-      this.app.getMyEthAddress()
-    )
+    const balance = await this.abBlockchain.fetchBalance(this.app.getMyEthAddress())
     const isEnoughMoney = sellAmount.isLessThanOrEqualTo(balance)
 
     const stateData = {
@@ -575,8 +573,7 @@ class AtomicAB2UTXO extends Flow {
 
     if (isEnoughMoney) {
       this.finishStep(stateData, { step: 'sync-balance' })
-    }
-    else {
+    } else {
       this.setState(stateData, true)
     }
   }
@@ -591,7 +588,11 @@ class AtomicAB2UTXO extends Flow {
     //@ts-ignore: strictNullChecks
     const utxoAddress = this.app.services.auth.accounts[this.utxoCoin].getAddress()
 
-    const txFee = await this.utxoBlockchain.estimateFeeValue({ method: 'swap', fixed: true, address: utxoAddress })
+    const txFee = await this.utxoBlockchain.estimateFeeValue({
+      method: 'swap',
+      fixed: true,
+      address: utxoAddress,
+    })
     const unspents = await this.utxoBlockchain.fetchUnspents(utxoAddress)
     const totalUnspent = unspents.reduce((summ, { satoshis }) => summ + satoshis, 0)
     const balance = new BigNumber(totalUnspent).dividedBy(1e8)
@@ -619,6 +620,5 @@ class AtomicAB2UTXO extends Flow {
     return scriptAddress
   }
 }
-
 
 export default AtomicAB2UTXO

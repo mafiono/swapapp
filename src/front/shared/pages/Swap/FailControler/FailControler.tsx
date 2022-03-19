@@ -12,7 +12,7 @@ export default class FailControler extends Component<any, any> {
     const { ethAddress, message } = this.props
 
     return (
-      <div styleName="FailControler" >
+      <div styleName="FailControler">
         <CopyToClipboard text={ethAddress}>
           <div>
             <div styleName="warning">

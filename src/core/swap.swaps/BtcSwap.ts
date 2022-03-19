@@ -1,7 +1,5 @@
 import UTXOBlockchain from './UTXOBlockchain'
 
-
-
 class BtcSwap extends UTXOBlockchain {
   constructor(options) {
     super({
@@ -18,6 +16,5 @@ class BtcSwap extends UTXOBlockchain {
     })
   }
 }
-
 
 export default BtcSwap

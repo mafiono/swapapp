@@ -12,7 +12,6 @@ const amount = 50_000e-8
 jest.setTimeout(150 * 1000)
 
 describe('Send', () => {
-
   test('BTC', async () => {
     const { browser, page } = await createBrowser()
 
@@ -26,10 +25,9 @@ describe('Send', () => {
 
       await timeOut(3 * 1000)
 
-      const recoveredBtcAddress = await page.$eval('#btcAddress', el => el.textContent)
+      const recoveredBtcAddress = await page.$eval('#btcAddress', (el) => el.textContent)
 
       expect(recoveredBtcAddress).toBe(testWallets.btcToEthTokenMTaker.address)
-
     } catch (error) {
       await takeScreenshot(page, 'SendBTC_RestoreWalletError')
       await browser.close()
@@ -61,12 +59,11 @@ describe('Send', () => {
       })
 
       await page.waitForSelector('#txAmout', { timeout: 60 * 1000 })
-      const btcTxAmout  = await page.$eval('#txAmout', el => el.textContent)
+      const btcTxAmout = await page.$eval('#txAmout', (el) => el.textContent)
 
       await takeScreenshot(page, 'SendBTC_TxInfo')
 
       expect(btcTxAmout).toContain(amount.toString())
-
     } catch (error) {
       await takeScreenshot(page, 'SendBTCError')
       await browser.close()
@@ -75,6 +72,5 @@ describe('Send', () => {
     }
 
     await browser.close()
-
   })
 })

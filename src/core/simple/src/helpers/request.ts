@@ -5,7 +5,6 @@ const responseQuery = {}
 const responseQueryTimers = {}
 const responseQueryTicks = 10
 
-
 const responseQueryInit = (queryName) => {
   if (!responseQuery[queryName]) responseQuery[queryName] = []
   if (!responseQueryTimers[queryName]) {
@@ -18,26 +17,28 @@ const responseQueryInit = (queryName) => {
 const responseCacheGetKey = (req, opts) => `${opts.method}-${opts.endpoint}`
 
 const responseCacheGet = (req, opts) => {
-  const cacheKey =  responseCacheGetKey(req, opts)
+  const cacheKey = responseCacheGetKey(req, opts)
 
-  if (opts
-    && opts.cacheResponse
-    && responseCacheStorage[cacheKey]
-    && ((responseCacheStorage[cacheKey].cacheResponseCreateTime + responseCacheStorage[cacheKey].cacheResponse) >= new Date().getTime())
+  if (
+    opts &&
+    opts.cacheResponse &&
+    responseCacheStorage[cacheKey] &&
+    responseCacheStorage[cacheKey].cacheResponseCreateTime +
+      responseCacheStorage[cacheKey].cacheResponse >=
+      new Date().getTime()
   ) {
     return responseCacheStorage[cacheKey]
-  } return false
+  }
+  return false
 }
 
 const responseCacheGetTimeout = (req, opts) => {
-  const cacheKey =  responseCacheGetKey(req, opts)
+  const cacheKey = responseCacheGetKey(req, opts)
 
-  if (opts
-    && opts.cacheResponse
-    && responseCacheStorage[cacheKey]
-  ) {
+  if (opts && opts.cacheResponse && responseCacheStorage[cacheKey]) {
     return responseCacheStorage[cacheKey]
-  } return false
+  }
+  return false
 }
 
 const responseCacheAdd = (req, opts, resData) => {
@@ -60,27 +61,26 @@ const responseQueryWorker = (queryName) => {
       req,
       opts,
       opts: {
-        inQuery: {
-          delay,
-        },
+        inQuery: { delay },
       },
       fulfill: onResolve,
       reject: onError,
     } = queryChunk
 
     const debug = `${opts.method.toUpperCase()} ${opts.endpoint}`
-    createResponseHandler(req, opts).then((answer) => {
-      onResolve(answer)
-      responseQueryTimers[queryName] = setTimeout(() => {
-        responseQueryWorker(queryName)
-      }, (delay || responseQueryTicks) )
-
-    }).catch((error) => {
-      onError(error)
-      responseQueryTimers[queryName] = setTimeout(() => {
-        responseQueryWorker(queryName)
-      }, (delay || responseQueryTicks) )
-    })
+    createResponseHandler(req, opts)
+      .then((answer) => {
+        onResolve(answer)
+        responseQueryTimers[queryName] = setTimeout(() => {
+          responseQueryWorker(queryName)
+        }, delay || responseQueryTicks)
+      })
+      .catch((error) => {
+        onError(error)
+        responseQueryTimers[queryName] = setTimeout(() => {
+          responseQueryWorker(queryName)
+        }, delay || responseQueryTicks)
+      })
   } else {
     responseQueryTimers[queryName] = setTimeout(() => {
       responseQueryWorker(queryName)
@@ -125,25 +125,25 @@ const createResponseHandler = (req, opts) => {
   }
 
   return new Promise((fulfill, reject) => {
-    req.then( answer => {
-      if (opts.cacheResponse) {
-        responseCacheAdd(req, opts, answer)
-      }
-      fulfill(answer)
-    })
-    .catch( error => {
-      if (opts.cacheOnFail) {
-        const cachedData = responseCacheGetTimeout(req, opts)
-        if (cachedData) {
-          fulfill(cachedData.resData)
-          return
+    req
+      .then((answer) => {
+        if (opts.cacheResponse) {
+          responseCacheAdd(req, opts, answer)
         }
-      }
-      reject(error)
-    })
+        fulfill(answer)
+      })
+      .catch((error) => {
+        if (opts.cacheOnFail) {
+          const cachedData = responseCacheGetTimeout(req, opts)
+          if (cachedData) {
+            fulfill(cachedData.resData)
+            return
+          }
+        }
+        reject(error)
+      })
   })
 }
-
 
 const defaultOptions = {
   sameOrigin: false,
@@ -173,7 +173,7 @@ const sendRequest = (options) => {
 
   if (opts.timeout) {
     req.timeout({
-      response: 5000,  // Wait 5 seconds for the server to start sending,
+      response: 5000, // Wait 5 seconds for the server to start sending,
       deadline: 60000, // but allow 1 minute for the file to finish loading.
       ...opts.timeout,
     })
@@ -195,7 +195,6 @@ const sendRequest = (options) => {
 }
 
 const requestByMethod = (method) => (endpoint, opts) => sendRequest({ ...opts, endpoint, method })
-
 
 export default {
   get: requestByMethod('get'),

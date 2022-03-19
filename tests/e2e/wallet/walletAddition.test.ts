@@ -1,11 +1,5 @@
 import puppeteer from 'puppeteer'
-import {
-  createBrowser,
-  addAssetToWallet,
-  takeScreenshot,
-  clickOn,
-  timeOut,
-} from '../utils'
+import { createBrowser, addAssetToWallet, takeScreenshot, clickOn, timeOut } from '../utils'
 
 jest.setTimeout(250 * 1000)
 
@@ -25,7 +19,7 @@ describe('Adding coins', () => {
   async function checkWalletDisplay(params) {
     const { page, name, expectedTitle } = params
 
-    const walletTitle = await page.$eval(`#${name}WalletTitle`, el => el.textContent)
+    const walletTitle = await page.$eval(`#${name}WalletTitle`, (el) => el.textContent)
 
     if (walletTitle !== expectedTitle) {
       throw new Error(`incorrect display for ${name.toUpperCase()} wallet`)

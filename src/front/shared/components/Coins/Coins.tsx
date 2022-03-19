@@ -22,4 +22,3 @@ const Coins = (props: ComponentProps) => {
 }
 
 export default CSSModules(Coins, styles)
-

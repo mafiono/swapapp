@@ -24,28 +24,29 @@ export default class CurrencyList extends Component<any, any> {
     const { target } = params
     let { currency, address, tokenKey } = target
 
-    this.setState({
-      isAssetsOpen: false,
-    }, () => {
-      const {
-        history,
-        intl: { locale },
-      } = this.props
+    this.setState(
+      {
+        isAssetsOpen: false,
+      },
+      () => {
+        const {
+          history,
+          intl: { locale },
+        } = this.props
 
-      switch (currency.toLowerCase()) {
-        case 'btc (multisig)':
-        case 'btc (pin-protected)':
-          currency = 'btc'
+        switch (currency.toLowerCase()) {
+          case 'btc (multisig)':
+          case 'btc (pin-protected)':
+            currency = 'btc'
+        }
+
+        const newPathName = `${tokenKey ? `/token/${tokenKey}` : `/${currency}`}/${address}/send`
+
+        if (history.location.pathname !== newPathName) {
+          history.push(localisedUrl(locale, newPathName))
+        }
       }
-
-      const newPathName = `${tokenKey ? `/token/${tokenKey}` : `/${currency}`}/${address}/send`
-
-      if (history.location.pathname !== newPathName) {
-        history.push(
-          localisedUrl(locale, newPathName)
-        )
-      }
-    })
+    )
   }
 
   closeList = () => {
@@ -68,18 +69,10 @@ export default class CurrencyList extends Component<any, any> {
   }
 
   render() {
-    const {
-      selectedCurrency,
-      currentBalance,
-      currency,
-      activeFiat,
-      tableRows,
-      currentAddress,
-    } = this.props
+    const { selectedCurrency, currentBalance, currency, activeFiat, tableRows, currentAddress } =
+      this.props
 
-    const {
-      isAssetsOpen,
-    } = this.state
+    const { isAssetsOpen } = this.state
 
     const standard = selectedCurrency.itemCurrency?.standard
     const fiatBalance = selectedCurrency?.infoAboutCurrency?.price_fiat
@@ -89,7 +82,7 @@ export default class CurrencyList extends Component<any, any> {
     return (
       <OutsideClick outsideAction={this.closeList}>
         <div
-          id='withdrawCurrencyList'
+          id="withdrawCurrencyList"
           styleName="customSelectValue"
           onClick={this.toggleListDisplay}
         >
@@ -132,7 +125,7 @@ export default class CurrencyList extends Component<any, any> {
           <div styleName="customSelectList">
             {tableRows.map((item, index) => {
               if (!user.isCorrectWalletToShow(item)) return
-              
+
               const {
                 baseCurrency,
                 currency,
@@ -153,7 +146,9 @@ export default class CurrencyList extends Component<any, any> {
               }${currency.toLowerCase()}`
 
               return (
-                <div id={`${itemId}Send`} key={index}
+                <div
+                  id={`${itemId}Send`}
+                  key={index}
                   styleName={cx('customSelectListItem customSelectValue', {
                     disabled: !balance || balanceError,
                   })}
@@ -171,7 +166,7 @@ export default class CurrencyList extends Component<any, any> {
                       {isMobile ? <PartOfAddress address={address} withoutLink /> : ''}
                     </span>
                   </div>
-   
+
                   <div styleName="amount">
                     <span>
                       <span id={`${itemId}CryptoBalance`}>
@@ -202,4 +197,3 @@ export default class CurrencyList extends Component<any, any> {
     )
   }
 }
-

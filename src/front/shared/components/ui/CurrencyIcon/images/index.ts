@@ -24,7 +24,6 @@ import eurs from './eurs.svg'
 import ghost from './ghost.svg'
 import next from './next.svg'
 
-
 export default {
   btc,
   'btc (multisig)': btc,

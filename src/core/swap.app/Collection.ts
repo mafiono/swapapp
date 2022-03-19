@@ -1,5 +1,4 @@
 class Collection {
-
   items: any[]
   itemIds: any
 
@@ -127,6 +126,5 @@ class Collection {
     return Boolean(this.getByKey(key))
   }
 }
-
 
 export default Collection

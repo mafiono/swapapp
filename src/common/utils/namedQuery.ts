@@ -5,13 +5,7 @@ const namedQueryTicks = 10
 const namedQueryTimer = (queryName) => {
   if (namedQuery[queryName].length) {
     const queryChunk = namedQuery[queryName].shift()
-    const {
-      resolve: onResolve,
-      error: onError,
-      delay,
-      func,
-      isAsync,
-    } = queryChunk
+    const { resolve: onResolve, error: onError, delay, func, isAsync } = queryChunk
 
     new Promise(async (resolve, reject) => {
       try {
@@ -37,7 +31,7 @@ const namedQueryTimer = (queryName) => {
 
 const namedQueryInit = (queryName) => {
   if (!namedQuery[queryName]) namedQuery[queryName] = []
-  if (!namedQueryTimers[queryName]) { 
+  if (!namedQueryTimers[queryName]) {
     namedQueryTimers[queryName] = setTimeout(() => {
       namedQueryTimer(queryName)
     }, namedQueryTicks)
@@ -45,15 +39,7 @@ const namedQueryInit = (queryName) => {
 }
 
 const namedQueryRun = (options) => {
-  const {
-    name: queryName,
-    resolve,
-    error,
-    delay,
-    func,
-    isAsync,
-  } = options
-
+  const { name: queryName, resolve, error, delay, func, isAsync } = options
 
   namedQueryInit(queryName)
   namedQuery[queryName].push(options)

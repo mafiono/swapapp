@@ -8,14 +8,12 @@ import encoding from './encoding'
 import directConnection from './direct-connection-handler'
 import namedQueryRun from '../../utils/namedQuery'
 
-
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   window.PeerId = PeerId
 }
 
-
 const DEFAULT_OPTIONS = {
-  pollInterval: 1000
+  pollInterval: 1000,
 }
 
 let index = 0
@@ -30,7 +28,7 @@ export default class PubSubRoom extends EventEmitter {
   _interval: NodeJS.Timeout
   _idx: number
 
-  constructor (libp2p, topic, options) {
+  constructor(libp2p, topic, options) {
     super()
     this._libp2p = libp2p.libp2p || libp2p
     this._topic = topic
@@ -45,10 +43,7 @@ export default class PubSubRoom extends EventEmitter {
       throw new Error('pubsub has not been configured')
     }
 
-    this._interval = setInterval(
-      this._pollPeers.bind(this),
-      this._options.pollInterval
-    )
+    this._interval = setInterval(this._pollPeers.bind(this), this._options.pollInterval)
 
     this._libp2p.handle(PROTOCOL, directConnection.handler)
     directConnection.emitter.on(this._topic, this._handleDirectMessage)
@@ -62,7 +57,7 @@ export default class PubSubRoom extends EventEmitter {
         } catch (e) {
           if (tryNumber > tryCounts) return
           setTimeout(async () => {
-            await tryConnect(peerId, tryNumber+1, tryCounts)
+            await tryConnect(peerId, tryNumber + 1, tryCounts)
           }, 1000)
         }
       }
@@ -76,15 +71,15 @@ export default class PubSubRoom extends EventEmitter {
     this._idx = index++
   }
 
-  getPeers () {
+  getPeers() {
     return this._peers.slice(0)
   }
 
-  hasPeer (peer) {
-    return Boolean(this._peers.find(p => p.toString() === peer.toString()))
+  hasPeer(peer) {
+    return Boolean(this._peers.find((p) => p.toString() === peer.toString()))
   }
 
-  async leave () {
+  async leave() {
     clearInterval(this._interval)
     Object.keys(this._connections).forEach((peer) => {
       this._connections[peer].stop()
@@ -94,7 +89,7 @@ export default class PubSubRoom extends EventEmitter {
     await this._libp2p.pubsub.unsubscribe(this._topic, this._handleMessage)
   }
 
-  async broadcast (_message) {
+  async broadcast(_message) {
     const message = encoding(_message)
 
     const peersInTopic = this._libp2p.pubsub.topics.get(this._topic)
@@ -105,7 +100,7 @@ export default class PubSubRoom extends EventEmitter {
     }
   }
 
-  sendTo (peer, message) {
+  sendTo(peer, message) {
     namedQueryRun({
       name: `libp2p_peer_${peer}`,
       delay: 100,
@@ -137,7 +132,7 @@ export default class PubSubRoom extends EventEmitter {
           data: Buffer.from(message).toString('hex'),
           seqno: seqno.toString('hex'),
           topicIDs: [this._topic],
-          topicCIDs: [this._topic]
+          topicCIDs: [this._topic],
         }
 
         conn.push(Buffer.from(JSON.stringify(msg)))
@@ -145,7 +140,7 @@ export default class PubSubRoom extends EventEmitter {
     })
   }
 
-  async _pollPeers () {
+  async _pollPeers() {
     const newPeers = (await this._libp2p.pubsub.getSubscribers(this._topic)).sort()
 
     if (this._emitChanges(newPeers)) {
@@ -153,7 +148,7 @@ export default class PubSubRoom extends EventEmitter {
     }
   }
 
-  _emitChanges (newPeers) {
+  _emitChanges(newPeers) {
     const differences = diff(this._peers, newPeers)
 
     differences.added.forEach((peer) => this.emit('peer joined', peer))
@@ -162,12 +157,11 @@ export default class PubSubRoom extends EventEmitter {
     return differences.added.length > 0 || differences.removed.length > 0
   }
 
-  _onMessage (message) {
-
+  _onMessage(message) {
     this.emit('message', message)
   }
 
-  _handleDirectMessage (message) {
+  _handleDirectMessage(message) {
     if (message.to.id === this._libp2p.peerId._idB58String) {
       const m = Object.assign({}, message)
       delete m.to

@@ -14,7 +14,6 @@ import swapConfig from './swapConfig'
 import evmNetworks from './evmNetworks'
 import evmNetworkVersions from './evmNetworkVersions'
 
-
 export default {
   web3,
   link,

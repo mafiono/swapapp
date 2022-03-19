@@ -12,7 +12,6 @@ import { FormattedMessage } from 'react-intl'
 import exConfig from 'helpers/externalConfig'
 import ConnectWalletModal from 'components/modals/ConnectWalletModal/ConnectWalletModal'
 
-
 const isWidgetBuild = config && config.isWidget
 
 type CurrenciesListProps = {
@@ -23,15 +22,13 @@ type CurrenciesListProps = {
 }
 
 const CurrenciesList = (props: CurrenciesListProps) => {
-  const {
-    tableRows,
-    goToСreateWallet,
-    multisigPendingCount,
-  } = props
+  const { tableRows, goToСreateWallet, multisigPendingCount } = props
 
-  const showAssets = !(config?.opts?.ui?.disableInternalWallet)
+  const showAssets = !config?.opts?.ui?.disableInternalWallet
     ? true
-    : (metamask.isConnected()) ? true : false
+    : metamask.isConnected()
+    ? true
+    : false
   return (
     <div styleName="yourAssets">
       {showAssets && (
@@ -55,15 +52,9 @@ const CurrenciesList = (props: CurrenciesListProps) => {
           <Table
             className={`${styles.walletTable} data-tut-address`}
             rows={tableRows}
-            rowRender={(row, index) => (
-              <Row
-                key={index}
-                currency={row}
-                itemData={row}
-              />
-            )}
+            rowRender={(row, index) => <Row key={index} currency={row} itemData={row} />}
           />
-          <div styleName='addCurrencyBtnWrapper'>
+          <div styleName="addCurrencyBtnWrapper">
             <Button id="addAssetBtn" onClick={goToСreateWallet} transparent fullWidth>
               <FormattedMessage id="addAsset" defaultMessage="Add currency" />
             </Button>

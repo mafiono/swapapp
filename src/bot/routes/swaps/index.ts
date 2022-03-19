@@ -6,7 +6,6 @@ import {
   goSwap,
   getSwapFormated,
   refund,
-
   nextStep,
   withSwap,
   sign,
@@ -14,11 +13,9 @@ import {
   submitSecret,
   syncBalance,
   tryWithdraw,
-
   getInProgress,
   getFinished,
 } from './controller'
-
 
 const router = Router()
 
@@ -39,6 +36,5 @@ router.get('/:id/submit-secret', withSwap(submitSecret))
 router.get('/:id/verify-script', withSwap(verifyScript))
 router.get('/:id/sync-balance', withSwap(syncBalance))
 router.get('/:id/try-withdraw', withSwap(tryWithdraw))
-
 
 export default router

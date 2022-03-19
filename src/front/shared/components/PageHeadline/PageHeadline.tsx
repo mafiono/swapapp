@@ -7,25 +7,14 @@ import styles from './PageHeadline.scss'
 import Title from './Title/Title'
 import SubTitle from './SubTitle/SubTitle'
 
-
 const PageHeadline = ({ children, title, subTitle, ...rest }) => (
-  <div styleName="headline" {...rest} >
-    {
-      children || (
-        <Fragment>
-          {
-            title && (
-              <Title>{title}</Title>
-            )
-          }
-          {
-            subTitle && (
-              <SubTitle>{subTitle}</SubTitle>
-            )
-          }
-        </Fragment>
-      )
-    }
+  <div styleName="headline" {...rest}>
+    {children || (
+      <Fragment>
+        {title && <Title>{title}</Title>}
+        {subTitle && <SubTitle>{subTitle}</SubTitle>}
+      </Fragment>
+    )}
   </div>
 )
 

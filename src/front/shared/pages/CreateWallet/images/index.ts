@@ -10,7 +10,6 @@ import google2FA from './google2FA.svg'
 import multisignature from './multisignature.svg'
 import fingerprint from './fingerprint.svg'
 
-
 export default {
   btc,
   swap,

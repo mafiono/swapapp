@@ -1,3 +1,1 @@
-export default [
-  'BTCMultisig',
-]
+export default ['BTCMultisig']

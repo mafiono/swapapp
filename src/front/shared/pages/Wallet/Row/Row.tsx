@@ -57,18 +57,13 @@ const langLabels = defineMessages({
 
 @withRouter
 @connect(
-  (
-    {
-      user: {
-        activeFiat,
-        ethData: {
-          address,
-          privateKey,
-        },
-        multisigStatus,
-      }
-    }
-  ) => ({
+  ({
+    user: {
+      activeFiat,
+      ethData: { address, privateKey },
+      multisigStatus,
+    },
+  }) => ({
     activeFiat,
     multisigStatus,
     ethDataHelper: {
@@ -81,7 +76,7 @@ const langLabels = defineMessages({
 class Row extends Component<RowProps, RowState> {
   constructor(props) {
     super(props)
-    
+
     const { currency, itemData } = props
     const currencyName = currency.currency
     const isToken = erc20Like.isToken({ name: currencyName })
@@ -106,16 +101,11 @@ class Row extends Component<RowProps, RowState> {
 
   componentDidUpdate(prevProps) {
     const {
-      itemData: { 
-        balance: prevBalance
-      }
+      itemData: { balance: prevBalance },
     } = prevProps
 
     const {
-      itemData: { 
-        currency, 
-        balance 
-      }
+      itemData: { currency, balance },
     } = this.props
 
     if (balance > 0) {
@@ -130,64 +120,63 @@ class Row extends Component<RowProps, RowState> {
   }
 
   handleReloadBalance = () => {
+    const { isBalanceFetching, isToken, reduxActionName } = this.state
     const {
-      isBalanceFetching,
-      isToken,
-      reduxActionName,
-    } = this.state
-    const {
-      itemData: {
-        isMetamask,
-        isConnected,
-      }
+      itemData: { isMetamask, isConnected },
     } = this.props
 
     if (isBalanceFetching) {
       return null
     }
 
-    if (isMetamask && !isConnected ) {
-      this.setState({
-        isBalanceFetching: true,
-      }, () => {
-        setTimeout(() => {
-          this.setState({isBalanceFetching: false})
-        }, 500)
-      })
+    if (isMetamask && !isConnected) {
+      this.setState(
+        {
+          isBalanceFetching: true,
+        },
+        () => {
+          setTimeout(() => {
+            this.setState({ isBalanceFetching: false })
+          }, 500)
+        }
+      )
       return null
     }
 
-    this.setState({
-      isBalanceFetching: true,
-    }, () => {
-      // here is timeout for the impression of the balance request
-      setTimeout(async () => {
-        const {
-          itemData: { currency, address },
-        } = this.props
-        switch (currency) {
-          case 'BTC (SMS-Protected)':
-            await actions.btcmultisig.getBalance()
-            break
-          case 'BTC (Multisig)':
-            await actions.btcmultisig.getBalanceUser(address)
-            break
-          case 'BTC (PIN-Protected)':
-            await actions.btcmultisig.getBalancePin()
-            break
-          default:
-            if (isMetamask && !isToken && metamask.isAvailableNetwork()) {
-              await metamask.getBalance()
-            } else {
-              await actions[reduxActionName].getBalance(currency)
-            }
-        }
+    this.setState(
+      {
+        isBalanceFetching: true,
+      },
+      () => {
+        // here is timeout for the impression of the balance request
+        setTimeout(async () => {
+          const {
+            itemData: { currency, address },
+          } = this.props
+          switch (currency) {
+            case 'BTC (SMS-Protected)':
+              await actions.btcmultisig.getBalance()
+              break
+            case 'BTC (Multisig)':
+              await actions.btcmultisig.getBalanceUser(address)
+              break
+            case 'BTC (PIN-Protected)':
+              await actions.btcmultisig.getBalancePin()
+              break
+            default:
+              if (isMetamask && !isToken && metamask.isAvailableNetwork()) {
+                await metamask.getBalance()
+              } else {
+                await actions[reduxActionName].getBalance(currency)
+              }
+          }
 
-        this.setState(() => ({
-          isBalanceFetching: false,
-        }))
-      }, 250)
-    })
+          this.setState(() => ({
+            isBalanceFetching: false,
+          }))
+        }, 250)
+      }
+    )
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -210,19 +199,13 @@ class Row extends Component<RowProps, RowState> {
   }
 
   handleWithdrawPopup = () => {
-    const {
-      itemData
-    } = this.props
+    const { itemData } = this.props
 
     actions.modals.open(constants.modals.Withdraw, itemData)
   }
 
   handleWithdraw = () => {
-    const {
-      itemData,
-      history,
-      intl
-    } = this.props
+    const { itemData, history, intl } = this.props
 
     if (itemData.currency.toLowerCase() === 'ghost') {
       this.handleWithdrawPopup()
@@ -245,9 +228,7 @@ class Row extends Component<RowProps, RowState> {
 
     const firstUrlPart = itemData.tokenKey ? `/token/${itemData.tokenKey}` : `/${targetCurrency}`
 
-    history?.push(
-      localisedUrl(intl?.locale, `${firstUrlPart}/${itemData.address}/send`)
-    )
+    history?.push(localisedUrl(intl?.locale, `${firstUrlPart}/${itemData.address}/send`))
   }
 
   handleReceive = () => {
@@ -314,11 +295,11 @@ class Row extends Component<RowProps, RowState> {
         address,
         balance,
       },
-      itemData
+      itemData,
     } = this.props
 
     actions.modals.open(constants.modals.InvoiceModal, {
-      currency: ((tokenKey) ? tokenKey : currency).toUpperCase(),
+      currency: (tokenKey ? tokenKey : currency).toUpperCase(),
       address,
       contractAddress,
       decimals,
@@ -329,20 +310,12 @@ class Row extends Component<RowProps, RowState> {
   }
 
   goToExchange = () => {
-    const {
-      history,
-      intl,
-    } = this.props
+    const { history, intl } = this.props
     history?.push(localisedUrl(intl?.locale, '/exchange'))
   }
 
   goToCurrencyHistory = () => {
-    const {
-      history,
-      intl,
-      itemData,
-    } = this.props
-
+    const { history, intl, itemData } = this.props
 
     let targetCurrency = itemData.currency
     switch (itemData.currency.toLowerCase()) {
@@ -353,12 +326,9 @@ class Row extends Component<RowProps, RowState> {
         break
     }
 
-
     const firstUrlPart = itemData.tokenKey ? `/token/${itemData.tokenKey}` : `/${targetCurrency}`
 
-    history?.push(
-      localisedUrl(intl?.locale, `${firstUrlPart}/${itemData.address}`)
-    )
+    history?.push(localisedUrl(intl?.locale, `${firstUrlPart}/${itemData.address}`))
   }
 
   hideCurrency = () => {
@@ -378,12 +348,7 @@ class Row extends Component<RowProps, RowState> {
     } else {
       actions.core.markCoinAsHidden(`${isToken ? tokenKey.toUpperCase() : currency}:${address}`)
       actions.notifications.show(constants.notifications.Message, {
-        message: (
-          <FormattedMessage
-            id="WalletRow_Action_Hidden"
-            defaultMessage="Кошелек скрыт"
-          />
-        ),
+        message: <FormattedMessage id="WalletRow_Action_Hidden" defaultMessage="Кошелек скрыт" />,
       })
     }
   }
@@ -420,17 +385,9 @@ class Row extends Component<RowProps, RowState> {
   }
 
   render() {
-    const {
-      isBalanceFetching,
-      isBalanceEmpty,
-    } = this.state
+    const { isBalanceFetching, isBalanceEmpty } = this.state
 
-    const {
-      itemData,
-      intl,
-      activeFiat,
-      multisigStatus,
-    } = this.props
+    const { itemData, intl, activeFiat, multisigStatus } = this.props
 
     const {
       currency,
@@ -463,16 +420,14 @@ class Row extends Component<RowProps, RowState> {
     }
 
     let hasHowToWithdraw = false
-    if (
-      config?.erc20?.[this.props.currency.currency.toLowerCase()]?.howToWithdraw
-    ) {
+    if (config?.erc20?.[this.props.currency.currency.toLowerCase()]?.howToWithdraw) {
       hasHowToWithdraw = true
     }
 
     const isSafari = 'safari' in window
 
     const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-    const mnemonicSaved = (mnemonic === `-`)
+    const mnemonicSaved = mnemonic === `-`
 
     type DropDownItem = {
       action: () => void
@@ -485,102 +440,65 @@ class Row extends Component<RowProps, RowState> {
     let dropDownMenuItems: DropDownItem[] = [
       {
         id: 1001,
-        title: (
-          <FormattedMessage
-            id="WalletRow_Menu_Deposit"
-            defaultMessage="Deposit"
-          />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_Deposit" defaultMessage="Deposit" />,
         action: this.handleReceive,
         disabled: false,
       },
       ...(hasHowToWithdraw
         ? [
-          {
-            id: 10021,
-            title: (
-              <FormattedMessage
-                id="HowToWithdrawModal_Title"
-                defaultMessage="How to withdraw"
-              />
-            ),
-            action: this.handleHowToWithdraw,
-          },
-        ]
+            {
+              id: 10021,
+              title: (
+                <FormattedMessage id="HowToWithdrawModal_Title" defaultMessage="How to withdraw" />
+              ),
+              action: this.handleHowToWithdraw,
+            },
+          ]
         : []),
       {
         id: 1002,
-        title: (
-          <FormattedMessage id="WalletRow_Menu_Send" defaultMessage="Send" />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_Send" defaultMessage="Send" />,
         action: this.handleWithdraw,
         disabled: isBalanceEmpty,
       },
       !config.opts.exchangeDisabled && {
         id: 1004,
-        title: (
-          <FormattedMessage
-            id="WalletRow_Menu_Exchange"
-            defaultMessage="Exchange"
-          />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_Exchange" defaultMessage="Exchange" />,
         action: this.goToExchange,
         disabled: false,
       },
       {
         id: 1003,
-        title: (
-          <FormattedMessage
-            id="WalletRow_Menu_History"
-            defaultMessage="History"
-          />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_History" defaultMessage="History" />,
         action: this.goToCurrencyHistory,
         disabled: !mnemonicSaved,
       },
       !isSafari && {
         id: 1012,
-        title: (
-          <FormattedMessage
-            id="WalletRow_Menu_Сopy"
-            defaultMessage="Copy address"
-          />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_Сopy" defaultMessage="Copy address" />,
         action: this.copy,
         disabled: !mnemonicSaved,
       },
       !config.opts.hideShowPrivateKey && {
         id: 1012,
         title: (
-          <FormattedMessage
-            id="WalletRow_Menu_Сopy_PrivateKey"
-            defaultMessage="Copy Private Key"
-          />
+          <FormattedMessage id="WalletRow_Menu_Сopy_PrivateKey" defaultMessage="Copy Private Key" />
         ),
         action: this.copyPrivateKey,
         disabled: false,
       },
       {
         id: 1011,
-        title: (
-          <FormattedMessage id="WalletRow_Menu_Hide" defaultMessage="Hide" />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_Hide" defaultMessage="Hide" />,
         action: this.hideCurrency,
         disabled: false,
       },
     ].filter((el) => el)
 
-    if (
-      config.opts.invoiceEnabled
-    ) {
+    if (config.opts.invoiceEnabled) {
       dropDownMenuItems.push({
         id: 1004,
-        title: (
-          <FormattedMessage
-            id="WalletRow_Menu_Invoice"
-            defaultMessage="Выставить счет"
-          />
-        ),
+        title: <FormattedMessage id="WalletRow_Menu_Invoice" defaultMessage="Выставить счет" />,
         action: this.handleCreateInvoice,
         disabled: false,
       })
@@ -597,38 +515,26 @@ class Row extends Component<RowProps, RowState> {
       })
     }
 
-    if (itemData.isMetamask
-      && !itemData.isConnected
-    ) {
-      dropDownMenuItems = [{
-        id: 1,
-        title: (
-          <FormattedMessage
-            id="WalletRow_MetamaskConnect"
-            defaultMessage="Подключить"
-          />
-        ),
-        action: metamask.handleConnectMetamask,
-        disabled: false,
-      }]
+    if (itemData.isMetamask && !itemData.isConnected) {
+      dropDownMenuItems = [
+        {
+          id: 1,
+          title: <FormattedMessage id="WalletRow_MetamaskConnect" defaultMessage="Подключить" />,
+          action: metamask.handleConnectMetamask,
+          disabled: false,
+        },
+      ]
     }
 
-    if (itemData.isMetamask
-      && itemData.isConnected
-    ) {
+    if (itemData.isMetamask && itemData.isConnected) {
       dropDownMenuItems = [
         {
           id: 1123,
-          title: (
-            <FormattedMessage
-              id="MetamaskDisconnect"
-              defaultMessage="Disconnect wallet"
-            />
-          ),
+          title: <FormattedMessage id="MetamaskDisconnect" defaultMessage="Disconnect wallet" />,
           action: metamask.handleDisconnectWallet,
-          disabled: false
+          disabled: false,
         },
-        ...dropDownMenuItems
+        ...dropDownMenuItems,
       ]
     }
 
@@ -638,10 +544,7 @@ class Row extends Component<RowProps, RowState> {
     // Prevent render SMS wallet
     if (itemData.isSmsProtected) return null
 
-    if (
-      itemData.isPinProtected &&
-      !itemData.isRegistered
-    ) {
+    if (itemData.isPinProtected && !itemData.isRegistered) {
       statusInfo = 'Not activated'
       showBalance = false
       nodeDownErrorShow = false
@@ -649,31 +552,27 @@ class Row extends Component<RowProps, RowState> {
         {
           id: 1,
           title: (
-            <FormattedMessage
-              id="WalletRow_Menu_ActivatePinProtected"
-              defaultMessage="Activate"
-            />
+            <FormattedMessage id="WalletRow_Menu_ActivatePinProtected" defaultMessage="Activate" />
           ),
           action: this.handleActivatePinProtected,
           disabled: false,
         },
         {
           id: 1011,
-          title: (
-            <FormattedMessage id="WalletRow_Menu_Hide" defaultMessage="Hide" />
-          ),
+          title: <FormattedMessage id="WalletRow_Menu_Hide" defaultMessage="Hide" />,
           action: this.hideCurrency,
           disabled: false,
         },
       ]
     }
 
-    const msConfirmCount = (
-      itemData.isUserProtected
-      && multisigStatus
-      && multisigStatus[itemData.address]
-      && multisigStatus[itemData.address].count
-    ) ? multisigStatus[itemData.address].count : false
+    const msConfirmCount =
+      itemData.isUserProtected &&
+      multisigStatus &&
+      multisigStatus[itemData.address] &&
+      multisigStatus[itemData.address].count
+        ? multisigStatus[itemData.address].count
+        : false
 
     if (itemData.isUserProtected) {
       if (!itemData.active) {
@@ -685,10 +584,7 @@ class Row extends Component<RowProps, RowState> {
         dropDownMenuItems.push({
           id: 1105,
           title: (
-            <FormattedMessage
-              id="WalletRow_Menu_BTCMS_SwitchMenu"
-              defaultMessage="Switch wallet"
-            />
+            <FormattedMessage id="WalletRow_Menu_BTCMS_SwitchMenu" defaultMessage="Switch wallet" />
           ),
           action: this.handleSwitchMultisign,
           disabled: false,
@@ -708,16 +604,16 @@ class Row extends Component<RowProps, RowState> {
       if (!itemData.active) {
         dropDownMenuItems.push({
           id: 1011,
-          title: (
-            <FormattedMessage id="WalletRow_Menu_Hide" defaultMessage="Hide" />
-          ),
+          title: <FormattedMessage id="WalletRow_Menu_Hide" defaultMessage="Hide" />,
           action: this.hideCurrency,
           disabled: false,
         })
       }
     }
 
-    const ethRowWithoutExternalProvider = itemData.address.toLowerCase() === 'not connected' && !metamask.web3connect.isInjectedEnabled()
+    const ethRowWithoutExternalProvider =
+      itemData.address.toLowerCase() === 'not connected' &&
+      !metamask.web3connect.isInjectedEnabled()
     const web3Type = metamask.web3connect.getInjectedType()
 
     const isMetamask = itemData.isMetamask
@@ -733,236 +629,221 @@ class Row extends Component<RowProps, RowState> {
       !balanceError
 
     return (
-      !ethRowWithoutExternalProvider
-      && <tr>
-        <td styleName={`assetsTableRow`}>
-          <div styleName="assetsTableCurrency">
-            <Coin
-              className={styles.assetsTableIcon}
-              name={metamaskDisconnected || isNotAvailableMetamaskNetwork ? web3Type : currency }
-            />
+      !ethRowWithoutExternalProvider && (
+        <tr>
+          <td styleName={`assetsTableRow`}>
+            <div styleName="assetsTableCurrency">
+              <Coin
+                className={styles.assetsTableIcon}
+                name={metamaskDisconnected || isNotAvailableMetamaskNetwork ? web3Type : currency}
+              />
 
-            {/* Title-Link */}
-            <div id={currencyTitleId + 'WalletTitle'} styleName="assetsTableInfo">
-              <div styleName="nameRow">
-                <a onClick={
-                  metamaskDisconnected
-                    ? this.connectMetamask
-                    : isNotAvailableMetamaskNetwork
-                      ? () => null
-                      : mnemonicSaved || (metamaskIsConnected && isAvailableMetamaskNetwork)
+              {/* Title-Link */}
+              <div id={currencyTitleId + 'WalletTitle'} styleName="assetsTableInfo">
+                <div styleName="nameRow">
+                  <a
+                    onClick={
+                      metamaskDisconnected
+                        ? this.connectMetamask
+                        : isNotAvailableMetamaskNetwork
+                        ? () => null
+                        : mnemonicSaved || (metamaskIsConnected && isAvailableMetamaskNetwork)
                         ? this.goToCurrencyHistory
                         : () => null
-                  }
-                  styleName={`${
-                    mnemonicSaved && isMobile
-                      ? 'linkToHistory mobile'
+                    }
+                    styleName={`${
+                      mnemonicSaved && isMobile
+                        ? 'linkToHistory mobile'
                         : mnemonicSaved || (metamaskIsConnected && isAvailableMetamaskNetwork)
-                          ? 'linkToHistory desktop'
-                          : ''
-                  }`}
-                  title={`Online ${fullName} wallet`}
-                >
-                  {fullName}
-                  {/* label for tokens */}
-                  {standard ? (
-                    <span styleName="tokenStandard">
-                      {` ${standard.toUpperCase()}`}
-                    </span>
-                  ) : ''}
-                </a>
+                        ? 'linkToHistory desktop'
+                        : ''
+                    }`}
+                    title={`Online ${fullName} wallet`}
+                  >
+                    {fullName}
+                    {/* label for tokens */}
+                    {standard ? (
+                      <span styleName="tokenStandard">{` ${standard.toUpperCase()}`}</span>
+                    ) : (
+                      ''
+                    )}
+                  </a>
+                </div>
               </div>
-            </div>
 
-            {/* Tip - if something wrong with endpoint */}
-            {balanceError && nodeDownErrorShow && (
-              <div className={styles.errorMessage}>
-                <ApiEndpoint
-                  contractAddress={itemData.contractAddress}
-                  address={itemData.address}
-                  symbol={itemData.currency}
-                  isERC20={itemData.isERC20}
-                  isBTC={itemData.isBTC}
-                >
-                  <FormattedMessage
-                    id="RowWallet276"
-                    defaultMessage="Node is down"
-                  />
-                </ApiEndpoint>
-                {' '}
-                <Tooltip id="WalletRowNodeIsDownTooltip">
-                  <div style={{ textAlign: 'center' }}>
-                    <FormattedMessage
-                      id="WalletRowNodeIsDownTooltipMessage"
-                      defaultMessage="You can not perform transactions"
-                    />
-                  </div>
-                </Tooltip>
-              </div>
-            )}
+              {/* Tip - if something wrong with endpoint */}
+              {balanceError && nodeDownErrorShow && (
+                <div className={styles.errorMessage}>
+                  <ApiEndpoint
+                    contractAddress={itemData.contractAddress}
+                    address={itemData.address}
+                    symbol={itemData.currency}
+                    isERC20={itemData.isERC20}
+                    isBTC={itemData.isBTC}
+                  >
+                    <FormattedMessage id="RowWallet276" defaultMessage="Node is down" />
+                  </ApiEndpoint>{' '}
+                  <Tooltip id="WalletRowNodeIsDownTooltip">
+                    <div style={{ textAlign: 'center' }}>
+                      <FormattedMessage
+                        id="WalletRowNodeIsDownTooltipMessage"
+                        defaultMessage="You can not perform transactions"
+                      />
+                    </div>
+                  </Tooltip>
+                </div>
+              )}
 
-            {/* Currency amount */}
-            <span styleName="assetsTableCurrencyWrapper">
-              {showBalance && (
-                <Fragment>
-                  {/*
+              {/* Currency amount */}
+              <span styleName="assetsTableCurrencyWrapper">
+                {showBalance && (
+                  <Fragment>
+                    {/*
                   If it's a metamask and it disconnected then showing connect button
                   else if balance fetched or fetching then showing loader
                   else showing fetch-button and currency balance
                   */}
-                  {metamaskDisconnected ? (
+                    {metamaskDisconnected ? (
                       <Button small empty onClick={metamask.handleConnectMetamask}>
                         <FormattedMessage id="CommonTextConnect" defaultMessage="Connect" />
                       </Button>
-                    ) :
-                      isNotAvailableMetamaskNetwork
-                        ? (
-                          <Button small empty onClick={metamask.handleDisconnectWallet}>
-                            <FormattedMessage id="MetamaskDisconnect" defaultMessage="Disconnect wallet" />
-                          </Button>
-                        )
-                        : !isBalanceFetched || isBalanceFetching ? (
-                          itemData.isUserProtected &&
-                            !itemData.active ? (
-                              <span>
-                                <FormattedMessage
-                                  id="walletMultisignNotJoined"
-                                  defaultMessage="Not joined"
-                                />
-                              </span>
-                            ) : (
-                              <div styleName="loader">
-                                {!(balanceError && nodeDownErrorShow) && <InlineLoader />}
-                              </div>
-                            )
-                        ) : (
-                          <button
-                            id="walletRowUpdateBalanceBtn"
-                            styleName="cryptoBalanceBtn"
-                            onClick={this.handleReloadBalance}
-                          >
-                            <i className="fas fa-sync-alt" styleName="icon" />
-                            <span id="walletRowCryptoBalance">
-                              {balanceError
-                                ? '?'
-                                : utils.toMeaningfulFloatValue({
-                                    value: balance,
-                                    meaningfulDecimals: 5,
-                                  })}{' '}
+                    ) : isNotAvailableMetamaskNetwork ? (
+                      <Button small empty onClick={metamask.handleDisconnectWallet}>
+                        <FormattedMessage
+                          id="MetamaskDisconnect"
+                          defaultMessage="Disconnect wallet"
+                        />
+                      </Button>
+                    ) : !isBalanceFetched || isBalanceFetching ? (
+                      itemData.isUserProtected && !itemData.active ? (
+                        <span>
+                          <FormattedMessage
+                            id="walletMultisignNotJoined"
+                            defaultMessage="Not joined"
+                          />
+                        </span>
+                      ) : (
+                        <div styleName="loader">
+                          {!(balanceError && nodeDownErrorShow) && <InlineLoader />}
+                        </div>
+                      )
+                    ) : (
+                      <button
+                        id="walletRowUpdateBalanceBtn"
+                        styleName="cryptoBalanceBtn"
+                        onClick={this.handleReloadBalance}
+                      >
+                        <i className="fas fa-sync-alt" styleName="icon" />
+                        <span id="walletRowCryptoBalance">
+                          {balanceError
+                            ? '?'
+                            : utils.toMeaningfulFloatValue({
+                                value: balance,
+                                meaningfulDecimals: 5,
+                              })}{' '}
+                        </span>
+                        <span styleName="assetsTableCurrencyBalance">{currencyView}</span>
+                        {unconfirmedBalance !== 0 && (
+                          <Fragment>
+                            <br />
+                            <span
+                              styleName="unconfirmedBalance"
+                              title={intl?.formatMessage(langLabels.unconfirmedBalance)}
+                            >
+                              {unconfirmedBalance > 0 && <>{'+'}</>}
+                              {unconfirmedBalance}{' '}
                             </span>
-                            <span styleName="assetsTableCurrencyBalance">
-                              {currencyView}
-                            </span>
-                            {unconfirmedBalance !== 0 && (
-                              <Fragment>
-                                <br />
-                                <span
-                                  styleName="unconfirmedBalance"
-                                  title={intl?.formatMessage(
-                                    langLabels.unconfirmedBalance
-                                  )}
-                                >
-                                  {unconfirmedBalance > 0 && <>{'+'}</>}
-                                  {unconfirmedBalance}{' '}
-                                </span>
-                              </Fragment>
-                            )}
-                          </button>
-                        )
-                  }
-                </Fragment>
-              )}
-            </span>
+                          </Fragment>
+                        )}
+                      </button>
+                    )}
+                  </Fragment>
+                )}
+              </span>
 
-            {/* Address */}
-            <Fragment>
-              {statusInfo ?
-                <p styleName="statusStyle">{statusInfo}</p>
-                :
-                !mnemonicSaved && !itemData.isMetamask ?
+              {/* Address */}
+              <Fragment>
+                {statusInfo ? (
+                  <p styleName="statusStyle">{statusInfo}</p>
+                ) : !mnemonicSaved && !itemData.isMetamask ? (
                   <p styleName="showAddressStyle" onClick={this.handleShowMnemonic}>
+                    <FormattedMessage id="WalletRow_ShowAddress" defaultMessage="Show address" />
+                  </p>
+                ) : // only for metamask
+                metamaskDisconnected ? (
+                  <p styleName="addressStyle">
                     <FormattedMessage
-                      id="WalletRow_ShowAddress"
-                      defaultMessage="Show address"
+                      id="WalletRow_MetamaskNotConnected"
+                      defaultMessage="Not connected"
                     />
                   </p>
-                  : // only for metamask
-                  metamaskDisconnected ?
-                    <p styleName="addressStyle">
-                      <FormattedMessage
-                        id="WalletRow_MetamaskNotConnected"
-                        defaultMessage="Not connected"
-                      />
-                    </p>
-                    : isNotAvailableMetamaskNetwork
-                      ?
-                        <p styleName="addressStyle">
-                          <FormattedMessage
-                            id="WalletRow_MetamaskNotAvailableNetwork"
-                            defaultMessage="Please choose another"
-                          />
-                        </p>
-                      : // Address shows
-                      <div styleName="addressStyle">
-                        <Copy text={itemData.address}>
-                          {isMobile ? (
-                              <PartOfAddress
-                                withoutLink
-                                currency={itemData.currency}
-                                contractAddress={itemData.contractAddress}
-                                address={itemData.address}
-                                style={{
-                                  position: 'relative',
-                                  bottom: '16px',
-                                }}
-                              />
-                            ) : (
-                              <p id={`${
-                                baseCurrency ? baseCurrency + currency.toLowerCase() : currency.toLowerCase()
-                              }Address`}>
-                                {itemData.address}
-                              </p>
-                            )
-                          }
-                        </Copy>
-                      </div>
-              }
-            </Fragment>
-
-            {/* Fiat amount */}
-            {showFiatBalance || msConfirmCount ? (
-              <div styleName="assetsTableValue">
-                {msConfirmCount && !isMobile && (
-                  <p styleName="txWaitConfirm" onClick={this.goToCurrencyHistory}>
-                    {intl?.formatMessage(
-                      langLabels.msConfirmCount,
-                      {
-                        count: msConfirmCount,
-                      }
-                    )}
+                ) : isNotAvailableMetamaskNetwork ? (
+                  <p styleName="addressStyle">
+                    <FormattedMessage
+                      id="WalletRow_MetamaskNotAvailableNetwork"
+                      defaultMessage="Please choose another"
+                    />
                   </p>
+                ) : (
+                  // Address shows
+                  <div styleName="addressStyle">
+                    <Copy text={itemData.address}>
+                      {isMobile ? (
+                        <PartOfAddress
+                          withoutLink
+                          currency={itemData.currency}
+                          contractAddress={itemData.contractAddress}
+                          address={itemData.address}
+                          style={{
+                            position: 'relative',
+                            bottom: '16px',
+                          }}
+                        />
+                      ) : (
+                        <p
+                          id={`${
+                            baseCurrency
+                              ? baseCurrency + currency.toLowerCase()
+                              : currency.toLowerCase()
+                          }Address`}
+                        >
+                          {itemData.address}
+                        </p>
+                      )}
+                    </Copy>
+                  </div>
                 )}
-                {showFiatBalance && (
-                  <>
-                    <p>{currencyFiatBalance}</p>
-                    <strong>{activeFiat}</strong>
-                  </>
-                )}
-              </div>
-            ) : null}
-          </div>
+              </Fragment>
 
-          {/* Additional option. Ethereum row with external wallet */}
-          {!metamaskDisconnected && !isNotAvailableMetamaskNetwork &&
-            <div onClick={this.handleOpenDropdown} styleName="assetsTableDots">
-              <DropdownMenu
-                className="walletControls"
-                items={dropDownMenuItems}
-              />
+              {/* Fiat amount */}
+              {showFiatBalance || msConfirmCount ? (
+                <div styleName="assetsTableValue">
+                  {msConfirmCount && !isMobile && (
+                    <p styleName="txWaitConfirm" onClick={this.goToCurrencyHistory}>
+                      {intl?.formatMessage(langLabels.msConfirmCount, {
+                        count: msConfirmCount,
+                      })}
+                    </p>
+                  )}
+                  {showFiatBalance && (
+                    <>
+                      <p>{currencyFiatBalance}</p>
+                      <strong>{activeFiat}</strong>
+                    </>
+                  )}
+                </div>
+              ) : null}
             </div>
-          }
-        </td>
-      </tr>
+
+            {/* Additional option. Ethereum row with external wallet */}
+            {!metamaskDisconnected && !isNotAvailableMetamaskNetwork && (
+              <div onClick={this.handleOpenDropdown} styleName="assetsTableDots">
+                <DropdownMenu className="walletControls" items={dropDownMenuItems} />
+              </div>
+            )}
+          </td>
+        </tr>
+      )
     )
   }
 }

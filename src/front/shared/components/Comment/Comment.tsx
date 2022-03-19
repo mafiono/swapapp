@@ -6,24 +6,26 @@ import { FormattedMessage } from 'react-intl'
 import actions from 'redux/actions'
 
 type WithdrawModalProps = {
-  commentKey?: any,
-  isOpen?: boolean,
-  label?: string,
-  date?: any,
-  canEdit?: boolean,
-  showComment?: boolean,
-  updateComment?: (text: string) => void,
+  commentKey?: any
+  isOpen?: boolean
+  label?: string
+  date?: any
+  canEdit?: boolean
+  showComment?: boolean
+  updateComment?: (text: string) => void
   onSubmit?: (text: string) => void
 }
 
 type WithdrawModalState = {
-  comment?: null | string,
+  comment?: null | string
   isOpen?: boolean
 }
 
-
 @CSSModules(styles, { allowMultiple: true })
-export default class CommentRow extends React.PureComponent<WithdrawModalProps, WithdrawModalState> {
+export default class CommentRow extends React.PureComponent<
+  WithdrawModalProps,
+  WithdrawModalState
+> {
   commentTextarea: any
 
   constructor(props) {
@@ -40,18 +42,13 @@ export default class CommentRow extends React.PureComponent<WithdrawModalProps, 
       event.preventDefault()
     }
 
-    const {
-      commentKey,
-      updateComment = false,
-    } = props
+    const { commentKey, updateComment = false } = props
 
-    const {
-      comment
-    } = this.state
+    const { comment } = this.state
 
     actions.comments.setComment({
       key: commentKey,
-      comment: comment
+      comment: comment,
     })
 
     if (updateComment) {
@@ -62,9 +59,7 @@ export default class CommentRow extends React.PureComponent<WithdrawModalProps, 
   }
 
   componentDidMount() {
-    const {
-      commentKey
-    } = this.props
+    const { commentKey } = this.props
 
     // not need anymore
     // actions.core.getSwapHistory()
@@ -72,7 +67,7 @@ export default class CommentRow extends React.PureComponent<WithdrawModalProps, 
 
     if (comment) {
       this.setState({
-        comment
+        comment,
       })
     }
   }
@@ -94,63 +89,57 @@ export default class CommentRow extends React.PureComponent<WithdrawModalProps, 
       return
     }
 
-    this.commentTextarea
-      .current.style.cssText = 'height:' + this.commentTextarea.current.scrollHeight + 'px;'
+    this.commentTextarea.current.style.cssText =
+      'height:' + this.commentTextarea.current.scrollHeight + 'px;'
   }
 
-  changeComment = (event) => this.setState({comment: event.target.value});
+  changeComment = (event) => this.setState({ comment: event.target.value })
 
   toggleComment = () => {
     const { isOpen = false } = this.state
 
     this.setState({
-      isOpen: !isOpen
+      isOpen: !isOpen,
     })
   }
 
   render() {
-    const {
-      label,
-      date,
-      canEdit = false,
-      showComment = false,
-    } = this.props
+    const { label, date, canEdit = false, showComment = false } = this.props
 
-    const {
-      isOpen = false,
-      comment = ''
-    } = this.state
+    const { isOpen = false, comment = '' } = this.state
 
     return (
       <div styleName="wrap-block">
-        {canEdit && (isOpen ?
-          <form styleName="input" onSubmit={(e) => this.submitComment(e, this.props)}>
-            <textarea 
-              ref={this.commentTextarea}
-              styleName="commentTextarea" id="commentTextarea"
-              //@ts-ignore: strictNullChecks
-              onKeyUp={this.handleKeyUp}
-              onChange={this.changeComment}
-              //@ts-ignore: strictNullChecks
-              value={comment} 
-            ></textarea>
-            <span styleName="submit" onClick={(e) => this.submitComment(e, this.props)}>&#10004;</span>
-            <span styleName="close" onClick={() => this.toggleComment()}>&times;</span>
-          </form>
-          :
-          <div styleName="add-link" onClick={() => this.toggleComment()}>
-            <FormattedMessage id="add_notice" defaultMessage="Add notice" />
-          </div>)
-        }
+        {canEdit &&
+          (isOpen ? (
+            <form styleName="input" onSubmit={(e) => this.submitComment(e, this.props)}>
+              <textarea
+                ref={this.commentTextarea}
+                styleName="commentTextarea"
+                id="commentTextarea"
+                //@ts-ignore: strictNullChecks
+                onKeyUp={this.handleKeyUp}
+                onChange={this.changeComment}
+                //@ts-ignore: strictNullChecks
+                value={comment}
+              ></textarea>
+              <span styleName="submit" onClick={(e) => this.submitComment(e, this.props)}>
+                &#10004;
+              </span>
+              <span styleName="close" onClick={() => this.toggleComment()}>
+                &times;
+              </span>
+            </form>
+          ) : (
+            <div styleName="add-link" onClick={() => this.toggleComment()}>
+              <FormattedMessage id="add_notice" defaultMessage="Add notice" />
+            </div>
+          ))}
 
         {showComment && (
           <div styleName="date">
-            {date &&
-              <div>{moment(date).format('LLLL')}</div>
-            }
-            {comment &&
-              <div styleName="commentText">{comment}</div>
-            }
+            {date && <div>{moment(date).format('LLLL')}</div>}
+            {comment && <div styleName="commentText">{comment}</div>}
           </div>
         )}
       </div>

@@ -28,13 +28,12 @@ import MIN_AMOUNT_OFFER from 'common/helpers/constants/MIN_AMOUNT'
 import turboSwap from 'common/helpers/turboSwap'
 import getCoinInfo from 'common/coins/getCoinInfo'
 
-
 const mathConstants = {
   high_precision: 10e-8,
   low_precision: 10e-5,
 }
 
-const isNumberStringFormatCorrect = number => {
+const isNumberStringFormatCorrect = (number) => {
   const stringified = String(number)
 
   const firstDotIndex = stringified.indexOf('.')
@@ -44,18 +43,13 @@ const isNumberStringFormatCorrect = number => {
   return firstDotIndex === lastDotIndex
 }
 
-@connect(
-  ({
-    currencies,
-  }) => ({
-    currencies: swapsHelper.isExchangeAllowed(currencies.partialItems),
-    addSelectedItems: swapsHelper.isExchangeAllowed(currencies.addPartialItems),
-    currenciesOrig: currencies,
-  })
-)
+@connect(({ currencies }) => ({
+  currencies: swapsHelper.isExchangeAllowed(currencies.partialItems),
+  addSelectedItems: swapsHelper.isExchangeAllowed(currencies.addPartialItems),
+  currenciesOrig: currencies,
+}))
 @cssModules(styles, { allowMultiple: true })
 export default class AddOffer extends Component<any, any> {
-
   isSending: any
 
   constructor(props) {
@@ -109,14 +103,8 @@ export default class AddOffer extends Component<any, any> {
     this.getFee()
     this.checkBalanceForTokenFee()
 
-    const {
-      coin: sellName,
-      blockchain: sellBlockchain,
-    } = getCoinInfo(sellCurrency)
-    const {
-      coin: buyName,
-      blockchain: buyBlockchain,
-    } = getCoinInfo(buyCurrency)
+    const { coin: sellName, blockchain: sellBlockchain } = getCoinInfo(sellCurrency)
+    const { coin: buyName, blockchain: buyBlockchain } = getCoinInfo(buyCurrency)
 
     if (sellBlockchain) {
       this.setState(() => ({ sellBlockchain }))
@@ -144,16 +132,11 @@ export default class AddOffer extends Component<any, any> {
   }
 
   checkBalanceForTokenFee = async () => {
-    const {
-      sellBlockchain,
-      buyBlockchain,
-    } = this.state
-    const balanceForBuyTokenFee = (buyBlockchain !== ``)
-      ? await actions[buyBlockchain.toLowerCase()].getBalance()
-      : 0
-    const balanceForSellTokenFee = (sellBlockchain !== ``)
-      ? await actions[sellBlockchain.toLowerCase()].getBalance()
-      : 0
+    const { sellBlockchain, buyBlockchain } = this.state
+    const balanceForBuyTokenFee =
+      buyBlockchain !== `` ? await actions[buyBlockchain.toLowerCase()].getBalance() : 0
+    const balanceForSellTokenFee =
+      sellBlockchain !== `` ? await actions[sellBlockchain.toLowerCase()].getBalance() : 0
 
     this.setState(() => ({
       balanceForBuyTokenFee,
@@ -163,16 +146,15 @@ export default class AddOffer extends Component<any, any> {
 
   checkBalance = async (sellCurrency) => {
     const sellWallet = actions.core.getWallet({ currency: sellCurrency })
-    let balance = new BigNumber(
-      await actions.core.fetchWalletBalance(sellWallet)
-    )
+    let balance = new BigNumber(await actions.core.fetchWalletBalance(sellWallet))
     let { unconfirmedBalance } = sellWallet
 
     unconfirmedBalance = new BigNumber(unconfirmedBalance)
 
-    const currentBalance = unconfirmedBalance.isNaN() && unconfirmedBalance.isLessThan(0)
-      ? balance.plus(unconfirmedBalance)
-      : balance
+    const currentBalance =
+      unconfirmedBalance.isNaN() && unconfirmedBalance.isLessThan(0)
+        ? balance.plus(unconfirmedBalance)
+        : balance
 
     const balanceWithoutFee = !erc20Like.isToken({ name: sellCurrency })
       ? currentBalance
@@ -199,7 +181,10 @@ export default class AddOffer extends Component<any, any> {
     const isToken = erc20Like.isToken({ name: sellCurrency })
 
     if (COINS_WITH_DYNAMIC_FEE.includes(sellCurrency) && !isToken) {
-      const minimalestAmountForSell = await helpers[sellCurrency].estimateFeeValue({ method: 'swap', speed: 'fast' })
+      const minimalestAmountForSell = await helpers[sellCurrency].estimateFeeValue({
+        method: 'swap',
+        speed: 'fast',
+      })
 
       this.setState({
         minimalestAmountForSell,
@@ -211,7 +196,10 @@ export default class AddOffer extends Component<any, any> {
     const isToken = erc20Like.isToken({ name: buyCurrency })
 
     if (COINS_WITH_DYNAMIC_FEE.includes(buyCurrency) && !isToken) {
-      const minimalestAmountForBuy = await helpers[buyCurrency].estimateFeeValue({ method: 'swap', speed: 'fast' })
+      const minimalestAmountForBuy = await helpers[buyCurrency].estimateFeeValue({
+        method: 'swap',
+        speed: 'fast',
+      })
 
       this.setState({
         minimalestAmountForBuy,
@@ -223,9 +211,10 @@ export default class AddOffer extends Component<any, any> {
     const exchangeRateSell: any = await actions.user.getExchangeRate(sellCurrency, 'usd')
     const exchangeRateBuy: any = await actions.user.getExchangeRate(buyCurrency, 'usd')
 
-    const exchangeRate = sellCurrency === 'swap' || buyCurrency === 'swap'
-      ? await actions.user.getExchangeRate(sellCurrency, buyCurrency)
-      : new BigNumber(exchangeRateSell).div(exchangeRateBuy).dp(4, BigNumber.ROUND_CEIL)
+    const exchangeRate =
+      sellCurrency === 'swap' || buyCurrency === 'swap'
+        ? await actions.user.getExchangeRate(sellCurrency, buyCurrency)
+        : new BigNumber(exchangeRateSell).div(exchangeRateBuy).dp(4, BigNumber.ROUND_CEIL)
 
     return new Promise((resolve, reject) => {
       this.setState({ exchangeRate }, () => resolve(true))
@@ -248,17 +237,20 @@ export default class AddOffer extends Component<any, any> {
       await this.updateExchangeRate(sellCurrency, value)
       this.isTokenOffer(sellCurrency, value)
 
-      this.setState(() => ({
-        buyCurrency: value,
-        buyBlockchain: blockchain,
-      }), () => {
-        const { isTokenBuy } = this.state
+      this.setState(
+        () => ({
+          buyCurrency: value,
+          buyBlockchain: blockchain,
+        }),
+        () => {
+          const { isTokenBuy } = this.state
 
-        if (isTokenBuy) {
-          this.checkBalanceForTokenFee()
-          this.updateTokenBaseWalletBalance(blockchain)
+          if (isTokenBuy) {
+            this.checkBalanceForTokenFee()
+            this.updateTokenBaseWalletBalance(blockchain)
+          }
         }
-      })
+      )
 
       if (sellAmount > 0 || buyAmount > 0) {
         this.handleBuyAmountChange(buyAmount)
@@ -285,17 +277,20 @@ export default class AddOffer extends Component<any, any> {
       await this.updateExchangeRate(value, buyCurrency)
       this.isTokenOffer(value, buyCurrency)
 
-      this.setState(() => ({
-        sellCurrency: value,
-        sellBlockchain: blockchain,
-      }), () => {
-        const { isTokenSell } = this.state
+      this.setState(
+        () => ({
+          sellCurrency: value,
+          sellBlockchain: blockchain,
+        }),
+        () => {
+          const { isTokenSell } = this.state
 
-        if (isTokenSell) {
-          this.checkBalanceForTokenFee()
-          this.updateTokenBaseWalletBalance(blockchain)
+          if (isTokenSell) {
+            this.checkBalanceForTokenFee()
+            this.updateTokenBaseWalletBalance(blockchain)
+          }
         }
-      })
+      )
 
       if (sellAmount > 0 || buyAmount > 0) {
         this.handleBuyAmountChange(buyAmount)
@@ -346,7 +341,8 @@ export default class AddOffer extends Component<any, any> {
   }
 
   handleAnyChange = ({ type, value }) => {
-    const { manualRate, exchangeRate, buyAmount, sellAmount, buyCurrency, sellCurrency } = this.state
+    const { manualRate, exchangeRate, buyAmount, sellAmount, buyCurrency, sellCurrency } =
+      this.state
 
     if (type === 'sell' || type === 'buy') {
       if (!this.isSending) {
@@ -377,7 +373,8 @@ export default class AddOffer extends Component<any, any> {
             sellAmount: newSellAmount.toString(),
           })
         } else {
-          const newBuyAmount = newSellAmount.multipliedBy(exchangeRate || 0)
+          const newBuyAmount = newSellAmount
+            .multipliedBy(exchangeRate || 0)
             .dp(constants.tokenDecimals[buyCurrency.toLowerCase()], BigNumber.ROUND_DOWN)
 
           this.setState({
@@ -404,7 +401,8 @@ export default class AddOffer extends Component<any, any> {
             buyAmount: newBuyAmount.toString(),
           })
         } else {
-          const newSellAmount = newBuyAmount.dividedBy(exchangeRate || 0)
+          const newSellAmount = newBuyAmount
+            .dividedBy(exchangeRate || 0)
             .dp(constants.tokenDecimals[sellCurrency.toLowerCase()], BigNumber.ROUND_DOWN)
 
           this.setState({
@@ -481,30 +479,33 @@ export default class AddOffer extends Component<any, any> {
       sellBlockchain,
     } = this.state
 
-    this.setState(() => ({
-      sellCurrency: buyCurrency,
-      sellBlockchain: buyBlockchain,
-      sellAmount: '',
-      balanceForSellTokenFee: balanceForBuyTokenFee,
-      // ----
-      buyCurrency: sellCurrency,
-      buyBlockchain: sellBlockchain,
-      buyAmount: '',
-      balanceForBuyTokenFee: balanceForSellTokenFee,
-    }), async () => {
-      await this.checkBalance(buyCurrency)
-      await this.updateExchangeRate(buyCurrency, sellCurrency)
+    this.setState(
+      () => ({
+        sellCurrency: buyCurrency,
+        sellBlockchain: buyBlockchain,
+        sellAmount: '',
+        balanceForSellTokenFee: balanceForBuyTokenFee,
+        // ----
+        buyCurrency: sellCurrency,
+        buyBlockchain: sellBlockchain,
+        buyAmount: '',
+        balanceForBuyTokenFee: balanceForSellTokenFee,
+      }),
+      async () => {
+        await this.checkBalance(buyCurrency)
+        await this.updateExchangeRate(buyCurrency, sellCurrency)
 
-      actions.pairs.selectPairPartial(buyCurrency)
+        actions.pairs.selectPairPartial(buyCurrency)
 
-      this.isTokenOffer(this.state.sellCurrency, this.state.buyCurrency)
-      this.getFee()
-    })
+        this.isTokenOffer(this.state.sellCurrency, this.state.buyCurrency)
+        this.getFee()
+      }
+    )
   }
 
   checkPair = (value) => {
     const selected = actions.pairs.selectPairPartial(value)
-    const check = selected.map(item => item.value).includes(this.state.buyCurrency)
+    const check = selected.map((item) => item.value).includes(this.state.buyCurrency)
 
     if (!check) {
       this.setState(() => ({
@@ -516,7 +517,7 @@ export default class AddOffer extends Component<any, any> {
   render() {
     const { currencies, addSelectedItems } = this.props
 
-    const { 
+    const {
       exchangeRate,
       buyAmount,
       sellAmount,
@@ -535,43 +536,54 @@ export default class AddOffer extends Component<any, any> {
 
     // @to-do - fetch eth miner fee for swap
     const minAmountForSwap = 0.004
-    const needEthBalance = (new BigNumber(tokenBaseCurrencyBalance).isLessThan(minAmountForSwap) && (isTokenBuy || isTokenSell))
+    const needEthBalance =
+      new BigNumber(tokenBaseCurrencyBalance).isLessThan(minAmountForSwap) &&
+      (isTokenBuy || isTokenSell)
     const linked = Link.all(this, 'exchangeRate', 'buyAmount', 'sellAmount')
 
     const minimalAmountSell = !isTokenSell
-      ? COINS_WITH_DYNAMIC_FEE.includes(sellCurrency) ? minimalestAmountForSell : MIN_AMOUNT_OFFER[buyCurrency]
+      ? COINS_WITH_DYNAMIC_FEE.includes(sellCurrency)
+        ? minimalestAmountForSell
+        : MIN_AMOUNT_OFFER[buyCurrency]
       : 0.001
 
     const minimalAmountBuy = !isTokenBuy
-      ? COINS_WITH_DYNAMIC_FEE.includes(buyCurrency) ? minimalestAmountForBuy : MIN_AMOUNT_OFFER[buyCurrency]
+      ? COINS_WITH_DYNAMIC_FEE.includes(buyCurrency)
+        ? minimalestAmountForBuy
+        : MIN_AMOUNT_OFFER[buyCurrency]
       : 0.001
 
     // temporary: hide turboswaps on mainnet
     const isShowSwapModeSwitch = !process.env.MAINNET
 
-    const isTurboAllowed = turboSwap.isAssetSupported(buyCurrency) && turboSwap.isAssetSupported(sellCurrency)
+    const isTurboAllowed =
+      turboSwap.isAssetSupported(buyCurrency) && turboSwap.isAssetSupported(sellCurrency)
 
-    const isDisabled = !exchangeRate
-      || !buyAmount && !sellAmount
-      || new BigNumber(sellAmount).isGreaterThan(balance)
-      || new BigNumber(sellAmount).isLessThan(minimalAmountSell)
-      || new BigNumber(buyAmount).isLessThan(minimalAmountBuy)
-      || needEthBalance
+    const isDisabled =
+      !exchangeRate ||
+      (!buyAmount && !sellAmount) ||
+      new BigNumber(sellAmount).isGreaterThan(balance) ||
+      new BigNumber(sellAmount).isLessThan(minimalAmountSell) ||
+      new BigNumber(buyAmount).isLessThan(minimalAmountBuy) ||
+      needEthBalance
 
     if (linked.sellAmount.value !== '' && linked.sellAmount.value > 0) {
-      linked.sellAmount.check((value) => (new BigNumber(value).isGreaterThan(minimalAmountSell)),
+      linked.sellAmount.check(
+        (value) => new BigNumber(value).isGreaterThan(minimalAmountSell),
         <span>
-          <FormattedMessage id="transaction444" defaultMessage="Sell amount must be greater than " />
-          {' '}
+          <FormattedMessage
+            id="transaction444"
+            defaultMessage="Sell amount must be greater than "
+          />{' '}
           {minimalAmountSell}
         </span>
       )
     }
     if (linked.buyAmount.value !== '' && linked.buyAmount.value > 0) {
-      linked.buyAmount.check((value) => (new BigNumber(value).isGreaterThan(minimalAmountBuy)),
+      linked.buyAmount.check(
+        (value) => new BigNumber(value).isGreaterThan(minimalAmountBuy),
         <span>
-          <FormattedMessage id="transaction450" defaultMessage="Buy amount must be greater than " />
-          {' '}
+          <FormattedMessage id="transaction450" defaultMessage="Buy amount must be greater than " />{' '}
           {minimalAmountBuy}
         </span>
       )
@@ -580,12 +592,20 @@ export default class AddOffer extends Component<any, any> {
     return (
       <div styleName={`wrapper addOffer`}>
         <div styleName="offerTitle">
-          <FormattedMessage id="offerMessageToUser" defaultMessage="You must be online all the time, otherwise your order will not be visible to other users" />
+          <FormattedMessage
+            id="offerMessageToUser"
+            defaultMessage="You must be online all the time, otherwise your order will not be visible to other users"
+          />
         </div>
 
         <SelectGroup
           label={<FormattedMessage id="addoffer381" defaultMessage="Sell" />}
-          tooltip={<FormattedMessage id="partial462" defaultMessage="The amount you have on swap.online or an external wallet that you want to exchange" />}
+          tooltip={
+            <FormattedMessage
+              id="partial462"
+              defaultMessage="The amount you have on swap.online or an external wallet that you want to exchange"
+            />
+          }
           inputValueLink={linked.sellAmount.pipe(this.handleSellAmountChange)}
           dontDisplayError
           selectedValue={sellCurrency}
@@ -595,15 +615,16 @@ export default class AddOffer extends Component<any, any> {
           currencies={currencies}
           placeholder="0.00000000"
         />
-        <Select
-          changeBalance={this.changeBalance}
-          balance={balance}
-          switching={this.switching}
-        />
+        <Select changeBalance={this.changeBalance} balance={balance} switching={this.switching} />
 
         <SelectGroup
           label={<FormattedMessage id="addoffer396" defaultMessage="Buy" />}
-          tooltip={<FormattedMessage id="partial478" defaultMessage="The amount you will receive after the exchange" />}
+          tooltip={
+            <FormattedMessage
+              id="partial478"
+              defaultMessage="The amount you will receive after the exchange"
+            />
+          }
           inputValueLink={linked.buyAmount.pipe(this.handleBuyAmountChange)}
           dontDisplayError
           selectedValue={buyCurrency}
@@ -629,8 +650,7 @@ export default class AddOffer extends Component<any, any> {
           <div styleName="toggle">
             <Toggle checked={manualRate} onChange={this.handleManualRate} />
             <div styleName="toggleText">
-              <FormattedMessage id="AddOffer418" defaultMessage="Custom exchange rate" />
-              {' '}
+              <FormattedMessage id="AddOffer418" defaultMessage="Custom exchange rate" />{' '}
               <Tooltip id="add264">
                 <FormattedMessage id="add408" defaultMessage="To change the exchange rate " />
               </Tooltip>
@@ -638,12 +658,14 @@ export default class AddOffer extends Component<any, any> {
           </div>
 
           <div styleName="toggle">
-            <Toggle checked={isPartial} onChange={() => this.setState((state) => ({ isPartial: !state.isPartial }))} />
+            <Toggle
+              checked={isPartial}
+              onChange={() => this.setState((state) => ({ isPartial: !state.isPartial }))}
+            />
             <div styleName="toggleText">
-              <FormattedMessage id="AddOffer423" defaultMessage="Enable partial fills" />
-              {' '}
+              <FormattedMessage id="AddOffer423" defaultMessage="Enable partial fills" />{' '}
               <Tooltip id="add547">
-                <div style={{ textAlign: 'center' }} >
+                <div style={{ textAlign: 'center' }}>
                   <FormattedMessage
                     id="addOfferPartialTooltip"
                     defaultMessage={`You will receive exchange requests or the {p} amount less than the total amount you want {p} sell. For example you want to sell 1 BTC,
@@ -655,22 +677,31 @@ export default class AddOffer extends Component<any, any> {
             </div>
           </div>
 
-          {isShowSwapModeSwitch &&
+          {isShowSwapModeSwitch && (
             <div styleName="toggle">
               <div styleName="toggleText">
                 <FormattedMessage id="AtomicSwap_Title" defaultMessage="Atomic swap" />
               </div>
-              <Toggle checked={isTurbo} isDisabled={!isTurboAllowed} onChange={() => this.setState((state) => ({ isTurbo: !state.isTurbo }))} />
+              <Toggle
+                checked={isTurbo}
+                isDisabled={!isTurboAllowed}
+                onChange={() => this.setState((state) => ({ isTurbo: !state.isTurbo }))}
+              />
               <div styleName="toggleText">
                 <TurboIcon />
                 <span>
                   <FormattedMessage id="TurboSwap_Title" defaultMessage="Turbo swap" />
                   &nbsp;
-                  <a href="https://github.com/swaponline/MultiCurrencyWallet/blob/master/docs/TURBO_SWAPS.md" target="_blank">(?)</a>
+                  <a
+                    href="https://github.com/swaponline/MultiCurrencyWallet/blob/master/docs/TURBO_SWAPS.md"
+                    target="_blank"
+                  >
+                    (?)
+                  </a>
                 </span>
               </div>
             </div>
-          }
+          )}
         </div>
         {needEthBalance && (
           <div styleName="Error">
@@ -696,12 +727,15 @@ export default class AddOffer extends Component<any, any> {
             )}
           </div>
         )}
-        {
-          Object.values(linked).map((item, index) => Boolean(item.error)
-            ? <div key={index} styleName="Error">{item.error}</div>
-            : ''
+        {Object.values(linked).map((item, index) =>
+          Boolean(item.error) ? (
+            <div key={index} styleName="Error">
+              {item.error}
+            </div>
+          ) : (
+            ''
           )
-        }
+        )}
         <Button styleName="button" fullWidth blue disabled={isDisabled} onClick={this.handleNext}>
           <FormattedMessage id="AddOffer396" defaultMessage="Next" />
         </Button>

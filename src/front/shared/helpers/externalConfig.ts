@@ -91,7 +91,8 @@ const externalConfig = () => {
       bannersSource: 'https://noxon.wpmix.net/swapBanners/banners.php',
       disableInternalWallet: false,
       faq: {
-        before: [/*
+        before: [
+          /*
           {
             title: 'Faq title before 1',
             content: 'Faq 1 content'
@@ -100,127 +101,95 @@ const externalConfig = () => {
             title: 'Faq title before 2',
             content: 'Faq 2 content'
           }
-        */],
-        after: [/*
+        */
+        ],
+        after: [
+          /*
           {
             title: 'Faq title after',
             content: 'Faq content'
           }
-        */]
+        */
+        ],
       },
       menu: {
-        before: [/*
+        before: [
+          /*
           {
             "title": "After",
             "link": "https:\/\/google.com"
           }
-        */],
-        after: []
+        */
+        ],
+        after: [],
       },
     },
   }
 
-  if (window
-    && window.SO_FaqBeforeTabs
-    && window.SO_FaqBeforeTabs.length
-  ) {
+  if (window && window.SO_FaqBeforeTabs && window.SO_FaqBeforeTabs.length) {
     config.opts.ui.faq.before = window.SO_FaqBeforeTabs
   }
-  if (window
-    && window.SO_FaqAfterTabs
-    && window.SO_FaqAfterTabs.length
-  ) {
+  if (window && window.SO_FaqAfterTabs && window.SO_FaqAfterTabs.length) {
     config.opts.ui.faq.after = window.SO_FaqAfterTabs
   }
 
-  if (window
-    && window.SO_MenuItemsBefore
-    && window.SO_MenuItemsBefore.length
-  ) {
+  if (window && window.SO_MenuItemsBefore && window.SO_MenuItemsBefore.length) {
     config.opts.ui.menu.before = window.SO_MenuItemsBefore
   }
-  if (window
-    && window.SO_MenuItemsAfter
-    && window.SO_MenuItemsAfter.length
-  ) {
+  if (window && window.SO_MenuItemsAfter && window.SO_MenuItemsAfter.length) {
     config.opts.ui.menu.after = window.SO_MenuItemsAfter
   }
 
-  if (window
-    && window.SO_disableInternalWallet
-    && window.SO_disableInternalWallet
-  ) {
+  if (window && window.SO_disableInternalWallet && window.SO_disableInternalWallet) {
     config.opts.ui.disableInternalWallet = window.SO_disableInternalWallet
   }
-  if (window
-    && window.SO_fiatBuySupperted
-    && window.SO_fiatBuySupperted.length
-  ) {
+  if (window && window.SO_fiatBuySupperted && window.SO_fiatBuySupperted.length) {
     config.opts.buyFiatSupported = window.SO_fiatBuySupperted
   }
-  if (window
-    && window.SO_defaultQuickSell
-  ) {
+  if (window && window.SO_defaultQuickSell) {
     config.opts.defaultQuickSell = window.SO_defaultQuickSell
   }
-  if (window
-    && window.SO_defaultQuickBuy
-  ) {
+  if (window && window.SO_defaultQuickBuy) {
     config.opts.defaultQuickBuy = window.SO_defaultQuickBuy
   }
-  if (window
-    && window.SO_createWalletCoinsOrder
-    && window.SO_createWalletCoinsOrder.length
-  ) {
+  if (window && window.SO_createWalletCoinsOrder && window.SO_createWalletCoinsOrder.length) {
     config.opts.createWalletCoinsOrder = window.SO_createWalletCoinsOrder
   }
 
-  if (window
-    && window.invoiceEnabled
-  ) {
+  if (window && window.invoiceEnabled) {
     config.opts.invoiceEnabled = true
   }
 
-  if (window
-    && window.hideServiceLinks
-  ) {
+  if (window && window.hideServiceLinks) {
     config.opts.ui.hideServiceLinks = window.hideServiceLinks
   }
 
-  if (window
-    && window.WPuserHash
-  ) {
+  if (window && window.WPuserHash) {
     config.opts.WPuserHash = window.WPuserHash
     window.WPuserHash = false
   }
 
-  if (window
-    && window.showHowItWorksOnExchangePage
-  ) {
+  if (window && window.showHowItWorksOnExchangePage) {
     config.showHowItsWork = window.showHowItWorksOnExchangePage
   }
 
-  if (window
-    && window.buildOptions
-    && Object.keys(window.buildOptions)
-    && Object.keys(window.buildOptions).length
+  if (
+    window &&
+    window.buildOptions &&
+    Object.keys(window.buildOptions) &&
+    Object.keys(window.buildOptions).length
   ) {
     config.opts = { ...config.opts, ...window.buildOptions }
   }
 
-  if (window
-    && window.DEFAULT_FIAT
-  ) {
+  if (window && window.DEFAULT_FIAT) {
     config.opts.activeFiat = window.DEFAULT_FIAT
   }
   reducers.user.setActiveFiat({ activeFiat: config.opts.activeFiat })
 
-  if (window
-    && window.EXCHANGE_DISABLED
-  ) {
+  if (window && window.EXCHANGE_DISABLED) {
     config.opts.exchangeDisabled = window.EXCHANGE_DISABLED
   }
-
 
   // Plugin: enable/disable currencies
 
@@ -277,19 +246,13 @@ const externalConfig = () => {
   )
 
   // Plugins
-  if (window
-    && window.backupPlugin
-    && window.backupUrl
-    && window.restoreUrl
-  ) {
+  if (window && window.backupPlugin && window.backupUrl && window.restoreUrl) {
     config.opts.plugins.backupPlugin = window.backupPlugin
     config.opts.plugins.backupPluginUrl = window.backupUrl
     config.opts.plugins.restorePluginUrl = window.restoreUrl
   }
 
-  if (window
-    && window.setItemPlugin
-  ) {
+  if (window && window.setItemPlugin) {
     config.opts.plugins.setItemPlugin = window.setItemPlugin
   }
   if (window && window.getItemPlugin) {
@@ -300,15 +263,11 @@ const externalConfig = () => {
   }
 
   // ------
-  if (window
-    && window.buyViaCreditCardLink
-  ) {
+  if (window && window.buyViaCreditCardLink) {
     config.opts.buyViaCreditCardLink = window.buyViaCreditCardLink
   }
 
-  if (window
-    && window.SWAP_HIDE_EXPORT_PRIVATEKEY !== undefined
-  ) {
+  if (window && window.SWAP_HIDE_EXPORT_PRIVATEKEY !== undefined) {
     config.opts.hideShowPrivateKey = window.SWAP_HIDE_EXPORT_PRIVATEKEY
   }
 
@@ -363,7 +322,7 @@ const externalConfig = () => {
             address: tokenObj.address,
             decimals: tokenObj.decimals,
             fullName: tokenObj.symbol,
-            canSwap: true
+            canSwap: true,
           }
         }
       })
@@ -371,10 +330,7 @@ const externalConfig = () => {
   }
 
   // Comission config - default false
-  if (window
-    && window.widgetERC20Comisions
-    && Object.keys(window.widgetERC20Comisions)
-  ) {
+  if (window && window.widgetERC20Comisions && Object.keys(window.widgetERC20Comisions)) {
     let hasTokenAdminFee = false
 
     Object.keys(window.widgetERC20Comisions).filter((key) => {
@@ -441,7 +397,4 @@ const externalConfig = () => {
 
 export default externalConfig()
 
-export {
-  externalConfig,
-  initExternalConfig,
-}
+export { externalConfig, initExternalConfig }

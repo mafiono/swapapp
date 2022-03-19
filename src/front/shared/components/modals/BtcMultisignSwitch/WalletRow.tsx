@@ -22,29 +22,32 @@ import CurrencyButton from 'components/controls/CurrencyButton/CurrencyButton'
 import SwapApp from 'swap.app'
 import { BigNumber } from 'bignumber.js'
 
-
-
 @cssModules(styles, { allowMultiple: true })
 class WalletRow extends Component<any, any> {
-
   constructor(props) {
     super(props)
   }
 
   handleOpenDropdown = () => {
     this.setState({
-      isDropdownOpen: true
+      isDropdownOpen: true,
     })
   }
 
   handleSwitch = () => {
-    const { item: { index }, handleFinish } = this.props
+    const {
+      item: { index },
+      handleFinish,
+    } = this.props
     actions.btcmultisig.switchBtcMultisigKey(index)
     handleFinish()
   }
 
   handleRemove = () => {
-    const { item: { index }, handleRefresh } = this.props
+    const {
+      item: { index },
+      handleRefresh,
+    } = this.props
 
     //@ts-ignore: strictNullChecks
     actions.modals.open(constants.modals.Confirm, {
@@ -53,7 +56,6 @@ class WalletRow extends Component<any, any> {
         handleRefresh()
       },
     })
-
   }
 
   render() {
@@ -63,25 +65,21 @@ class WalletRow extends Component<any, any> {
       intl: { locale },
     } = this.props
 
-    const {
-      address,
-      currency,
-      balance,
-    } = item
+    const { address, currency, balance } = item
 
     let dropDownMenuItems = [
       {
         id: 1001,
-        title: <FormattedMessage id='SwitchBtcMultisigMenuSwitch' defaultMessage='Switch' />,
+        title: <FormattedMessage id="SwitchBtcMultisigMenuSwitch" defaultMessage="Switch" />,
         action: this.handleSwitch,
         disabled: false,
       },
       {
         id: 1002,
-        title: <FormattedMessage id='SwitchBtcMultisigMenuRemove' defaultMessage='Remove' />,
+        title: <FormattedMessage id="SwitchBtcMultisigMenuRemove" defaultMessage="Remove" />,
         action: this.handleRemove,
         disabled: false,
-      }
+      },
     ]
 
     if (itemsCount === 1) {
@@ -93,26 +91,19 @@ class WalletRow extends Component<any, any> {
           <div styleName="assetsTableCurrency">
             <Coin className={styles.assetsTableIcon} name={currency} />
             <div styleName="assetsTableInfo">
-              <div styleName="nameRow">
-                {address}
-              </div>
+              <div styleName="nameRow">{address}</div>
               <span>
                 <div styleName="no-select-inline">
-                  <span>
-                    {new BigNumber(balance).dp(5, BigNumber.ROUND_FLOOR).toString()}{' '}
-                  </span>
+                  <span>{new BigNumber(balance).dp(5, BigNumber.ROUND_FLOOR).toString()} </span>
                   <span>{currency}</span>
                 </div>
               </span>
-              <strong>{' '}</strong>
+              <strong> </strong>
             </div>
           </div>
           {dropDownMenuItems.length > 0 && (
             <div onClick={this.handleOpenDropdown} styleName="assetsTableDots">
-              <DropdownMenu
-                className="walletControls"
-                items={dropDownMenuItems}
-              />
+              <DropdownMenu className="walletControls" items={dropDownMenuItems} />
             </div>
           )}
         </td>
@@ -120,6 +111,5 @@ class WalletRow extends Component<any, any> {
     )
   }
 }
-
 
 export default injectIntl(WalletRow)

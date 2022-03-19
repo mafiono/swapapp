@@ -7,7 +7,6 @@ import { Modal } from 'components/modal'
 import { FormattedMessage, defineMessages, injectIntl } from 'react-intl'
 import config from 'helpers/externalConfig'
 
-
 const langLabels = defineMessages({
   title: {
     id: 'HowToWithdrawModal_Title',
@@ -17,21 +16,20 @@ const langLabels = defineMessages({
 
 @cssModules(styles, { allowMultiple: true })
 class HowToWithdrawModal extends React.Component<any, any> {
-
   constructor(props) {
     super(props)
     const {
-      data: {
-        currency,
-      },
+      data: { currency },
     } = props
 
     let howToWithdraw = ''
-    if (config
-      && config.erc20
-      && config.erc20[currency.toLowerCase()]
-      && config.erc20[currency.toLowerCase()].howToWithdraw
-    ) howToWithdraw = config.erc20[currency.toLowerCase()].howToWithdraw
+    if (
+      config &&
+      config.erc20 &&
+      config.erc20[currency.toLowerCase()] &&
+      config.erc20[currency.toLowerCase()].howToWithdraw
+    )
+      howToWithdraw = config.erc20[currency.toLowerCase()].howToWithdraw
 
     this.state = {
       howToWithdraw,
@@ -40,13 +38,8 @@ class HowToWithdrawModal extends React.Component<any, any> {
 
   render() {
     const {
-      props: {
-        name,
-        intl,
-      },
-      state: {
-        howToWithdraw,
-      },
+      props: { name, intl },
+      state: { howToWithdraw },
     } = this
 
     return (

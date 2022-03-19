@@ -8,14 +8,10 @@ import styles from './NetworkStatus.scss'
 import Tooltip from 'components/ui/Tooltip/Tooltip'
 import { FormattedMessage } from 'react-intl'
 
-@connect(
-  ({
-    pubsubRoom,
-  }) => ({
-    isOnline: pubsubRoom.isOnline,
-    onlineUsers: pubsubRoom.onlineUsers,
-  })
-)
+@connect(({ pubsubRoom }) => ({
+  isOnline: pubsubRoom.isOnline,
+  onlineUsers: pubsubRoom.onlineUsers,
+}))
 @cssModules(styles, { allowMultiple: true })
 export default class NetworkStatus extends React.Component<any, any> {
   static propTypes = {
@@ -36,15 +32,14 @@ export default class NetworkStatus extends React.Component<any, any> {
     return (
       <div styleName={`title ${isOnline ? 'online' : 'offline'}`}>
         <em styleName="mark"></em>
-        {!isOnline &&
-          <span styleName="status">Offline</span>
-        }
-        {
-          isOnline && (onlineUsers <= 0
-            ? <span styleName="status">Connecting...</span>
-            : <span styleName="status">{`${onlineUsers} peers online`}</span>)
-        }
-        <span styleName='status-tooltip'>
+        {!isOnline && <span styleName="status">Offline</span>}
+        {isOnline &&
+          (onlineUsers <= 0 ? (
+            <span styleName="status">Connecting...</span>
+          ) : (
+            <span styleName="status">{`${onlineUsers} peers online`}</span>
+          ))}
+        <span styleName="status-tooltip">
           <Tooltip id="NetworkStatusPeersOnlineTooltip">
             <div style={{ maxWidth: '24em', textAlign: 'center' }}>
               <FormattedMessage

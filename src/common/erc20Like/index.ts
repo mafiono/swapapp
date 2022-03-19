@@ -10,7 +10,6 @@ import utils from 'common/utils'
 import { feedback, metamask } from 'helpers'
 import getCoinInfo from 'common/coins/getCoinInfo'
 
-
 class erc20LikeHelper {
   readonly standard: string // (ex. erc20, bep20, erc20Matic, ...)
   readonly currency: string // (ex. ETH)
@@ -19,12 +18,7 @@ class erc20LikeHelper {
   readonly Web3: IUniversalObj
 
   constructor(params) {
-    const {
-      standard,
-      currency,
-      defaultParams,
-      web3,
-    } = params
+    const { standard, currency, defaultParams, web3 } = params
 
     this.standard = standard
     this.currency = currency
@@ -52,17 +46,15 @@ class erc20LikeHelper {
   estimateFeeValue = async (params): Promise<number> => {
     const { method, swapABMethod } = params
     const gasPrice = await this.estimateGasPrice()
-    const methodForLimit = swapABMethod === 'deposit'
-      ? 'swapDeposit'
-      : swapABMethod === 'withdraw'
+    const methodForLimit =
+      swapABMethod === 'deposit'
+        ? 'swapDeposit'
+        : swapABMethod === 'withdraw'
         ? 'swapWithdraw'
         : method
     const defaultGasLimit = this.defaultParams.limit[methodForLimit]
 
-    return new BigNumber(defaultGasLimit)
-      .multipliedBy(gasPrice)
-      .multipliedBy(1e-18)
-      .toNumber()
+    return new BigNumber(defaultGasLimit).multipliedBy(gasPrice).multipliedBy(1e-18).toNumber()
   }
 
   estimateGasPrice = async (): Promise<number> => {
@@ -71,10 +63,7 @@ class erc20LikeHelper {
 
   isToken = (params): boolean => {
     const { name } = params
-    const {
-      coin,
-      blockchain,
-    } = getCoinInfo(name)
+    const { coin, blockchain } = getCoinInfo(name)
 
     if (!blockchain) return false
     return (
@@ -112,14 +101,12 @@ class erc20LikeHelper {
 
 const isToken = (params) => {
   const { name } = params
-  const {
-    coin: coinName,
-    blockchain,
-  } = getCoinInfo(name)
+  const { coin: coinName, blockchain } = getCoinInfo(name)
 
   if (!blockchain) return false
 
-  const isUTXOModel = COIN_DATA[name.toUpperCase()] && COIN_DATA[name.toUpperCase()].model === COIN_MODEL.UTXO
+  const isUTXOModel =
+    COIN_DATA[name.toUpperCase()] && COIN_DATA[name.toUpperCase()].model === COIN_MODEL.UTXO
   if (isUTXOModel) return false
 
   for (const prop in TOKEN_STANDARDS) {

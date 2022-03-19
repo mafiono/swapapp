@@ -13,7 +13,6 @@ import styles from './ModalConductor.scss'
 })
 @cssModules(styles, { allowMultiple: true })
 export default class ModalConductor extends Component<any, any> {
-
   static propTypes = {
     modals: PropTypes.object,
   }
@@ -35,8 +34,7 @@ export default class ModalConductor extends Component<any, any> {
           offsetTop: myOffsetTop,
         })
       }
-    }
-    else {
+    } else {
       if (offsetTop > 0) {
         window.scrollTo(0, offsetTop)
 
@@ -52,15 +50,15 @@ export default class ModalConductor extends Component<any, any> {
 
     const modalNames = Object.keys(modals)
     const highestZIndex = Object.values(modals)
-      //@ts-ignore 
-      .map(i => i.zIndex)
-      .reduce((acc, i) => acc < i ? i : acc, 0)
+      //@ts-ignore
+      .map((i) => i.zIndex)
+      .reduce((acc, i) => (acc < i ? i : acc), 0)
     const areModalsExist = Boolean(modalNames.length)
 
-    return areModalsExist && (
-      <div styleName={`${!dashboardView ? 'modalConductor' : 'modalDashboardConductor'}`}>
-        {
-          modalNames.map((key, index) => {
+    return (
+      areModalsExist && (
+        <div styleName={`${!dashboardView ? 'modalConductor' : 'modalDashboardConductor'}`}>
+          {modalNames.map((key, index) => {
             const { name, data = {}, zIndex } = modals[key]
 
             if (zIndex === highestZIndex) {
@@ -73,9 +71,9 @@ export default class ModalConductor extends Component<any, any> {
               })
             }
             return null
-          })
-        }
-      </div>
+          })}
+        </div>
+      )
     )
   }
 }

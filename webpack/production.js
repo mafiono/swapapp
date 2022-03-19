@@ -6,12 +6,12 @@ import webpack from 'webpack'
 import externalConfig from './externalConfig'
 import ownBuffer from './ownBuffer'
 
-
 export default (webpackConfig) => {
   webpackConfig.mode = 'production'
 
   // `default` - через BUILD_TYPE Не указано, локальные, полные и билды теста
-  const hashPrefix = (process && process.env && process.env.BUILD_TYPE) ? process.env.BUILD_TYPE : `default`
+  const hashPrefix =
+    process && process.env && process.env.BUILD_TYPE ? process.env.BUILD_TYPE : `default`
 
   webpackConfig.output = {
     path: config.paths.base(`build-${config.dir}`),
@@ -21,13 +21,13 @@ export default (webpackConfig) => {
   }
 
   webpackConfig.externals = {
-    'react': 'React',
-    'react-dom' : 'ReactDOM',
+    react: 'React',
+    'react-dom': 'ReactDOM',
   }
   /*
-  * for production build is better to replace 'style-loader' on 'MiniCssExtractPlugin.loader'
-  * works with styles more effectively
-  */
+   * for production build is better to replace 'style-loader' on 'MiniCssExtractPlugin.loader'
+   * works with styles more effectively
+   */
   webpackConfig.module.rules = webpackConfig.module.rules.map((loader) => {
     if (loader.test.test('*.css') || loader.test.test('*.scss')) {
       loader.use[0] = MiniCssExtractPlugin.loader
@@ -48,8 +48,8 @@ export default (webpackConfig) => {
           priority: 1,
           enforce: true,
         },
-      }
-    }
+      },
+    },
   }
 
   webpackConfig.devtool = false
@@ -63,13 +63,13 @@ export default (webpackConfig) => {
     }),
     new WebpackRequireFrom({
       variableName: 'publicUrl',
-      suppressErrors: true
+      suppressErrors: true,
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[hash:6].css',
     }),
     ...externalConfig(),
-    ownBuffer(),
+    ownBuffer()
   )
 
   return webpackConfig

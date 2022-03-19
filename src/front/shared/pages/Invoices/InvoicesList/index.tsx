@@ -18,36 +18,37 @@ import config from 'helpers/externalConfig'
 import ContentLoader from 'components/loaders/ContentLoader/ContentLoader'
 import lsDataCache from 'helpers/lsDataCache'
 
-
 const isWidgetBuild = config && config.isWidget
 
-@connect(({
-  user: {
-    btcData,
-    ethData,
-    bnbData,
-    maticData,
-    arbethData,
-    xdaiData,
-    ghostData,
-    nextData,
-    activeFiat,
-  },
-}) => {
-  return {
-    data: {
-      btc: btcData,
-      eth: ethData,
-      bnb: bnbData,
-      matic: maticData,
-      arbeth: arbethData,
-      xdai: xdaiData,
-      ghost: ghostData,
-      next: nextData,
+@connect(
+  ({
+    user: {
+      btcData,
+      ethData,
+      bnbData,
+      maticData,
+      arbethData,
+      xdaiData,
+      ghostData,
+      nextData,
+      activeFiat,
     },
-    activeFiat,
+  }) => {
+    return {
+      data: {
+        btc: btcData,
+        eth: ethData,
+        bnb: bnbData,
+        matic: maticData,
+        arbeth: arbethData,
+        xdai: xdaiData,
+        ghost: ghostData,
+        next: nextData,
+      },
+      activeFiat,
+    }
   }
-})
+)
 @withRouter
 @CSSModules(styles, { allowMultiple: true })
 class InvoicesList extends PureComponent<any, any> {
@@ -58,10 +59,7 @@ class InvoicesList extends PureComponent<any, any> {
 
     const {
       match: {
-        params: {
-          type = null,
-          address = null,
-        },
+        params: { type = null, address = null },
       },
     } = props
 
@@ -79,49 +77,49 @@ class InvoicesList extends PureComponent<any, any> {
   }
 
   handleGoWalletHome = () => {
-    const { history, intl: { locale } } = this.props
+    const {
+      history,
+      intl: { locale },
+    } = this.props
 
     history.push(localisedUrl(locale, links.wallet))
   }
 
   fetchItems = () => {
-    const {
-      type,
-      address,
-    } = this.state
+    const { type, address } = this.state
 
     if (type && address) {
       // Fetch for one wallet
-      actions.invoices.getInvoices({
-        currency: type,
-        address,
-      //@ts-ignore
-      }).then((items) => {
-        lsDataCache.push({
-          key: `Invoices_${type.toLowerCase()}_${address.toLowerCase()}`,
-          time: 3600,
-          data: items,
+      actions.invoices
+        .getInvoices({
+          currency: type,
+          address,
+          //@ts-ignore
         })
-        if (!this.unmounted) {
-          this.setState({ items })
-        }
-      })
+        .then((items) => {
+          lsDataCache.push({
+            key: `Invoices_${type.toLowerCase()}_${address.toLowerCase()}`,
+            time: 3600,
+            data: items,
+          })
+          if (!this.unmounted) {
+            this.setState({ items })
+          }
+        })
     } else {
       // Fetch for all my wallets
       const wallets = actions.core.getWallets({})
-      const invoicesData = wallets.map((wallet) => {
-        const {
-          currency: type,
-          tokenKey,
-          address,
-        } = wallet
+      const invoicesData = wallets
+        .map((wallet) => {
+          const { currency: type, tokenKey, address } = wallet
 
-        return {
-          type,
-          tokenKey,
-          address,
-        }
-      }).filter((wallet) => wallet.address !== `Not connected`)
+          return {
+            type,
+            tokenKey,
+            address,
+          }
+        })
+        .filter((wallet) => wallet.address !== `Not connected`)
 
       actions.invoices.getManyInvoices(invoicesData).then((items) => {
         lsDataCache.push({
@@ -149,44 +147,38 @@ class InvoicesList extends PureComponent<any, any> {
   componentDidUpdate(prevProps) {
     let {
       match: {
-        params: {
-          type = null,
-          address = null,
-        },
+        params: { type = null, address = null },
       },
     } = this.props
 
     let {
       match: {
-        params: {
-          address: prevAddress = null,
-          type: prevType = null,
-        },
+        params: { address: prevAddress = null, type: prevType = null },
       },
     } = prevProps
 
-    if ((prevAddress !== address) || (prevType !== type)) {
+    if (prevAddress !== address || prevType !== type) {
       let items = false
       if (type && address) {
         items = lsDataCache.get(`Invoices_${type.toLowerCase()}_${address.toLowerCase()}`)
       } else {
         items = lsDataCache.get(`Invoices_All`)
       }
-      this.setState({
-        type,
-        address,
-        items,
-      }, () => {
-        this.fetchItems()
-      })
+      this.setState(
+        {
+          type,
+          address,
+          items,
+        },
+        () => {
+          this.fetchItems()
+        }
+      )
     }
   }
 
   rowRender = (row, rowIndex) => {
-    const {
-      history,
-      activeFiat,
-    } = this.props
+    const { history, activeFiat } = this.props
 
     return (
       <Row key={rowIndex} {...row} viewType="invoice" activeFiat={activeFiat} history={history} />
@@ -194,14 +186,9 @@ class InvoicesList extends PureComponent<any, any> {
   }
 
   render() {
-    let {
-      onlyTable,
-    } = this.props
+    let { onlyTable } = this.props
 
-    const {
-      isRedirecting,
-      items,
-    } = this.state
+    const { isRedirecting, items } = this.state
 
     if (isRedirecting) return null
 
@@ -210,7 +197,7 @@ class InvoicesList extends PureComponent<any, any> {
         <h3>
           <FormattedMessage id="InvoicesList_Title" defaultMessage="Invoices" />
         </h3>
-        {(items && items.length > 0) ? (
+        {items && items.length > 0 ? (
           <Table rows={items} styleName="currencyHistory" rowRender={this.rowRender} />
         ) : (
           <ContentLoader rideSideContent empty inner />
@@ -241,17 +228,13 @@ class InvoicesList extends PureComponent<any, any> {
         <Fragment>
           <div styleName="currencyWalletWrapper">
             <div styleName="currencyWalletBalance">
-              {(items && items.length > 0) ? (
-                <div>
-                  {/* Right form holder */}
-                </div>
+              {items && items.length > 0 ? (
+                <div>{/* Right form holder */}</div>
               ) : (
                 <ContentLoader leftSideContent />
               )}
             </div>
-            <div styleName="currencyWalletActivity">
-              {invoicesTable}
-            </div>
+            <div styleName="currencyWalletActivity">{invoicesTable}</div>
           </div>
         </Fragment>
       </div>

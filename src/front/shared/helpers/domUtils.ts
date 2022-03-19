@@ -1,6 +1,5 @@
 import ReactDOM from 'react-dom'
 
-
 export const bodySelector = document.querySelector('body')
 export const portalSelector = document.getElementById('portal')
 
@@ -35,6 +34,5 @@ export const animate = (draw, duration) => {
     if (timePassed < duration) {
       requestAnimationFrame(animate)
     }
-
   })
 }

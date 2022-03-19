@@ -12,40 +12,43 @@ function ContentLoader(props) {
 
   return (
     <Fragment>
-      {
-        rideSideContent ? (
-          <div styleName={`animationLoading rideSideContent ${empty ? 'stop' : ''} ${inner ? 'inner' : ''}`}>
-            {
-              empty ? (
-                <div styleName="textBlock">
-                  <p>No transactions</p>
-                  <span>There isn't any activity in your account yet</span>
-                </div>
-              ) : ''
-            }
-            {!empty && !nonHeader ? <DescrSection /> : ''}
-            <ContentSection />
-            <ContentSection />
-          </div>
-        ) : ''
-      }
-      {
-        leftSideContent ? (
-          <div styleName="animationLoading leftSideContent">
-            <BalanceSection />
-          </div>
-        ) : ''
-      }
-      {
-        banners ? (
-          <div styleName="animationLoading banners">
-            <BannersSection />
-          </div>
-        ) : ''
-      }
+      {rideSideContent ? (
+        <div
+          styleName={`animationLoading rideSideContent ${empty ? 'stop' : ''} ${
+            inner ? 'inner' : ''
+          }`}
+        >
+          {empty ? (
+            <div styleName="textBlock">
+              <p>No transactions</p>
+              <span>There isn't any activity in your account yet</span>
+            </div>
+          ) : (
+            ''
+          )}
+          {!empty && !nonHeader ? <DescrSection /> : ''}
+          <ContentSection />
+          <ContentSection />
+        </div>
+      ) : (
+        ''
+      )}
+      {leftSideContent ? (
+        <div styleName="animationLoading leftSideContent">
+          <BalanceSection />
+        </div>
+      ) : (
+        ''
+      )}
+      {banners ? (
+        <div styleName="animationLoading banners">
+          <BannersSection />
+        </div>
+      ) : (
+        ''
+      )}
     </Fragment>
   )
 }
 
 export default CSSModules(ContentLoader, styles, { allowMultiple: true })
-

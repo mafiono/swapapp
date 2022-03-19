@@ -22,18 +22,10 @@ const SecondStep = (props) => {
       sellCurrency,
       buyCurrency,
       flow: {
-        state: {
-          ethSwapCreationTransactionHash,
-          utxoScriptCreatingTransactionHash,
-        },
+        state: { ethSwapCreationTransactionHash, utxoScriptCreatingTransactionHash },
       },
     },
-    fields: {
-      explorerLink,
-      etherscanLink,
-      currencyName,
-      ethLikeCoin,
-    },
+    fields: { explorerLink, etherscanLink, currencyName, ethLikeCoin },
     text,
   } = props
 
@@ -57,7 +49,8 @@ const SecondStep = (props) => {
       try {
         let fetchedTx: any
 
-        if (currencyName === ethLikeCoin.toLowerCase()) { // TODO: needs to be improved when adding BNB
+        if (currencyName === ethLikeCoin.toLowerCase()) {
+          // TODO: needs to be improved when adding BNB
           fetchedTx = await actions[ethLikeCoin.toLowerCase()].fetchTxInfo(txHash)
 
           if (fetchedTx && fetchedTx.confirmed) {
@@ -67,7 +60,10 @@ const SecondStep = (props) => {
           }
         }
 
-        fetchedTx = await actions[currencyName.toLowerCase()].fetchTx(txHash, (refreshTime - 5) * 1000)
+        fetchedTx = await actions[currencyName.toLowerCase()].fetchTx(
+          txHash,
+          (refreshTime - 5) * 1000
+        )
 
         if (fetchedTx && fetchedTx.confirmations >= 1) {
           return setScriptHashIsConfirmed(true)
@@ -84,14 +80,14 @@ const SecondStep = (props) => {
 
   useEffect(() => {
     _mounted = true
-    if (scriptHash && !scriptHashIsConfirmed){
+    if (scriptHash && !scriptHashIsConfirmed) {
       checkTransactionHash(scriptHash, currencyName, 20)
     }
   }, [scriptHash])
 
   useEffect(() => {
     _mounted = true
-    if (ethSwapHash && !ethSwapHashIsConfirmed){
+    if (ethSwapHash && !ethSwapHashIsConfirmed) {
       checkTransactionHash(ethSwapHash, ethLikeCoin.toLowerCase(), 20)
     }
   }, [ethSwapHash])
@@ -109,8 +105,25 @@ const SecondStep = (props) => {
 
   return (
     <div
-      styleName={(isStepActive && 'stepItem active') || (isFirstStepActive && 'stepItem') || 'stepItem active checked'}>
-      <span styleName="stepNumber">{!isMobile ? (showStepNumber ? 2 : <i className="fas fa-check" />) : (showStepNumber ? 1 : <i className="fas fa-check" />) }</span>
+      styleName={
+        (isStepActive && 'stepItem active') ||
+        (isFirstStepActive && 'stepItem') ||
+        'stepItem active checked'
+      }
+    >
+      <span styleName="stepNumber">
+        {!isMobile ? (
+          showStepNumber ? (
+            2
+          ) : (
+            <i className="fas fa-check" />
+          )
+        ) : showStepNumber ? (
+          1
+        ) : (
+          <i className="fas fa-check" />
+        )}
+      </span>
       <p styleName="stepText">
         <FormattedMessage id="BtcToEthToken24" defaultMessage="Deposit" />
       </p>
@@ -123,15 +136,21 @@ const SecondStep = (props) => {
             target="_blank"
             rel="noreferrer noopener"
           >
-            <FormattedMessage id="FourthStep37BtcLike" defaultMessage="({currencyName} tx)" values={{ currencyName : currencyName.toLowerCase() }} />
+            <FormattedMessage
+              id="FourthStep37BtcLike"
+              defaultMessage="({currencyName} tx)"
+              values={{ currencyName: currencyName.toLowerCase() }}
+            />
             {scriptHashIsConfirmed ? (
               <img
                 id="checkedUtxoDepositHashIcon"
                 styleName="checkedIcon"
                 src={regularIcons.CHECKED}
-                alt='checked'
+                alt="checked"
               />
-            ) : <InlineLoader />}
+            ) : (
+              <InlineLoader />
+            )}
             <i className="fas fa-link" />
           </a>
         </strong>
@@ -147,7 +166,12 @@ const SecondStep = (props) => {
             <FormattedMessage
               id="FourthStep52"
               defaultMessage="({otherCurrency} tx)"
-              values={{ otherCurrency: sellCurrency.toLowerCase() === currencyName.toLowerCase() ? buyCurrency.toLowerCase() : sellCurrency.toLowerCase() }}
+              values={{
+                otherCurrency:
+                  sellCurrency.toLowerCase() === currencyName.toLowerCase()
+                    ? buyCurrency.toLowerCase()
+                    : sellCurrency.toLowerCase(),
+              }}
             />
             <i className="fas fa-link" />
             {ethSwapHashIsConfirmed ? (
@@ -155,9 +179,11 @@ const SecondStep = (props) => {
                 id="checkedEvmDepositHashIcon"
                 styleName="checkedIcon"
                 src={regularIcons.CHECKED}
-                alt='checked'
+                alt="checked"
               />
-            ) : <InlineLoader />}
+            ) : (
+              <InlineLoader />
+            )}
           </a>
         </strong>
       )}
@@ -168,13 +194,9 @@ const SecondStep = (props) => {
             defaultMessage="On this step, the crypto goes not to your wallet {br}or to the wallet of your counterparty but directly to the swap contract"
             values={{ br: <br /> }}
           />
-        </Tooltip >
+        </Tooltip>
       </div>
-      {showDepositWindow ? '' : isStepActive && (
-        <span styleName="stepHeading">
-          {text}
-        </span>
-      )}
+      {showDepositWindow ? '' : isStepActive && <span styleName="stepHeading">{text}</span>}
     </div>
   )
 }

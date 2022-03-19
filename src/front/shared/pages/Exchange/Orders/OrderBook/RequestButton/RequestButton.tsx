@@ -8,24 +8,18 @@ const RequestButton = (params) => {
   const {
     disabled,
     onClick,
-    data: {
-      type,
-      base,
-      main,
-    },
+    data: { type, base, main },
   } = params
 
   return (
     <button styleName={`button ${disabled ? 'disabled' : ''}`} onClick={onClick}>
       <div styleName="rows">
         <div styleName="row1">
-          <FormattedMessage id="Reqstbttn16" defaultMessage="Buy" />
-          {' '}
+          <FormattedMessage id="Reqstbttn16" defaultMessage="Buy" />{' '}
           <span styleName="ticker">{type === PAIR_TYPES.BID ? base : main}</span>
         </div>
-        <div  styleName="row2">
-          <FormattedMessage id="Reqstbttn22" defaultMessage="for" />
-          {' '}
+        <div styleName="row2">
+          <FormattedMessage id="Reqstbttn22" defaultMessage="for" />{' '}
           <span styleName="ticker">{type === PAIR_TYPES.BID ? main : base}</span>
         </div>
       </div>

@@ -13,7 +13,6 @@ import { FormattedMessage, injectIntl, defineMessages } from 'react-intl'
 import Table from 'components/tables/Table/Table'
 import WalletRow from './WalletRow'
 
-
 @cssModules({ ...defaultStyles, ...styles }, { allowMultiple: true })
 class BtcMultisignSwitch extends React.Component<any, any> {
   static propTypes = {
@@ -74,7 +73,7 @@ class BtcMultisignSwitch extends React.Component<any, any> {
       empty: {
         id: 'btcmsSwitchFetchWalletsEmpty',
         defaultMessage: `У вас нет BTC-Multisign кошельков`,
-      }
+      },
     })
 
     return (
@@ -83,7 +82,9 @@ class BtcMultisignSwitch extends React.Component<any, any> {
           <Table
             styleName="wallets"
             rows={wallets}
-            textIfEmpty={`${intl.formatMessage((isFetching) ? langLabels.fetching : langLabels.empty)}`}
+            textIfEmpty={`${intl.formatMessage(
+              isFetching ? langLabels.fetching : langLabels.empty
+            )}`}
             rowRender={(row, index, selectId, handleSelectId) => (
               <WalletRow
                 key={index}
@@ -94,7 +95,7 @@ class BtcMultisignSwitch extends React.Component<any, any> {
                 handleRefresh={this.handleRefresh}
               />
             )}
-            { ... this.props }
+            {...this.props}
           />
         </Fragment>
       </Modal>

@@ -13,7 +13,6 @@ import { FormattedMessage, injectIntl, defineMessages } from 'react-intl'
 
 import { withRouter } from 'react-router-dom'
 
-
 const title = defineMessages({
   downloadModal: {
     id: 'down97',
@@ -24,27 +23,9 @@ const title = defineMessages({
 @withRouter
 @connect(
   ({
-    user: {
-      ethData,
-      bnbData,
-      maticData,
-      arbethData,
-      xdaiData,
-      btcData,
-      ghostData,
-      nextData,
-    },
+    user: { ethData, bnbData, maticData, arbethData, xdaiData, btcData, ghostData, nextData },
   }) => ({
-    items: [
-      ethData,
-      bnbData,
-      maticData,
-      arbethData,
-      xdaiData,
-      btcData,
-      ghostData,
-      nextData,
-    ],
+    items: [ethData, bnbData, maticData, arbethData, xdaiData, btcData, ghostData, nextData],
   })
 )
 @cssModules(styles)
@@ -57,28 +38,20 @@ class DownloadModal extends React.Component<any, any> {
     const { items, name, intl } = this.props
     const textToCopy = actions.user.getText()
 
-    const Account = () => (
+    const Account = () =>
       items.map((item, index) => (
         <Fragment key={index}>
           <a>
-            {item.fullName}
-            {' '}
-            <FormattedMessage id="downloadModal75" defaultMessage="Address:" />
+            {item.fullName} <FormattedMessage id="downloadModal75" defaultMessage="Address:" />
           </a>
           <p>{item.address}</p>
           <a>
-            {item.fullName}
-            {' '}
-            <FormattedMessage id="downloadModal782" defaultMessage="Private key" />
-            {' '}
+            {item.fullName} <FormattedMessage id="downloadModal782" defaultMessage="Private key" />{' '}
           </a>
 
-          <p>
-            {item.privateKey}
-          </p>
+          <p>{item.privateKey}</p>
         </Fragment>
       ))
-    )
 
     return (
       <Modal name={name} title={intl.formatMessage(title.downloadModal)}>
@@ -94,15 +67,13 @@ class DownloadModal extends React.Component<any, any> {
               <FormattedMessage id="recieved67" defaultMessage="Copy to clipboard" />
             </Button>
           </Copy>
-          {
-            !(/iPad|iPhone|iPod/.test(navigator.userAgent)) && (
-              <Fragment>
-                <Button onClick={this.handleDownloadTxt} styleName="button" brand >
-                  <FormattedMessage id="downFile2" defaultMessage="Download txt file" />
-                </Button>
-              </Fragment>
-            )
-          }
+          {!/iPad|iPhone|iPod/.test(navigator.userAgent) && (
+            <Fragment>
+              <Button onClick={this.handleDownloadTxt} styleName="button" brand>
+                <FormattedMessage id="downFile2" defaultMessage="Download txt file" />
+              </Button>
+            </Fragment>
+          )}
         </div>
         <div styleName="indent">
           <Account />

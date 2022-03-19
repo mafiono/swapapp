@@ -10,21 +10,23 @@ import Button from 'components/controls/Button/Button'
 
 @cssModules(styles, { allowMultiple: true })
 export default class FeeControler extends Component<any, any> {
-
   state = {
     isAddressCopied: false,
   }
 
   handleCopy = () => {
-    this.setState({
-      isAddressCopied: true,
-    }, () => {
-      setTimeout(() => {
-        this.setState({
-          isAddressCopied: false,
-        })
-      }, 500)
-    })
+    this.setState(
+      {
+        isAddressCopied: true,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            isAddressCopied: false,
+          })
+        }, 500)
+      }
+    )
   }
 
   render() {
@@ -49,14 +51,13 @@ export default class FeeControler extends Component<any, any> {
                   }}
                 />
               </h3>
-              <p styleName="address">
-                {ethAddress}
-              </p>
+              <p styleName="address">{ethAddress}</p>
               <Button brand styleName="button" onClick={this.handleCopy}>
-                {isAddressCopied
-                  ? <FormattedMessage id="FeeControler48" defaultMessage="Copied" />
-                  : <FormattedMessage id="FeeControler49" defaultMessage="Copy" />
-                }
+                {isAddressCopied ? (
+                  <FormattedMessage id="FeeControler48" defaultMessage="Copied" />
+                ) : (
+                  <FormattedMessage id="FeeControler49" defaultMessage="Copy" />
+                )}
               </Button>
             </Fragment>
           </div>

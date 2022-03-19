@@ -3,7 +3,6 @@ import http from 'http'
 
 import { util } from 'swap.app'
 
-
 const WS_PORT = 7333
 
 const init = (app, SwapApp, router, port) => {
@@ -31,8 +30,7 @@ const init = (app, SwapApp, router, port) => {
 
   const interval = setInterval(() => {
     wss.clients.forEach((ws) => {
-      if (ws.isAlive === false)
-        return ws.terminate()
+      if (ws.isAlive === false) return ws.terminate()
 
       ws.isAlive = false
       ws.ping(() => {})
@@ -66,17 +64,21 @@ const init = (app, SwapApp, router, port) => {
     ws.on('pong', () => (ws.isAlive = true))
     ws.on('close', () => (ws.isAlive = false))
 
-    ws.send(json({
-      event: 'ready',
-      payload: 'server',
-    }))
+    ws.send(
+      json({
+        event: 'ready',
+        payload: 'server',
+      })
+    )
 
-    ws.send(json({
-      event: 'ready',
-      payload: {
-        mainnet: SwapApp.isMainNet()
-      }
-    }))
+    ws.send(
+      json({
+        event: 'ready',
+        payload: {
+          mainnet: SwapApp.isMainNet(),
+        },
+      })
+    )
 
     pipe(swap.room, ws, 'ready', () => ({
       event: 'ready',

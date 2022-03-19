@@ -40,12 +40,17 @@ describe('Swap e2e test', () => {
       await MakerPage.waitForSelector('#btcAddress') // waits for Maker wallet to load
       await TakerPage.waitForSelector('#btcAddress') // waits for Taker wallet to load
 
-      const recoveredMakerBtcAddress = await MakerPage.$eval('#btcAddress', (el: { textContent: any }) => el.textContent)
-      const recoveredTakerBtcAddress = await TakerPage.$eval('#btcAddress', (el: { textContent: any }) => el.textContent)
+      const recoveredMakerBtcAddress = await MakerPage.$eval(
+        '#btcAddress',
+        (el: { textContent: any }) => el.textContent
+      )
+      const recoveredTakerBtcAddress = await TakerPage.$eval(
+        '#btcAddress',
+        (el: { textContent: any }) => el.textContent
+      )
 
       expect(recoveredMakerBtcAddress).toBe(testWallets.btcToEthTokenMMaker.address)
       expect(recoveredTakerBtcAddress).toBe(testWallets.btcToEthTokenMTaker.address)
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_RestoreWalletError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_RestoreWalletError')
@@ -65,10 +70,15 @@ describe('Swap e2e test', () => {
       // taker move to exchange page and try connecting to peers
       await TakerPage.goto(`${TakerPage.url()}exchange/btc-to-{ETH}wbtc`)
 
-      await TakerPage.evaluate((selector: any) => document.querySelector(selector).click(), '.dropDownReceive')
+      await TakerPage.evaluate(
+        (selector: any) => document.querySelector(selector).click(),
+        '.dropDownReceive'
+      )
       await TakerPage.click(`#Internal`)
 
-      const [sellCurrencySelectorInput, buyCurrencySelectorInput] = await TakerPage.$$('.selectGroupInput')
+      const [sellCurrencySelectorInput, buyCurrencySelectorInput] = await TakerPage.$$(
+        '.selectGroupInput'
+      )
 
       await sellCurrencySelectorInput.press('Backspace')
       await sellCurrencySelectorInput.type(btcSellAmount.toString())
@@ -77,7 +87,6 @@ describe('Swap e2e test', () => {
         page: TakerPage,
         selector: '#orderbookBtn',
       })
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_PreparePagesError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_PreparePagesError')
@@ -107,8 +116,12 @@ describe('Swap e2e test', () => {
       })
 
       // find all maker orders
-      const sellAmountOrders  = await MakerPage.$$eval('.sellAmountOrders', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
-      const buyAmountOrders   = await MakerPage.$$eval('.buyAmountOrders', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
+      const sellAmountOrders = await MakerPage.$$eval('.sellAmountOrders', (elements: any[]) =>
+        elements.map((el: { textContent: any }) => el.textContent)
+      )
+      const buyAmountOrders = await MakerPage.$$eval('.buyAmountOrders', (elements: any[]) =>
+        elements.map((el: { textContent: any }) => el.textContent)
+      )
       const mmOrders = [...sellAmountOrders, ...buyAmountOrders]
 
       if (+makerBtcBalance) expect(mmOrders).toContain(makerBtcBalance)
@@ -116,7 +129,6 @@ describe('Swap e2e test', () => {
 
       if (+makerTokenBalance) expect(mmOrders).toContain(makerTokenBalance)
       else console.log('maker have not token balance')
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SetupMMError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SetupMMError')
@@ -131,13 +143,25 @@ describe('Swap e2e test', () => {
       await timeOut(3 * 1000)
 
       // find btc maker orders
-      const btcSellAmountsOfOrders  = await TakerPage.$$eval('.btcSellAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
-      const btcGetAmountsOfOrders   = await TakerPage.$$eval('.btcGetAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
+      const btcSellAmountsOfOrders = await TakerPage.$$eval(
+        '.btcSellAmountOfOrder',
+        (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent)
+      )
+      const btcGetAmountsOfOrders = await TakerPage.$$eval(
+        '.btcGetAmountOfOrder',
+        (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent)
+      )
       const btcOrders = [...btcSellAmountsOfOrders, ...btcGetAmountsOfOrders]
 
       // find wbtc maker orders
-      const wbtcSellAmountsOfOrders  = await TakerPage.$$eval('.wbtcSellAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
-      const wbtcGetAmountsOfOrders   = await TakerPage.$$eval('.wbtcGetAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
+      const wbtcSellAmountsOfOrders = await TakerPage.$$eval(
+        '.wbtcSellAmountOfOrder',
+        (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent)
+      )
+      const wbtcGetAmountsOfOrders = await TakerPage.$$eval(
+        '.wbtcGetAmountOfOrder',
+        (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent)
+      )
       const wbtcOrders = [...wbtcSellAmountsOfOrders, ...wbtcGetAmountsOfOrders]
 
       const allOrders = [
@@ -150,7 +174,6 @@ describe('Swap e2e test', () => {
 
       if (+makerTokenBalance) expect(allOrders).toContain(makerTokenBalance)
       else console.log('maker have not token balance')
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_MessagingError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_MessagingError')
@@ -169,7 +192,10 @@ describe('Swap e2e test', () => {
 
       await timeOut(5 * 1000)
 
-      const textOfExchangeButton = await TakerPage.$eval('#exchangeButton', (el: { textContent: any }) => el.textContent)
+      const textOfExchangeButton = await TakerPage.$eval(
+        '#exchangeButton',
+        (el: { textContent: any }) => el.textContent
+      )
       console.log('textOfExchangeButton', textOfExchangeButton)
 
       expect(textOfExchangeButton).toBe('Exchange now')
@@ -178,13 +204,12 @@ describe('Swap e2e test', () => {
 
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_StartSwap')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_StartSwap')
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_StartSwapError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_StartSwapError')
       await MakerBrowser.close()
       await TakerBrowser.close()
-      console.error('SwapWIW -> Can\'t start swap: ', error)
+      console.error("SwapWIW -> Can't start swap: ", error)
       expect(false).toBe(true)
     }
 
@@ -194,39 +219,80 @@ describe('Swap e2e test', () => {
 
       await TakerPage.waitForSelector('#firtsStepDoneIcon')
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress0_firtsStepDoneIcon')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress0_firtsStepDoneIcon')
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress0_firtsStepDoneIcon'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress0_firtsStepDoneIcon'
+      )
 
       await TakerPage.waitForSelector('#utxoDepositHashLink', { timeout: 300 * 1000 })
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress1_utxoDepositHashLink')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress1_utxoDepositHashLink')
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress1_utxoDepositHashLink'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress1_utxoDepositHashLink'
+      )
 
       await TakerPage.waitForSelector('#evmDepositHashLink', { timeout: 300 * 1000 })
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress2_evmDepositHashLink')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress2_evmDepositHashLink')
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress2_evmDepositHashLink'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress2_evmDepositHashLink'
+      )
 
       await TakerPage.waitForSelector('#evmWithdrawalHashLink', { timeout: 300 * 1000 })
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress3_evmWithdrawalHashLink')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress3_evmWithdrawalHashLink')
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress3_evmWithdrawalHashLink'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress3_evmWithdrawalHashLink'
+      )
 
       await TakerPage.waitForSelector('#utxoWithdrawalHashLink', { timeout: 300 * 1000 })
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress4_utxoWithdrawalHashLink')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress4_utxoWithdrawalHashLink')
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress4_utxoWithdrawalHashLink'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress4_utxoWithdrawalHashLink'
+      )
 
       await TakerPage.waitForSelector('#swapCompleted')
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress5_swapCompleted')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress5_swapCompleted')
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress5_swapCompleted'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress5_swapCompleted'
+      )
 
       await timeOut(15 * 1000)
 
-      await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress6_swapCompleted_End')
-      await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress6_swapCompleted_End')
-
+      await takeScreenshot(
+        MakerPage,
+        'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress6_swapCompleted_End'
+      )
+      await takeScreenshot(
+        TakerPage,
+        'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgress6_swapCompleted_End'
+      )
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgressError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SwapProgressError')
@@ -278,15 +344,20 @@ describe('Swap e2e test', () => {
 
       await MakerPage.waitForSelector('#txAmout', { timeout: 60 * 1000 })
       await TakerPage.waitForSelector('#txAmout', { timeout: 60 * 1000 })
-      const btcTxAmout  = await MakerPage.$eval('#txAmout', (el: { textContent: any }) => el.textContent)
-      const wbtcTxAmout  = await TakerPage.$eval('#txAmout', (el: { textContent: any }) => el.textContent)
+      const btcTxAmout = await MakerPage.$eval(
+        '#txAmout',
+        (el: { textContent: any }) => el.textContent
+      )
+      const wbtcTxAmout = await TakerPage.$eval(
+        '#txAmout',
+        (el: { textContent: any }) => el.textContent
+      )
 
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SendBTC_TxInfo')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SendWBTC_TxInfo')
 
       expect(btcTxAmout).toContain(btcSellAmount.toString())
       expect(wbtcTxAmout).toContain(wbtcBuyAmount.toString())
-
     } catch (error) {
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SendBTCError')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SendWBTCError')
@@ -298,6 +369,5 @@ describe('Swap e2e test', () => {
 
     await MakerBrowser.close()
     await TakerBrowser.close()
-
   })
 })

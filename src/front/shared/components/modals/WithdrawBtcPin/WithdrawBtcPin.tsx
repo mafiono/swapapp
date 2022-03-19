@@ -308,12 +308,7 @@ class WithdrawBtcPin extends React.Component<ComponentProps, ComponentState> {
   }
 
   render() {
-    const {
-      error,
-      isShipped,
-      serverOffline,
-      useMnemonic,
-    } = this.state
+    const { error, isShipped, serverOffline, useMnemonic } = this.state
 
     const { name, intl } = this.props
     const linked = Link.all(this, 'pinCode')

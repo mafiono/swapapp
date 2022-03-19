@@ -14,12 +14,10 @@ import {
   deleteOrder,
   deleteAllOrders,
   forceDeleteAllOrders,
-
   requestOrder,
   acceptRequest,
   requestPartialFulfilment,
 } from './controller'
-
 
 const router = Router()
 
@@ -53,6 +51,5 @@ router.get('/:id/request-partial', requestPartialFulfilment)
 router.get('/:id/accept', acceptRequest)
 router.get('/:id/accept/:peer', acceptRequest)
 router.get('/:id/decline/:peer', acceptRequest)
-
 
 export default router

@@ -8,8 +8,8 @@ const {
 const app = swap.setup({})
 
 getAllInProgress()
-  .map(id => get(app, id))
-  .filter(({ flow: { isRefunded }}) => isRefunded !== true)
-  .map(swap => console.log('swap:', swap))
+  .map((id) => get(app, id))
+  .filter(({ flow: { isRefunded } }) => isRefunded !== true)
+  .map((swap) => console.log('swap:', swap))
 
 process.exit(0)

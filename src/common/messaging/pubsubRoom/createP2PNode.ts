@@ -8,13 +8,8 @@ import MPLEX from 'libp2p-mplex'
 import SECIO from 'libp2p-secio'
 import PeerId from 'peer-id'
 
-
 const createP2PNode = (options) => {
-  const {
-    listen,
-    discoveryPeers,
-    peerIdJson,
-  } = options
+  const { listen, discoveryPeers, peerIdJson } = options
 
   const defaultListen = [
     //'/ip4/0.0.0.0/tcp/4002',
@@ -68,7 +63,7 @@ const createP2PNode = (options) => {
       //@ts-ignore: strictNullChecks
       peerId,
       addresses: {
-        listen: (listen || defaultListen),
+        listen: listen || defaultListen,
       },
       modules: {
         transport: [WebrtcStar],
@@ -77,13 +72,13 @@ const createP2PNode = (options) => {
         peerDiscovery: [Bootstrap],
         dht: KadDHT,
         // @ts-ignore
-        pubsub: Gossipsub
+        pubsub: Gossipsub,
       },
       dialer: {
         // @ts-ignore
         maxParallelDials: 100,
         maxDialsPerPeer: 100,
-        dialTimeout: 30e3
+        dialTimeout: 30e3,
       },
       connectionManager: {
         maxConnections: Infinity,
@@ -95,18 +90,18 @@ const createP2PNode = (options) => {
         pollInterval: 2000,
         autoDialInterval: 5000,
         movingAverageInterval: 1000,
-        defaultPeerValue: 1
+        defaultPeerValue: 1,
       },
       config: {
         transport: {
           [WebrtcStar.prototype[Symbol.toStringTag]]: {
-            wrtc
-          }
+            wrtc,
+          },
         },
         peerDiscovery: {
           autoDial: true,
           webRTCStar: {
-            enabled: true
+            enabled: true,
           },
           bootstrap: {
             enabled: true,
@@ -119,19 +114,18 @@ const createP2PNode = (options) => {
           hop: {
             enabled: true,
             active: true,
-          }
+          },
         },
         dht: {
           enabled: true,
           randomWalk: {
             enabled: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
     resolve(p2pNode)
   })
 }
-
 
 export default createP2PNode

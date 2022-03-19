@@ -41,9 +41,8 @@ type AlertModalProps = {
   }
 }
 
-
-@connect(({ ui: { dashboardModalsAllowed }}) => ({
-  dashboardModalsAllowed
+@connect(({ ui: { dashboardModalsAllowed } }) => ({
+  dashboardModalsAllowed,
 }))
 @cssModules(styles)
 class AlertModal extends React.Component<AlertModalProps, null> {
@@ -51,9 +50,7 @@ class AlertModal extends React.Component<AlertModalProps, null> {
     const {
       name,
       data,
-      data: {
-        dontClose,
-      },
+      data: { dontClose },
       onClose,
     } = this.props
 
@@ -78,9 +75,7 @@ class AlertModal extends React.Component<AlertModalProps, null> {
 
   handleOk = () => {
     const {
-      data: {
-        callbackOk,
-      },
+      data: { callbackOk },
     } = this.props
 
     if (typeof callbackOk === `function`) {
@@ -95,13 +90,7 @@ class AlertModal extends React.Component<AlertModalProps, null> {
   render() {
     const {
       intl,
-      data: {
-        canClose,
-        title,
-        message,
-        labelOk,
-        okButtonAutoWidth,
-      },
+      data: { canClose, title, message, labelOk, okButtonAutoWidth },
       dashboardModalsAllowed,
     } = this.props
 
@@ -111,25 +100,27 @@ class AlertModal extends React.Component<AlertModalProps, null> {
       ok: labelOk || intl.formatMessage(defaultLanguage.ok),
     }
 
-    const buttonStyle = (!okButtonAutoWidth) ? `button` : `button_autoWidth`
+    const buttonStyle = !okButtonAutoWidth ? `button` : `button_autoWidth`
 
     return (
-      <div className={cx({
-        [styles['modal-overlay']]: true,
-      })}>
-        <div className={cx({
-          [styles.modal]: true,
-          [styles.modal_dashboardView]: dashboardModalsAllowed
-        })}>
+      <div
+        className={cx({
+          [styles['modal-overlay']]: true,
+        })}
+      >
+        <div
+          className={cx({
+            [styles.modal]: true,
+            [styles.modal_dashboardView]: dashboardModalsAllowed,
+          })}
+        >
           <div styleName="header">
             {/*
             //@ts-ignore */}
             <WidthContainer styleName="headerContent">
               <div styleName="title">{labels.title}</div>
 
-              {canClose && (
-                <CloseIcon styleName="closeButton" onClick={this.closeModal} />
-              )}
+              {canClose && <CloseIcon styleName="closeButton" onClick={this.closeModal} />}
             </WidthContainer>
           </div>
           <div styleName="content">
@@ -137,7 +128,9 @@ class AlertModal extends React.Component<AlertModalProps, null> {
               <p styleName="notification">{labels.message}</p>
             </div>
             <div styleName="button-overlay">
-              <Button styleName={buttonStyle} blue onClick={this.handleOk}>{labels.ok}</Button>
+              <Button styleName={buttonStyle} blue onClick={this.handleOk}>
+                {labels.ok}
+              </Button>
             </div>
           </div>
         </div>

@@ -10,16 +10,14 @@ type ISwapPairInfoProps = {
 
 const SwapPairInfo = (props: ISwapPairInfoProps) => {
   const {
-      swap: {
-        sellAmount,
-        buyAmount,
-        flow: {
-            _flowName: flowName
-        }
-      },
-    } = props
+    swap: {
+      sellAmount,
+      buyAmount,
+      flow: { _flowName: flowName },
+    },
+  } = props
 
-  const [ sellCurrency, buyCurrency ] = flowName.split('2')
+  const [sellCurrency, buyCurrency] = flowName.split('2')
 
   const { coin: sellCurrencyName, blockchain: sellCurrencyBlockchain } = getCoinInfo(sellCurrency)
   const { coin: buyCurrencyName, blockchain: buyCurrencyBlockchain } = getCoinInfo(buyCurrency)
@@ -27,11 +25,11 @@ const SwapPairInfo = (props: ISwapPairInfoProps) => {
   return (
     <div styleName="swapInfo">
       <strong>
-        {sellAmount.toFixed(6)}
-        {' '}
-        {sellCurrencyBlockchain ? `${sellCurrencyName} (${sellCurrencyBlockchain})` : sellCurrencyName} &#10230; {' '}
-        {buyAmount.toFixed(6)}
-        {' '}
+        {sellAmount.toFixed(6)}{' '}
+        {sellCurrencyBlockchain
+          ? `${sellCurrencyName} (${sellCurrencyBlockchain})`
+          : sellCurrencyName}{' '}
+        &#10230; {buyAmount.toFixed(6)}{' '}
         {buyCurrencyBlockchain ? `${buyCurrencyName} (${buyCurrencyBlockchain})` : buyCurrencyName}
       </strong>
     </div>

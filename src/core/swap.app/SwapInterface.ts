@@ -1,7 +1,6 @@
 import SwapApp from 'swap.app'
 
 class SwapInterface {
-
   _swapName: any
   accounts: any
 
@@ -17,6 +16,5 @@ class SwapInterface {
     this.accounts = app.services.auth.accounts
   }
 }
-
 
 export default SwapInterface

@@ -14,18 +14,16 @@ export default class Debug extends Component<ComponentProps, any> {
     const {
       flow: {
         state: flowState,
-        state: {
-          utxoScriptValues: scriptValues,
-        },
+        state: { utxoScriptValues: scriptValues },
       },
     } = this.props
 
     return (
       <div styleName="debug">
-        <button styleName='button' onClick={() => document.location.href = '#/localStorage'}>
+        <button styleName="button" onClick={() => (document.location.href = '#/localStorage')}>
           <FormattedMessage id="DebugStoredDataLink" defaultMessage="Show stored data" />
         </button>
-        <h5 styleName='title'>
+        <h5 styleName="title">
           <FormattedMessage id="DebugSwapDataTitle" defaultMessage="Swap data:" />
         </h5>
         <pre styleName="information">

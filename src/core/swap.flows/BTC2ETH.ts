@@ -1,7 +1,6 @@
 import { constants } from 'swap.app'
 import BtcToEthLike from './atomic/BtcToEthLike'
 
-
 class BTC2ETH extends BtcToEthLike {
   static getName() {
     return `${this.getFromName()}2${this.getToName()}`

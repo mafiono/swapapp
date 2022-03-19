@@ -4,11 +4,7 @@ import styles from './AdminFeeInfoBlock.scss'
 import { FormattedMessage } from 'react-intl'
 
 const AdminFeeInfoBlock = (props) => {
-  const {
-    fee,
-    min,
-    currency,
-  } = props
+  const { fee, min, currency } = props
 
   return (
     <div styleName="adminFeeInfoBlock">

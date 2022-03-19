@@ -7,7 +7,6 @@ import { FormattedMessage } from 'react-intl'
 
 @cssModules(styles, { allowMultiple: true })
 export default class MyOrders extends PureComponent<any, any> {
-
   render() {
     const titles = [
       ' ', // empty title in the table
@@ -27,11 +26,9 @@ export default class MyOrders extends PureComponent<any, any> {
         <table styleName="myOrdersTable">
           <thead>
             <tr>
-              {
-                titles.map((title, index) =>
-                  <th key={index}>{title}</th>
-                )
-              }
+              {titles.map((title, index) => (
+                <th key={index}>{title}</th>
+              ))}
             </tr>
           </thead>
           <tbody>

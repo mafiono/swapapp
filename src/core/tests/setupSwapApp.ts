@@ -16,7 +16,6 @@ import Web3 from 'web3'
 const web3 = new Web3(new Web3.providers.HttpProvider('https://rinkeby.infura.io/<YOUR_KEY>'))
 import bitcoin from 'bitcoinjs-lib'
 
-
 import { LocalStorage } from 'node-localstorage'
 
 import config from './config'

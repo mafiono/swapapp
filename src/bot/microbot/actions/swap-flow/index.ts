@@ -1,6 +1,3 @@
 import DefaultFlowActions from './DefaultFlowActions'
 
-
-export {
-  DefaultFlowActions,
-}
+export { DefaultFlowActions }

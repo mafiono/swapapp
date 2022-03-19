@@ -5,12 +5,11 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import externalConfig from './externalConfig'
 import ownBuffer from './ownBuffer'
 
-/* 
-* verbose output in console about build time
-* for all loaders and plugins
-* and showing quantity modules
-*/
-
+/*
+ * verbose output in console about build time
+ * for all loaders and plugins
+ * and showing quantity modules
+ */
 
 //const smp = new SpeedMeasurePlugin();
 // export default smp.wrap((webpackConfig) => {
@@ -28,26 +27,23 @@ export default (webpackConfig) => {
   webpackConfig.resolve.fallback.net = false
   webpackConfig.resolve.fallback.tls = false
 
-  /* 
-  * build speed: slow
-  * rebuild: faster
-  * qualiry: original source (lines only)
-  */
+  /*
+   * build speed: slow
+   * rebuild: faster
+   * qualiry: original source (lines only)
+   */
   webpackConfig.devtool = 'eval-cheap-module-source-map'
-  
+
   webpackConfig.devServer = {
     publicPath: webpackConfig.output.publicPath,
     stats: 'errors-only',
   }
-  
+
   webpackConfig.optimization = {
     minimize: false,
   }
 
-  webpackConfig.plugins.push(
-    ...externalConfig(),
-    ownBuffer(),
-  )
+  webpackConfig.plugins.push(...externalConfig(), ownBuffer())
 
   if (config.firebug) {
     webpackConfig.plugins.push(
@@ -58,7 +54,7 @@ export default (webpackConfig) => {
             to: 'firebug/',
           },
         ],
-      }),
+      })
     )
   }
 

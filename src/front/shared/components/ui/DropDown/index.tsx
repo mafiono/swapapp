@@ -58,7 +58,7 @@ export default class DropDown extends Component<DropDownProps, DropDownState> {
 
   handleOptionClick = (item) => {
     const { onSelect } = this.props
-    
+
     // for example we'd like to change `selectedValue` manually
     if (typeof onSelect === 'function' && !item.disabled) {
       onSelect(item)
@@ -100,7 +100,7 @@ export default class DropDown extends Component<DropDownProps, DropDownState> {
     const { disableSearch } = this.props
     const { optionToggleIsOpen } = this.state
     const linkedValue = Link.all(this, 'inputValue')
-    
+
     if (optionToggleIsOpen) {
       // cleanup the search field
       if (!disableSearch) {
@@ -126,10 +126,7 @@ export default class DropDown extends Component<DropDownProps, DropDownState> {
 
     const { optionToggleIsOpen, inputValue } = this.state
     const dropDownStyleName = cx('dropDown', { active: optionToggleIsOpen })
-    const {
-      inputValue: linkedInputValue,
-    } = Link.all(this, 'inputValue')
-
+    const { inputValue: linkedInputValue } = Link.all(this, 'inputValue')
 
     let itemsFiltered = items
     // Filtering values for search input
@@ -179,39 +176,38 @@ export default class DropDown extends Component<DropDownProps, DropDownState> {
               {name ? <span styleName="listName">{name}</span> : ''}
 
               {noOptions ? (
-                  <FormattedMessage id="DropDownNoOptionsInTheList" defaultMessage="No options" />
-                ) : moreThenOneOption ? (
-                  itemsFiltered.map((item, index) => {
-                    if (!item.hidden) {
-                      return (
-                        <div
-                          id={item.value}
-                          key={index}
-                          styleName="dropDownItem"
-                          onClick={() => {
-                            linkedInputValue.set('')
-                            this.handleOptionClick(item)
-                          }}
-                        >
-                          {this.renderItem(item)}
-                        </div>
-                      )
-                    }
+                <FormattedMessage id="DropDownNoOptionsInTheList" defaultMessage="No options" />
+              ) : moreThenOneOption ? (
+                itemsFiltered.map((item, index) => {
+                  if (!item.hidden) {
+                    return (
+                      <div
+                        id={item.value}
+                        key={index}
+                        styleName="dropDownItem"
+                        onClick={() => {
+                          linkedInputValue.set('')
+                          this.handleOptionClick(item)
+                        }}
+                      >
+                        {this.renderItem(item)}
+                      </div>
+                    )
+                  }
 
-                    return null
-                  })
-                ) : (
-                  <div
-                    styleName="dropDownItem"
-                    onClick={() => {
-                      linkedInputValue.set('')
-                      this.handleOptionClick(itemsFiltered[0])
-                    }}
-                  >
-                    {this.renderItem(itemsFiltered[0])}
-                  </div>
-                )
-              }
+                  return null
+                })
+              ) : (
+                <div
+                  styleName="dropDownItem"
+                  onClick={() => {
+                    linkedInputValue.set('')
+                    this.handleOptionClick(itemsFiltered[0])
+                  }}
+                >
+                  {this.renderItem(itemsFiltered[0])}
+                </div>
+              )}
             </div>
           )}
         </div>

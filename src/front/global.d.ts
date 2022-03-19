@@ -26,7 +26,7 @@ declare global {
     [key: string]: any
   }
 
-  interface IUniversalObj { 
+  interface IUniversalObj {
     [key: string]: any
   }
 

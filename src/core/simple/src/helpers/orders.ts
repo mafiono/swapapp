@@ -3,14 +3,14 @@ import debug from 'debug'
 
 import checkService from './checkService'
 
-export const request = order =>
+export const request = (order) =>
   new Promise((resolve, reject) =>
-    order.sendRequest(accepted => {
+    order.sendRequest((accepted) => {
       if (accepted) {
         resolve(order)
       }
     })
-  ).then(order => {
+  ).then((order) => {
     //@ts-ignore
     debug('swap.core:simple:orders')('order accepted', order.id)
     //@ts-ignore

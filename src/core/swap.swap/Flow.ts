@@ -3,7 +3,6 @@ import SwapApp, { util } from 'swap.app'
 import Room from './Room'
 import Swap from './Swap'
 
-
 class Flow {
   _flowName: string
   swap: Swap
@@ -25,8 +24,8 @@ class Flow {
     isSignFetching?: boolean
     isMeSigned?: boolean
 
-    isBalanceFetching: boolean,
-    isBalanceEnough: boolean,
+    isBalanceFetching: boolean
+    isBalanceEnough: boolean
 
     // Turbo swaps state
 
@@ -63,10 +62,10 @@ class Flow {
   }
 
   constructor(swap) {
-    this.swap     = swap
-    this.steps    = []
+    this.swap = swap
+    this.steps = []
     //@ts-ignore: strictNullChecks
-    this.app      = null
+    this.app = null
 
     this.stepNumbers = {}
 
@@ -145,28 +144,23 @@ class Flow {
   }
 
   _isFinished(): boolean {
-    const {
-      isStoppedSwap,
-      isRefunded,
-      isFinished,
-      isSwapTimeout,
-    } = this.state
+    const { isStoppedSwap, isRefunded, isFinished, isSwapTimeout } = this.state
 
     if (this.swap.checkTimeout(3600)) {
-      this.setState({
-        isStoppedSwap: true,
-        isSwapTimeout: true,
-      }, true)
+      this.setState(
+        {
+          isStoppedSwap: true,
+          isSwapTimeout: true,
+        },
+        true
+      )
     }
 
-    return (isStoppedSwap || isRefunded || isFinished || this.swap.checkTimeout(3600))
+    return isStoppedSwap || isRefunded || isFinished || this.swap.checkTimeout(3600)
   }
 
   isFinished(): boolean {
-    return (
-      (this.state.step >= this.steps.length)
-      || this._isFinished()
-    )
+    return this.state.step >= this.steps.length || this._isFinished()
   }
 
   _persistState() {
@@ -181,16 +175,11 @@ class Flow {
   }
 
   _persistSteps() {
-    this.steps = [
-      ...this._getInitialSteps(),
-      ...this._getSteps(),
-    ]
+    this.steps = [...this._getInitialSteps(), ...this._getSteps()]
 
     // wait events placed
     setTimeout(() => {
-      if ((this.state.step >= this.steps.length)
-        || this._isFinished()
-      ) {
+      if (this.state.step >= this.steps.length || this._isFinished()) {
         return
       } else {
         this._goStep(this.state.step)
@@ -202,7 +191,6 @@ class Flow {
     const flow = this
 
     return [
-
       // Check if order exists
 
       async () => {
@@ -255,10 +243,7 @@ class Flow {
   }
 
   finishStep(data?, constraints?) {
-    const {
-      isStoppedSwap,
-    } = this.state
-
+    const { isStoppedSwap } = this.state
 
     debug('swap.core:swap')(`on step ${this.state.step}, constraints =`, constraints)
 
@@ -270,7 +255,9 @@ class Flow {
         console.error(`Cant finish step ${step} = ${n_step} when swap is stopped`)
         return
       }
-      debug('swap.core:swap')(`trying to finish step ${step} = ${n_step} when on step ${this.state.step}`)
+      debug('swap.core:swap')(
+        `trying to finish step ${step} = ${n_step} when on step ${this.state.step}`
+      )
 
       if (step && this.state.step != n_step) {
         if (silentError) {
@@ -283,35 +270,32 @@ class Flow {
       }
     }
 
-    debug('swap.core:swap')(`proceed to step ${this.state.step+1}, data=`, data)
+    debug('swap.core:swap')(`proceed to step ${this.state.step + 1}, data=`, data)
 
     this._goNextStep(data)
   }
 
   _goNextStep(data) {
-    const {
-      step,
-      isStoppedSwap,
-    } = this.state
+    const { step, isStoppedSwap } = this.state
 
     if (isStoppedSwap) return
     const newStep = step + 1
-    console.warn("this.state", this.state)
+    console.warn('this.state', this.state)
     this.swap.events.dispatch('leave step', step)
 
-    this.setState({
-      step: newStep,
-      ...(data || {}),
-    }, true)
+    this.setState(
+      {
+        step: newStep,
+        ...(data || {}),
+      },
+      true
+    )
 
-    if (this.steps.length > newStep)
-      this._goStep(newStep)
+    if (this.steps.length > newStep) this._goStep(newStep)
   }
 
   _goStep(index) {
-    const {
-      isStoppedSwap,
-    } = this.state
+    const { isStoppedSwap } = this.state
 
     if (isStoppedSwap) return
 
@@ -334,7 +318,7 @@ class Flow {
 
   sendMessageAboutClose() {
     this.swap.room.sendMessage({
-      event: 'swap was canceled',// for front
+      event: 'swap was canceled', // for front
     })
 
     this.swap.room.sendMessage({
@@ -346,16 +330,19 @@ class Flow {
   stopSwapProcess() {
     console.warn('Swap was stopped')
 
-    this.setState({
-      isStoppedSwap: true,
-    }, true)
+    this.setState(
+      {
+        isStoppedSwap: true,
+      },
+      true
+    )
   }
 
   tryRefund(): Promise<any> {
-    return new Promise((resolve) => { resolve(true) })
+    return new Promise((resolve) => {
+      resolve(true)
+    })
   }
-
 }
-
 
 export default Flow

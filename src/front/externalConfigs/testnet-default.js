@@ -95,7 +95,8 @@ window.buildOptions = {
   showHowItsWork: true, // Can be inited from window.showHowItWorksOnExchangePage
   // inited from window.EXCHANGE_DISABLED
   exchangeDisabled: false,
-  curEnabled: { // Or 'false' if enabled all
+  curEnabled: {
+    // Or 'false' if enabled all
     // inited from window.CUR_<NAME>_DISABLED
     btc: true,
     eth: true,
@@ -119,5 +120,5 @@ window.buildOptions = {
   defaultExchangePair: {
     buy: '{eth}usdt',
     sell: 'btc',
-  }
+  },
 }

@@ -11,7 +11,6 @@ import stylesSwaps from './SwapsHistory.scss'
 
 @CSSModules({ ...styles, ...stylesSwaps }, { allowMultiple: true })
 export default class SwapsHistory extends PureComponent<any, any> {
-
   render() {
     let { orders } = this.props
 
@@ -28,12 +27,7 @@ export default class SwapsHistory extends PureComponent<any, any> {
           id="table-history"
           className={styles.historySwap}
           rows={orders.reverse()}
-          rowRender={(row, index) => (
-            <RowHistory
-              key={index}
-              row={row}
-            />
-          )}
+          rowRender={(row, index) => <RowHistory key={index} row={row} />}
         />
       </div>
     )

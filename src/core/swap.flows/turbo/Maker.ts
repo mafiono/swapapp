@@ -3,9 +3,7 @@ import SwapApp, { constants, util } from 'swap.app'
 import { Flow } from 'swap.swap'
 import { BigNumber } from 'bignumber.js'
 
-
 export default class TurboMaker extends Flow {
-
   _flowName = 'TurboMaker'
   static getName = () => 'TurboMaker'
 
@@ -13,12 +11,12 @@ export default class TurboMaker extends Flow {
   participantSwap: any
 
   state: {
-    step: 0 | 1 | 2 | 3 | 4 | 5 | 6,
+    step: 0 | 1 | 2 | 3 | 4 | 5 | 6
 
-    isParticipantSigned: boolean,
+    isParticipantSigned: boolean
 
-    isBalanceFetching: boolean,
-    isBalanceEnough: boolean,
+    isBalanceFetching: boolean
+    isBalanceEnough: boolean
 
     takerTxHash: null | string
     isTakerTxPended: boolean
@@ -26,8 +24,8 @@ export default class TurboMaker extends Flow {
     makerTxHash: null | string
     isMakerTxPended: boolean
 
-    isStoppedSwap: boolean,
-    isFinished: boolean,
+    isStoppedSwap: boolean
+    isFinished: boolean
   }
 
   constructor(swap) {
@@ -35,12 +33,12 @@ export default class TurboMaker extends Flow {
     console.log('Create Maker flow(swap), swap =', swap)
 
     this.stepNumbers = {
-      'sign': 1,
+      sign: 1,
       'check-balance': 2,
       'wait-taker-tx': 3,
       'send-maker-tx': 4,
-      'finish': 5,
-      'end': 6,
+      finish: 5,
+      end: 6,
     }
 
     this.mySwap = swap.ownerSwap
@@ -78,7 +76,6 @@ export default class TurboMaker extends Flow {
     const participantSwap = this.participantSwap
 
     return [
-
       async () => {
         console.log(`Maker Step 1: 'sign'`)
         console.log('this.swap =', swap)
@@ -96,12 +93,14 @@ export default class TurboMaker extends Flow {
             return
           }
 
-          flow.finishStep({
-            isParticipantSigned: true,
-          }, { step: 'sign' })
+          flow.finishStep(
+            {
+              isParticipantSigned: true,
+            },
+            { step: 'sign' }
+          )
         })
       },
-
 
       async () => {
         console.log(`Maker Step 2: 'check-balance'`)
@@ -142,11 +141,13 @@ export default class TurboMaker extends Flow {
         //return true
 
         //temp
-        this.finishStep({
-          isBalanceEnough: true,
-        }, { step: 'check-balance' })
+        this.finishStep(
+          {
+            isBalanceEnough: true,
+          },
+          { step: 'check-balance' }
+        )
       },
-
 
       () => {
         console.log(`Maker Step 3: 'wait-taker-tx'`)
@@ -159,20 +160,22 @@ export default class TurboMaker extends Flow {
           //... || this.stopSwapProcess()
           console.log('Taker tx is OK!')
 
-          flow.finishStep({
-            takerTxHash: txHash,
-            isTakerTxPended: true, // todo later
-          }, { step: 'wait-taker-tx' })
+          flow.finishStep(
+            {
+              takerTxHash: txHash,
+              isTakerTxPended: true, // todo later
+            },
+            { step: 'wait-taker-tx' }
+          )
         })
       },
-
 
       async () => {
         console.log(`Maker Step 4: 'send-maker-tx'`)
         console.log('this.swap =', swap)
 
         // send tx
-        
+
         const amount = swap.sellAmount
         const to = swap.participant[swap.sellCurrency.toLowerCase()].address
 
@@ -199,15 +202,17 @@ export default class TurboMaker extends Flow {
           event: 'maker tx sended',
           data: {
             txHash,
-          }
+          },
         })
 
-        flow.finishStep({
-          makerTxHash: txHash,
-          isMakerTxPended: true, // todo later
-        }, 'send-maker-tx')
+        flow.finishStep(
+          {
+            makerTxHash: txHash,
+            isMakerTxPended: true, // todo later
+          },
+          'send-maker-tx'
+        )
       },
-
 
       () => {
         console.log(`Maker Step 5: 'finish'`)
@@ -221,16 +226,18 @@ export default class TurboMaker extends Flow {
           event: 'request swap finished',
         })
         */
-        flow.finishStep({
-          isFinished: true,
-        }, 'finish')
+        flow.finishStep(
+          {
+            isFinished: true,
+          },
+          'finish'
+        )
       },
-
 
       () => {
         console.log(`Maker Step 6: 'end'`)
         // Finished!
-      }
+      },
     ]
   }
 
@@ -239,9 +246,11 @@ export default class TurboMaker extends Flow {
 
     debug('swap.core:flow')('Swap was stopped')
 
-    flow.setState({
-      isStoppedSwap: true,
-    }, true)
+    flow.setState(
+      {
+        isStoppedSwap: true,
+      },
+      true
+    )
   }
-
 }

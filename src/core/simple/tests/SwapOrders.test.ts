@@ -11,13 +11,13 @@ const _ORDER = {
   buyCurrency: 'ETH',
   sellCurrency: 'BTC',
   buyAmount: 20,
-  sellAmount: "1",
+  sellAmount: '1',
 }
 
 const { app, wallet, auth, room, orders } = swap.setup({
   swapRoom: {
-    roomName: 'xxx.swap.online'
-  }
+    roomName: 'xxx.swap.online',
+  },
 })
 
 beforeAll(async () => {

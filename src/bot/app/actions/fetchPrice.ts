@@ -2,7 +2,6 @@ import { TRADE_TICKERS } from '../../config/constants'
 import handleError from './errors/handleError'
 import getPriceByPair from '../middlewares/prices'
 
-
 let _isOutdated = true
 let _firstRun = true
 let _prices = []
@@ -11,7 +10,7 @@ const fetchPrice = async (obj, type?) => {
   const ticker = obj.ticker ? obj.ticker : obj
 
   try {
-   // if (!TRADE_TICKERS.includes(ticker)) return
+    // if (!TRADE_TICKERS.includes(ticker)) return
 
     if (_isOutdated || !(ticker in _prices)) {
       _isOutdated = false

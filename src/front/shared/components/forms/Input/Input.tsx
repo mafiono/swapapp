@@ -1,16 +1,15 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
-import { Input as ValueLinkInput } from "local_modules/sw-valuelink"
-import cx from "classnames";
-import { ignoreProps } from "helpers"
-import reducers from "redux/core/reducers"
-import { isMobile } from "react-device-detect"
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Input as ValueLinkInput } from 'local_modules/sw-valuelink'
+import cx from 'classnames'
+import { ignoreProps } from 'helpers'
+import reducers from 'redux/core/reducers'
+import { isMobile } from 'react-device-detect'
 
-import cssModules from "react-css-modules"
-import styles from "./Input.scss"
-import "./style.css"
-import TextArea from "components/forms/TextArea/TextArea"
-
+import cssModules from 'react-css-modules'
+import styles from './Input.scss'
+import './style.css'
+import TextArea from 'components/forms/TextArea/TextArea'
 
 @cssModules(styles, { allowMultiple: true })
 export default class Input extends Component<any, any> {
@@ -27,8 +26,8 @@ export default class Input extends Component<any, any> {
     readOnly: PropTypes.bool,
     required: PropTypes.bool,
     icon: PropTypes.bool,
-    intl: PropTypes.object
-  };
+    intl: PropTypes.object,
+  }
 
   static defaultProps = {
     focusOnInit: false,
@@ -36,25 +35,25 @@ export default class Input extends Component<any, any> {
     disabled: false,
     readOnly: false,
     required: false,
-    type: "text"
-  };
+    type: 'text',
+  }
 
   handleFocus = () => {
-    const { onFocus } = this.props;
+    const { onFocus } = this.props
 
     if (onFocus) {
-      onFocus();
+      onFocus()
     }
 
     // Hide the Header if Input is blured
     if (isMobile) {
       const header = document.getElementById('header-mobile')
       if (header) {
-        header.classList.add("hidden-header")
+        header.classList.add('hidden-header')
       }
     }
-    reducers.inputActive.setInputActive(true);
-  };
+    reducers.inputActive.setInputActive(true)
+  }
 
   handleBlur = (event) => {
     const { onBlur } = this.props
@@ -67,11 +66,11 @@ export default class Input extends Component<any, any> {
     if (isMobile) {
       const header = document.getElementById('header-mobile')
       if (header) {
-        header.classList.remove("hidden-header")
+        header.classList.remove('hidden-header')
       }
     }
-    reducers.inputActive.setInputActive(false);
-  };
+    reducers.inputActive.setInputActive(false)
+  }
 
   render() {
     const {
@@ -98,21 +97,21 @@ export default class Input extends Component<any, any> {
       activeFiat,
       id,
       ...rest
-    } = this.props;
+    } = this.props
 
-    const inputContainerStyleName = cx("inputContainer", {
+    const inputContainerStyleName = cx('inputContainer', {
       withError: error,
       withMargin: withMargin,
       smallFontSize: smallFontSize,
       withQr: qr,
-    });
+    })
 
     const focusEvent = !isMobile
       ? {}
       : {
-        onFocus: this.handleFocus,
-        onBlur: this.handleBlur
-      };
+          onFocus: this.handleFocus,
+          onBlur: this.handleBlur,
+        }
 
     const style = `input ${errorStyle ? 'inputError' : ''} ${srollingForm ? 'srollingForm' : ''} ${
       styleName ? styleName : ''
@@ -122,7 +121,7 @@ export default class Input extends Component<any, any> {
       <div styleName="root" className={className}>
         <div styleName={inputContainerStyleName} className={inputContainerClassName}>
           {React.createElement(multiline ? TextArea : ValueLinkInput, {
-            ...ignoreProps(rest, "styles"),
+            ...ignoreProps(rest, 'styles'),
             styleName: style,
             className: inputClassName,
             style: inputCustomStyle,
@@ -131,11 +130,16 @@ export default class Input extends Component<any, any> {
             id,
             disabled: disabled || readOnly,
             autoFocus: !!focusOnInit,
-            dir: "auto",
-            autoComplete: "off",
-            ...focusEvent
+            dir: 'auto',
+            autoComplete: 'off',
+            ...focusEvent,
           })}
-          {fiat > 0 && <p styleName="dollar">{`~${fiat}`}{activeFiat}</p>}
+          {fiat > 0 && (
+            <p styleName="dollar">
+              {`~${fiat}`}
+              {activeFiat}
+            </p>
+          )}
           {qr && (
             <p styleName="qrWrapper">
               <i className="fas fa-qrcode" onClick={openScan} />
@@ -144,6 +148,6 @@ export default class Input extends Component<any, any> {
         </div>
         {Boolean(error && !dontDisplayError) && <div styleName="error">{error}</div>}
       </div>
-    );
+    )
   }
 }

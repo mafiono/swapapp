@@ -11,14 +11,4 @@ import RemoveButton from './RemoveButton'
 
 import WithdrawButton from './WithdrawButton/WithdrawButton'
 
-
-export {
-  Toggle,
-  TimerButton,
-  Button,
-  Switching,
-  Flip,
-  RemoveButton,
-  WithdrawButton,
-  ShareLink,
-}
+export { Toggle, TimerButton, Button, Switching, Flip, RemoveButton, WithdrawButton, ShareLink }

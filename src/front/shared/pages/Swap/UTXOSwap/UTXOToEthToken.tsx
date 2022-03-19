@@ -12,7 +12,6 @@ import FeeControler from '../FeeControler/FeeControler'
 import SwapController from '../SwapController'
 import SwapPairInfo from './SwapPairInfo'
 
-
 @CSSModules(styles)
 export default class UTXOToEthToken extends Component<any, any> {
   swap = null
@@ -38,10 +37,12 @@ export default class UTXOToEthToken extends Component<any, any> {
       destinationAddressTimer: true,
       isShowingScript: false,
       currencyAddress: currencyData.address,
-      ethAddress: ethData.map(item => item.address),
+      ethAddress: ethData.map((item) => item.address),
       secret: crypto.randomBytes(32).toString('hex'),
       //@ts-ignore: strictNullChecks
-      destinationBuyAddress: (this.swap.destinationBuyAddress) ? this.swap.destinationBuyAddress : SwapApp.shared().services.auth.accounts.eth.address,
+      destinationBuyAddress: this.swap.destinationBuyAddress
+        ? this.swap.destinationBuyAddress
+        : SwapApp.shared().services.auth.accounts.eth.address,
     }
 
     this._fields = fields
@@ -58,14 +59,16 @@ export default class UTXOToEthToken extends Component<any, any> {
   }
 
   componentDidMount() {
-    const { swap, flow: { step, isParticipantSigned, isStoppedSwap } } = this.state
+    const {
+      swap,
+      flow: { step, isParticipantSigned, isStoppedSwap },
+    } = this.state
     if (isStoppedSwap) return
     //@ts-ignore: strictNullChecks
     this.ParticipantTimer = setInterval(() => {
       if (this.state.flow.isParticipantSigned && this.state.destinationBuyAddress) {
         this.submitSecret()
-      }
-      else {
+      } else {
         //@ts-ignore: strictNullChecks
         clearInterval(this.ParticipantTimer)
       }
@@ -76,7 +79,6 @@ export default class UTXOToEthToken extends Component<any, any> {
     const { secret } = this.state
     // this.swap.flow.submitSecret(secret)
   }
-
 
   handleFlowStateUpdate = (values) => {
     this.setState({
@@ -112,20 +114,9 @@ export default class UTXOToEthToken extends Component<any, any> {
       wallets,
     } = this.props
 
-    const {
-      swap,
-      flow,
-      secret,
-      ethAddress,
-      isShowingScript,
-    } = this.state
+    const { swap, flow, secret, ethAddress, isShowingScript } = this.state
 
-    const feeControllerView = (
-      <FeeControler
-        ethAddress={ethAddress}
-        fields={this._fields}
-      />
-    )
+    const feeControllerView = <FeeControler ethAddress={ethAddress} fields={this._fields} />
     const swapProgressView = (
       <SwapProgress
         flow={flow}
@@ -155,9 +146,10 @@ export default class UTXOToEthToken extends Component<any, any> {
               swapName="BtcLikeToEthToken"
             />
             {!continueSwap
-              ? ((!waitWithdrawOther) ? feeControllerView : swapProgressView)
-              : swapProgressView
-            }
+              ? !waitWithdrawOther
+                ? feeControllerView
+                : swapProgressView
+              : swapProgressView}
           </div>
         </div>
         {children && <div styleName="swapContainerInfo">{children}</div>}

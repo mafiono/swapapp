@@ -2,8 +2,7 @@ import reducers from 'redux/core/reducers'
 import { getState } from 'redux/core'
 import SwapApp from 'swap.app'
 
-
-const set = payload => {
+const set = (payload) => {
   reducers.pubsubRoom.set(payload)
 }
 
@@ -21,7 +20,9 @@ const allPeersLoaded = () => {
 
 const onReady = (cb) => {
   const _checkFunc = () => {
-    const { pubsubRoom : { isOnline } } = getState()
+    const {
+      pubsubRoom: { isOnline },
+    } = getState()
     if (isOnline) {
       cb()
     } else {

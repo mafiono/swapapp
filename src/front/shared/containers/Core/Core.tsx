@@ -6,7 +6,6 @@ import { connect } from 'redaction'
 import metamask from 'helpers/metamask'
 import { onInit as onSwapCoreInited } from 'instances/newSwap'
 
-
 @connect(({ pubsubRoom }) => ({ pubsubRoom }))
 export default class Core extends Component<any, any> {
   _mounted = true
@@ -19,8 +18,8 @@ export default class Core extends Component<any, any> {
       if (!this._mounted) return
       actions.core.getSwapHistory()
       //@ts-ignore: strictNullChecks
-      SwapApp.shared().services.orders
-        .on('new orders', this.updateOrders)
+      SwapApp.shared()
+        .services.orders.on('new orders', this.updateOrders)
         .on('new order', this.updateOrders)
         .on('order update', this.updateOrders)
         .on('remove order', this.updateOrders)
@@ -33,8 +32,8 @@ export default class Core extends Component<any, any> {
     this._mounted = false
     try {
       //@ts-ignore: strictNullChecks
-      SwapApp.shared().services.orders
-        .off('new orders', this.updateOrders)
+      SwapApp.shared()
+        .services.orders.off('new orders', this.updateOrders)
         .off('new order', this.updateOrders)
         .off('order update', this.updateOrders)
         .off('remove order', this.updateOrders)
@@ -44,8 +43,8 @@ export default class Core extends Component<any, any> {
       if (SwapApp.shared().services.room.connection) {
         console.log('leave room')
         //@ts-ignore: strictNullChecks
-        SwapApp.shared().services.room.connection
-          .removeListener('peer joined', actions.pubsubRoom.userJoined)
+        SwapApp.shared()
+          .services.room.connection.removeListener('peer joined', actions.pubsubRoom.userJoined)
           .removeListener('peer left', actions.pubsubRoom.userLeft)
         //@ts-ignore: strictNullChecks
         SwapApp.shared().services.room.connection.leave()
@@ -81,13 +80,16 @@ export default class Core extends Component<any, any> {
         }
 
         //@ts-ignore: strictNullChecks
-        SwapApp.shared().services.room.connection
-          .on('peer joined', actions.pubsubRoom.userJoined)
+        SwapApp.shared()
+          .services.room.connection.on('peer joined', actions.pubsubRoom.userJoined)
           .on('peer left', actions.pubsubRoom.userLeft)
 
         // BTC Multisign
         //@ts-ignore: strictNullChecks
-        SwapApp.shared().services.room.on('btc multisig join', actions.btcmultisig.onUserMultisigJoin)
+        SwapApp.shared().services.room.on(
+          'btc multisig join',
+          actions.btcmultisig.onUserMultisigJoin
+        )
 
         clearInterval(pubsubLoadingInterval)
 

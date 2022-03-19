@@ -17,41 +17,53 @@ let buildOpts = {
   invoiceEnabled: true,
 }
 
-if (window
-  && window.buildOptions
-  && Object.keys(window.buildOptions)
-  && Object.keys(window.buildOptions).length
+if (
+  window &&
+  window.buildOptions &&
+  Object.keys(window.buildOptions) &&
+  Object.keys(window.buildOptions).length
 ) {
   buildOpts = { ...buildOpts, ...window.buildOptions }
 }
 
-const swap = (config && config.isWidget) ?
-  []
-  :
-  [
-    ...(!config.opts.curEnabled || (config.opts.curEnabled.eth && config.opts.curEnabled.btc)) ? ['ETH-BTC'] : [],
-    ...(!config.opts.curEnabled || (config.opts.curEnabled.bnb && config.opts.curEnabled.btc)) ? ['BNB-BTC'] : [],
-    ...(!config.opts.curEnabled || (config.opts.curEnabled.matic && config.opts.curEnabled.btc)) ? ['MATIC-BTC'] : [],
-    ...(!config.opts.curEnabled || (config.opts.curEnabled.arbeth && config.opts.curEnabled.btc)) ? ['ARBETH-BTC'] : [],
-    ...(!config.opts.curEnabled || (config.opts.curEnabled.eth && config.opts.curEnabled.ghost)) ? ['ETH-GHOST'] : [],
-    ...(!config.opts.curEnabled || (config.opts.curEnabled.eth && config.opts.curEnabled.next)) ? ['ETH-NEXT'] : [],
-  ]
+const swap =
+  config && config.isWidget
+    ? []
+    : [
+        ...(!config.opts.curEnabled || (config.opts.curEnabled.eth && config.opts.curEnabled.btc)
+          ? ['ETH-BTC']
+          : []),
+        ...(!config.opts.curEnabled || (config.opts.curEnabled.bnb && config.opts.curEnabled.btc)
+          ? ['BNB-BTC']
+          : []),
+        ...(!config.opts.curEnabled || (config.opts.curEnabled.matic && config.opts.curEnabled.btc)
+          ? ['MATIC-BTC']
+          : []),
+        ...(!config.opts.curEnabled || (config.opts.curEnabled.arbeth && config.opts.curEnabled.btc)
+          ? ['ARBETH-BTC']
+          : []),
+        ...(!config.opts.curEnabled || (config.opts.curEnabled.eth && config.opts.curEnabled.ghost)
+          ? ['ETH-GHOST']
+          : []),
+        ...(!config.opts.curEnabled || (config.opts.curEnabled.eth && config.opts.curEnabled.next)
+          ? ['ETH-NEXT']
+          : []),
+      ]
 
-Object.keys(config.erc20)
-  .forEach(key => {
-    swap.push(`{ETH}${key.toUpperCase()}-BTC`)
-    if (!config.opts.curEnabled || config.opts.curEnabled.ghost) swap.push(`{ETH}${key.toUpperCase()}-GHOST`)
-    if (!config.opts.curEnabled || config.opts.curEnabled.next) swap.push(`{ETH}${key.toUpperCase()}-NEXT`)
-  })
-Object.keys(config.bep20)
-  .forEach(key => {
-    swap.push(`{BNB}${key.toUpperCase()}-BTC`)
-  })
+Object.keys(config.erc20).forEach((key) => {
+  swap.push(`{ETH}${key.toUpperCase()}-BTC`)
+  if (!config.opts.curEnabled || config.opts.curEnabled.ghost)
+    swap.push(`{ETH}${key.toUpperCase()}-GHOST`)
+  if (!config.opts.curEnabled || config.opts.curEnabled.next)
+    swap.push(`{ETH}${key.toUpperCase()}-NEXT`)
+})
+Object.keys(config.bep20).forEach((key) => {
+  swap.push(`{BNB}${key.toUpperCase()}-BTC`)
+})
 
-Object.keys(config.erc20matic)
-  .forEach(key => {
-    swap.push(`{MATIC}${key.toUpperCase()}-BTC`)
-  })
+Object.keys(config.erc20matic).forEach((key) => {
+  swap.push(`{MATIC}${key.toUpperCase()}-BTC`)
+})
 
 if (config?.isWidget) {
   swap.length = 0
@@ -110,7 +122,4 @@ if (buildOpts.addCustomTokens) {
   })
 }
 
-
-export default [
-  ...swap,
-]
+export default [...swap]

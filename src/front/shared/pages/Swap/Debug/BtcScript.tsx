@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 const BtcScript = ({ recipientPublicKey, secretHash, lockTime, ownerPublicKey }) => (
   <div>
     {`

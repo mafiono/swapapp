@@ -7,25 +7,25 @@ const webpackConfig = {
   mode: 'production',
 
   node: {
-    fs: 'empty'
+    fs: 'empty',
   },
 
   entry: {
-    'auth': resolveSrcPath('swap.auth/index.js'),
-    'orders': resolveSrcPath('swap.orders/index.js'),
-    'room': resolveSrcPath('swap.room/index.js'),
-    'app': resolveSrcPath('swap.app/index.js'),
-    'flows': resolveSrcPath('swap.flows/index.js'),
-    'swap': resolveSrcPath('swap.swap/index.js'),
-    'swaps': resolveSrcPath('swap.swaps/index.js'),
-    'core': resolveSrcPath('index.js'),
+    auth: resolveSrcPath('swap.auth/index.js'),
+    orders: resolveSrcPath('swap.orders/index.js'),
+    room: resolveSrcPath('swap.room/index.js'),
+    app: resolveSrcPath('swap.app/index.js'),
+    flows: resolveSrcPath('swap.flows/index.js'),
+    swap: resolveSrcPath('swap.swap/index.js'),
+    swaps: resolveSrcPath('swap.swaps/index.js'),
+    core: resolveSrcPath('index.js'),
   },
 
   output: {
     path: path.join(__dirname, 'umd'),
     filename: 'swap.[name].js',
     libraryTarget: 'umd',
-    library: [ 'swap', '[name]' ],
+    library: ['swap', '[name]'],
   },
 
   module: {
@@ -42,18 +42,15 @@ const webpackConfig = {
             presets: ['@babel/preset-env'],
             plugins: ['@babel/plugin-proposal-object-rest-spread'],
             cacheDirectory: true,
-          }
-        }
-      }
-    ]
+          },
+        },
+      },
+    ],
   },
 
   resolve: {
     symlinks: false,
-    modules: [
-      path.resolve(__dirname, '..', 'node_modules'),
-      'node_modules'
-    ],
+    modules: [path.resolve(__dirname, '..', 'node_modules'), 'node_modules'],
     alias: {
       'swap.auth': resolveSrcPath('swap.auth'),
       'swap.orders': resolveSrcPath('swap.orders'),
@@ -77,6 +74,5 @@ const webpackConfig = {
     }),
   ],
 }
-
 
 export default webpackConfig

@@ -15,7 +15,6 @@ import SwapsHistory from 'pages/History/SwapsHistory/SwapsHistory'
 
 import { onInit as onSwapCoreInited } from 'instances/newSwap'
 
-
 const filterHistory = (items, filter) => {
   if (filter === 'sent') {
     return items.filter(({ direction }) => direction === 'out')
@@ -28,31 +27,21 @@ const filterHistory = (items, filter) => {
   return items
 }
 
-@connect(({
-  user: { activeFiat },
-  history: {
-    transactions,
-    filter,
-    swapHistory,
-  },
-}) => ({
+@connect(({ user: { activeFiat }, history: { transactions, filter, swapHistory } }) => ({
   activeFiat,
   items: filterHistory(transactions, filter),
   swapHistory,
 }))
 @CSSModules(stylesHere, { allowMultiple: true })
 class History extends Component<any, any> {
-
   constructor(props) {
     super(props)
 
     const {
       items,
       match: {
-        params: {
-          page = null,
-        }
-      }
+        params: { page = null },
+      },
     } = props
 
     const commentsList = actions.comments.getComments()
@@ -60,10 +49,10 @@ class History extends Component<any, any> {
     this.state = {
       page,
       items,
-      filterValue: "",
+      filterValue: '',
       isLoading: false,
       renderedItems: 10,
-      commentsList: commentsList || null
+      commentsList: commentsList || null,
     }
   }
 
@@ -93,7 +82,7 @@ class History extends Component<any, any> {
     const { renderedItems } = this.state
 
     if (renderedItems < items.length) {
-      this.setState(state => ({
+      this.setState((state) => ({
         renderedItems: state.renderedItems + Math.min(10, items.length - state.renderedItems),
       }))
     }
@@ -103,14 +92,7 @@ class History extends Component<any, any> {
     const { activeFiat } = this.props
     const { commentsList } = this.state
 
-    return (
-      <Row
-        activeFiat={activeFiat}
-        key={rowIndex}
-        hiddenList={commentsList}
-        {...row}
-      />
-    )
+    return <Row activeFiat={activeFiat} key={rowIndex} hiddenList={commentsList} {...row} />
   }
 
   handleFilterChange = ({ target }) => {
@@ -123,9 +105,10 @@ class History extends Component<any, any> {
     const { filterValue, items } = this.state
 
     if (filterValue && filterValue.length) {
-      const newRows = items.filter(({ address }) => address && address.includes(filterValue.toLowerCase()))
+      const newRows = items.filter(
+        ({ address }) => address && address.includes(filterValue.toLowerCase())
+      )
       this.setState(() => ({ items: newRows }))
-
     } else {
       this.resetFilter()
     }
@@ -137,10 +120,9 @@ class History extends Component<any, any> {
   }
 
   resetFilter = () => {
-
     this.loading()
     const { items } = this.props
-    this.setState(() => ({ filterValue: "" }))
+    this.setState(() => ({ filterValue: '' }))
 
     this.createItemsState(items)
   }
@@ -152,21 +134,20 @@ class History extends Component<any, any> {
 
     return (
       <Fragment>
-      <section styleName="history">
-        <h3 styleName="historyHeading">
-          <FormattedMessage id="History_Activity_Title" defaultMessage="Activity" />
-        </h3>
-        {items ? (
-          <div>
-            <FilterForm
-              filterValue={filterValue}
-              onSubmit={this.handleFilter}
-              onChange={this.handleFilterChange}
-              resetFilter={this.resetFilter}
-            />
+        <section styleName="history">
+          <h3 styleName="historyHeading">
+            <FormattedMessage id="History_Activity_Title" defaultMessage="Activity" />
+          </h3>
+          {items ? (
             <div>
-              {
-                items.length > 0 && !isLoading ? (
+              <FilterForm
+                filterValue={filterValue}
+                onSubmit={this.handleFilter}
+                onChange={this.handleFilterChange}
+                resetFilter={this.resetFilter}
+              />
+              <div>
+                {items.length > 0 && !isLoading ? (
                   <InfiniteScrollTable
                     className={styles.history}
                     titles={titles}
@@ -178,24 +159,21 @@ class History extends Component<any, any> {
                   />
                 ) : (
                   <ContentLoader rideSideContent empty={!isLoading} nonHeader />
-                )
-              }
+                )}
+              </div>
             </div>
-          </div>
           ) : (
             <div styleName="historyLoader">
               <ContentLoader rideSideContent />
             </div>
-          )
-        }
-      </section>
+          )}
+        </section>
 
-      {externalConfig.opts.invoiceEnabled && <InvoicesList onlyTable />}
+        {externalConfig.opts.invoiceEnabled && <InvoicesList onlyTable />}
 
-      { swapHistory.length > 0 &&
-        <SwapsHistory orders={swapHistory.filter((item) => item.step >= 1)} />
-      }
-
+        {swapHistory.length > 0 && (
+          <SwapsHistory orders={swapHistory.filter((item) => item.step >= 1)} />
+        )}
       </Fragment>
     )
   }

@@ -39,13 +39,7 @@ const Avatar = (props: ComponentProps) => {
   }
   return (
     <Fragment>
-      <img
-        className={className}
-        styleName="avatar"
-        alt={value}
-        title={value}
-        src={avatarUrl}
-      />
+      <img className={className} styleName="avatar" alt={value} title={value} src={avatarUrl} />
     </Fragment>
   )
 }

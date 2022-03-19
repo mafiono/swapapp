@@ -33,9 +33,7 @@ type ModalProps = {
   shouldCenterHorizontally?: boolean
 }
 
-@connect(({
-  ui: { dashboardModalsAllowed },
-}) => ({
+@connect(({ ui: { dashboardModalsAllowed } }) => ({
   dashboardView: dashboardModalsAllowed,
 }))
 @cssModules(styles, { allowMultiple: true })
@@ -56,11 +54,7 @@ export default class Modal extends Component<ModalProps, object> {
   catchLocationChange = null
 
   componentDidMount() {
-    const {
-      closeOnLocationChange,
-      onLocationChange,
-      name,
-    } = this.props
+    const { closeOnLocationChange, onLocationChange, name } = this.props
 
     window.addEventListener('popstate', () => actions.modals.close(name))
 
@@ -119,68 +113,70 @@ export default class Modal extends Component<ModalProps, object> {
   }
 
   render() {
-    const { 
-      className, 
-      title, 
-      showCloseButton, 
-      disableClose, 
+    const {
+      className,
+      title,
+      showCloseButton,
+      disableClose,
       children,
-      titleUppercase, 
-      shouldCenterHorizontally, 
-      shouldCenterVertically, 
-      styleName, 
-      delayClose, 
-      dashboardView 
+      titleUppercase,
+      shouldCenterHorizontally,
+      shouldCenterVertically,
+      styleName,
+      delayClose,
+      dashboardView,
     } = this.props
 
     const titleStyleName = cx('title', {
-      'uppercase': titleUppercase,
+      uppercase: titleUppercase,
     })
 
     return (
       <Overlay dashboardView={dashboardView} styleName={styleName}>
-        <div 
+        <div
           styleName={cx({
             modal: true,
             modal_dashboardView: dashboardView,
-          })} 
+          })}
           className={className}
         >
-          {
-            Boolean(title || showCloseButton) && (
-              <div styleName="header">
-                {/*
+          {Boolean(title || showCloseButton) && (
+            <div styleName="header">
+              {/*
                 //@ts-ignore */}
-                <WidthContainer styleName="headerContent">
-                  <div styleName={titleStyleName} role="title">{title}</div>
-                  {
-                    showCloseButton && !disableClose && (
-                      <CloseIcon styleName={`closeButton ${delayClose ? 'delayClose' : ''}`} onClick={this.close} data-testid="modalCloseIcon" />
-                    )
-                  }
-                </WidthContainer>
+              <WidthContainer styleName="headerContent">
+                <div styleName={titleStyleName} role="title">
+                  {title}
+                </div>
+                {showCloseButton && !disableClose && (
+                  <CloseIcon
+                    styleName={`closeButton ${delayClose ? 'delayClose' : ''}`}
+                    onClick={this.close}
+                    data-testid="modalCloseIcon"
+                  />
+                )}
+              </WidthContainer>
+            </div>
+          )}
+          <div
+            styleName={cx({
+              contentContainer: true,
+              contentContainer_dashboardView: dashboardView,
+            })}
+          >
+            {dashboardView ? (
+              <div styleName="content content_dashboardView" className="contentHeightEvaluateHere">
+                {children}
               </div>
-            )
-          }
-          <div styleName={cx({
-            contentContainer: true,
-            contentContainer_dashboardView: dashboardView,
-          })}>
-            {
-              dashboardView
-                ? (
-                  <div styleName="content content_dashboardView" className="contentHeightEvaluateHere">
-                    {children}
-                  </div>
-                )
-                : (
-                  <Center scrollable centerHorizontally={shouldCenterHorizontally} centerVertically={shouldCenterVertically}>
-                    <div styleName="content">
-                      {children}
-                    </div>
-                  </Center>
-                )
-            }
+            ) : (
+              <Center
+                scrollable
+                centerHorizontally={shouldCenterHorizontally}
+                centerVertically={shouldCenterVertically}
+              >
+                <div styleName="content">{children}</div>
+              </Center>
+            )}
           </div>
         </div>
       </Overlay>

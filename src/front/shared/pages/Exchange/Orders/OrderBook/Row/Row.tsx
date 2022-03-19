@@ -30,7 +30,7 @@ type RowProps = {
   decline: any[]
   orderId: string
   linkedOrderId: string
-  
+
   row: {
     id: string
     isMy: boolean
@@ -62,14 +62,10 @@ type RowState = {
   windowWidth: number
 }
 
-@connect(({
-  pubsubRoom: { peer },
-  user,
-}) => ({
+@connect(({ pubsubRoom: { peer }, user }) => ({
   currenciesData: user,
   peer,
 }))
-
 @cssModules(styles, { allowMultiple: true })
 class Row extends Component<RowProps, RowState> {
   _mounted = false
@@ -86,17 +82,13 @@ class Row extends Component<RowProps, RowState> {
 
   getBalance() {
     const {
-      row: {
-        isMy,
-        buyCurrency,
-        sellCurrency,
-      },
+      row: { isMy, buyCurrency, sellCurrency },
       balances,
     } = this.props
 
     let balanceCheckCur = isMy ? sellCurrency : buyCurrency
 
-    return (balances && balances[balanceCheckCur]) ? balances[balanceCheckCur] : 0
+    return balances && balances[balanceCheckCur] ? balances[balanceCheckCur] : 0
   }
 
   componentDidMount() {
@@ -117,7 +109,10 @@ class Row extends Component<RowProps, RowState> {
     if (decline.length === 0) {
       this.sendSwapRequest(orderId, currency)
     } else {
-      const getDeclinedExistedSwapIndex = helpers.handleGoTrade.getDeclinedExistedSwapIndex({ currency, decline })
+      const getDeclinedExistedSwapIndex = helpers.handleGoTrade.getDeclinedExistedSwapIndex({
+        currency,
+        decline,
+      })
       if (getDeclinedExistedSwapIndex !== false) {
         this.handleDeclineOrdersModalOpen(getDeclinedExistedSwapIndex)
       } else {
@@ -171,26 +166,35 @@ class Row extends Component<RowProps, RowState> {
 
     const balance = this.getBalance()
 
-    feedback.offers.buyPressed(`${this.renderCoinName(sellCurrency)}->${this.renderCoinName(buyCurrency)}`)
+    feedback.offers.buyPressed(
+      `${this.renderCoinName(sellCurrency)}->${this.renderCoinName(buyCurrency)}`
+    )
 
     const pair = Pair.fromOrder(row)
     //@ts-ignore: strictNullChecks
     const { price, amount, total, main, base, type } = pair
 
-    if (!checkSwapAllow({
-      sellCurrency,
-      buyCurrency,
-      amount: sellAmount,
-      balance,
-    })) return false
+    if (
+      !checkSwapAllow({
+        sellCurrency,
+        buyCurrency,
+        amount: sellAmount,
+        balance,
+      })
+    )
+      return false
 
-    const isSwapExists = await checkSwapExists({ haveCurrency: sellCurrency, getCurrency: buyCurrency, orderId })
+    const isSwapExists = await checkSwapExists({
+      haveCurrency: sellCurrency,
+      getCurrency: buyCurrency,
+      orderId,
+    })
 
     if (isSwapExists) {
-      actions.notifications.show(
-        constants.notifications.ErrorNotification,
-        { error: 'You have Exists Swap with order participant. Please use other order for start swap with this pair.' }
-      )
+      actions.notifications.show(constants.notifications.ErrorNotification, {
+        error:
+          'You have Exists Swap with order participant. Please use other order for start swap with this pair.',
+      })
       return false
     }
 
@@ -211,7 +215,9 @@ class Row extends Component<RowProps, RowState> {
     actions.modals.open(constants.modals.ConfirmBeginSwap, {
       order: row,
       onAccept: async (customWallet) => {
-        feedback.offers.swapRequested(`${this.renderCoinName(sellCurrency)}->${this.renderCoinName(buyCurrency)}`)
+        feedback.offers.swapRequested(
+          `${this.renderCoinName(sellCurrency)}->${this.renderCoinName(buyCurrency)}`
+        )
 
         this.setState({ isFetching: true })
 
@@ -220,7 +226,7 @@ class Row extends Component<RowProps, RowState> {
         }, 15 * 1000)
 
         const destination = {
-          address: null
+          address: null,
         }
         if (customWallet !== null) {
           destination.address = customWallet
@@ -231,11 +237,8 @@ class Row extends Component<RowProps, RowState> {
 
           if (isAccepted) {
             this.setState({ isFetching: false }, () => {
-              const swapUri = row.isTurbo ?
-                `${links.turboSwap}/${id}`
-                :
-                `${links.atomicSwap}/${id}`
-              
+              const swapUri = row.isTurbo ? `${links.turboSwap}/${id}` : `${links.atomicSwap}/${id}`
+
               console.log(`Redirect to swap: ${swapUri}`)
               //@ts-ignore: strictNullChecks
               history.push(localisedUrl(intl.locale, swapUri))
@@ -251,11 +254,12 @@ class Row extends Component<RowProps, RowState> {
           id="ordersRow134"
           defaultMessage="Do you want to {action} {amount} {main} for {total} {base} at price {price} {main}/{base}?"
           values={{
-            action: `${type === PAIR_TYPES.BID
-              //@ts-ignore: strictNullChecks
-              ? intl.formatMessage(messages.sell)
-              //@ts-ignore: strictNullChecks
-              : intl.formatMessage(messages.buy)
+            action: `${
+              type === PAIR_TYPES.BID
+                ? //@ts-ignore: strictNullChecks
+                  intl.formatMessage(messages.sell)
+                : //@ts-ignore: strictNullChecks
+                  intl.formatMessage(messages.buy)
             }`,
             amount: `${this.formatWithDecimals(amount, main)}`,
             main: `${this.renderCoinName(main)}`,
@@ -277,10 +281,7 @@ class Row extends Component<RowProps, RowState> {
   }
 
   render() {
-    const {
-      isFetching,
-      windowWidth,
-    } = this.state
+    const { isFetching, windowWidth } = this.state
 
     const {
       row: {
@@ -294,9 +295,7 @@ class Row extends Component<RowProps, RowState> {
         isProcessing,
         owner: {
           peer: ownerPeer,
-          eth: {
-            address: ownerEthAddress,
-          },
+          eth: { address: ownerEthAddress },
         },
       },
       buy,
@@ -366,92 +365,85 @@ class Row extends Component<RowProps, RowState> {
         `}
         style={orderId === id ? { background: 'rgba(0, 236, 0, 0.1)' } : {}}
       >
-        <td styleName='rowCell'>
-          <div styleName='withIcon'>
-            <Avatar
-              value={ownerPeer}
-              size={25}
-              ownerEthAddress={ownerEthAddress}
-            />
-            {isTurbo &&
-              <TurboIcon />
-            }
+        <td styleName="rowCell">
+          <div styleName="withIcon">
+            <Avatar value={ownerPeer} size={25} ownerEthAddress={ownerEthAddress} />
+            {isTurbo && <TurboIcon />}
           </div>
         </td>
-        <td styleName='rowCell'>
-          <span styleName='rowAmount'>
-            <span className={`${sellCurrencyOut.toLowerCase()}SellAmountOfOrder`}>{`${this.formatWithDecimals(sellAmountOut, sellCurrencyOut)}`}</span>
-            {' '}
+        <td styleName="rowCell">
+          <span styleName="rowAmount">
+            <span
+              className={`${sellCurrencyOut.toLowerCase()}SellAmountOfOrder`}
+            >{`${this.formatWithDecimals(sellAmountOut, sellCurrencyOut)}`}</span>{' '}
             <span>{`${this.renderCoinName(sellCurrencyOut)}`}</span>
           </span>
         </td>
-        <td styleName='rowCell'>
-          <span styleName='rowAmount'>
-            <span className={`${getCurrencyOut.toLowerCase()}GetAmountOfOrder`}>{`${this.formatWithDecimals(getAmountOut, getCurrencyOut)}`}</span>
-            {' '}
+        <td styleName="rowCell">
+          <span styleName="rowAmount">
+            <span
+              className={`${getCurrencyOut.toLowerCase()}GetAmountOfOrder`}
+            >{`${this.formatWithDecimals(getAmountOut, getCurrencyOut)}`}</span>{' '}
             <span>{`${this.renderCoinName(getCurrencyOut)}`}</span>
           </span>
         </td>
-        <td styleName='rowCell'>
-          <span styleName='rowAmount'>
-            {`${this.formatWithDecimals(priceOut, getCurrencyOut)} ${this.renderCoinName(getCurrencyOut)}/${this.renderCoinName(sellCurrencyOut)}`}
+        <td styleName="rowCell">
+          <span styleName="rowAmount">
+            {`${this.formatWithDecimals(priceOut, getCurrencyOut)} ${this.renderCoinName(
+              getCurrencyOut
+            )}/${this.renderCoinName(sellCurrencyOut)}`}
           </span>
         </td>
-        <td styleName='rowCell'>
-          {peer === ownerPeer
-            ? <RemoveButton onClick={() => removeOrder(id)} brand />
-            :
+        <td styleName="rowCell">
+          {peer === ownerPeer ? (
+            <RemoveButton onClick={() => removeOrder(id)} brand />
+          ) : (
             <Fragment>
-              {
-                isRequested ? (
-                  <Fragment>
-                    <div style={{ color: 'red' }}>
-                      <FormattedMessage id="RowM136" defaultMessage="REQUESTING" />
-                    </div>
-                    {' '}
-                    <Link to={swapUri}>
-                      <FormattedMessage id="RowM139" defaultMessage="Swap" />
-                    </Link>
-                  </Fragment>
-                ) : (
-                  isProcessing ? (
-                    <span>
-                      <FormattedMessage id="Row157" defaultMessage="This order is in execution" />
-                    </span>
-                  ) : (
-                    isFetching ? (
-                      <Fragment>
-                        <InlineLoader />
-                        <br />
-                        <span>
-                          <FormattedMessage id="Row165" defaultMessage="Please wait while we confirm your request" />
-                        </span>
-                      </Fragment>
-                    ) : (
-                      <RequestButton
-                        disabled={!isSwapButtonEnabled}
-                        onClick={isSwapButtonEnabled ?
-                          () => this.checkDeclineOrders(id, isMy ? sellCurrency : buyCurrency)
-                          :
-                          () => {}
-                        }
-                        data={{
-                          type,
-                          main: this.renderCoinName(main),
-                          base: this.renderCoinName(base),
-                        }}
-                      />
-                    )
-                  )
-                )
-              }
+              {isRequested ? (
+                <Fragment>
+                  <div style={{ color: 'red' }}>
+                    <FormattedMessage id="RowM136" defaultMessage="REQUESTING" />
+                  </div>{' '}
+                  <Link to={swapUri}>
+                    <FormattedMessage id="RowM139" defaultMessage="Swap" />
+                  </Link>
+                </Fragment>
+              ) : isProcessing ? (
+                <span>
+                  <FormattedMessage id="Row157" defaultMessage="This order is in execution" />
+                </span>
+              ) : isFetching ? (
+                <Fragment>
+                  <InlineLoader />
+                  <br />
+                  <span>
+                    <FormattedMessage
+                      id="Row165"
+                      defaultMessage="Please wait while we confirm your request"
+                    />
+                  </span>
+                </Fragment>
+              ) : (
+                <RequestButton
+                  disabled={!isSwapButtonEnabled}
+                  onClick={
+                    isSwapButtonEnabled
+                      ? () => this.checkDeclineOrders(id, isMy ? sellCurrency : buyCurrency)
+                      : () => {}
+                  }
+                  data={{
+                    type,
+                    main: this.renderCoinName(main),
+                    base: this.renderCoinName(base),
+                  }}
+                />
+              )}
             </Fragment>
-          }
+          )}
         </td>
       </tr>
-    )
-    : /* mobile content */
-    (
+    ) : (
+      /* mobile content */
       <tr
         id={id}
         styleName={`
@@ -464,81 +456,80 @@ class Row extends Component<RowProps, RowState> {
           <div styleName="bigContainer">
             <div styleName="tdContainer-1">
               <span styleName="firstType">
-                {type === PAIR_TYPES.BID
-                  ? (<FormattedMessage id="MyOrdersYouSend" defaultMessage="You send" />)
-                  : (<FormattedMessage id="RowMobileYouGet" defaultMessage="You get" />)}
+                {type === PAIR_TYPES.BID ? (
+                  <FormattedMessage id="MyOrdersYouSend" defaultMessage="You send" />
+                ) : (
+                  <FormattedMessage id="RowMobileYouGet" defaultMessage="You get" />
+                )}
               </span>
-              <span styleName='rowAmount withIcon'>
-                {isTurbo &&
-                  <TurboIcon />
-                }
+              <span styleName="rowAmount withIcon">
+                {isTurbo && <TurboIcon />}
                 {`${mobileFormatCrypto(amount, main)} ${main}`}
               </span>
             </div>
             <div>
-              <i styleName='arrowsIcon' className="fas fa-exchange-alt" />
+              <i styleName="arrowsIcon" className="fas fa-exchange-alt" />
             </div>
             <div styleName="tdContainer-2">
               <span styleName="secondType">
-                {type === PAIR_TYPES.BID
-                  ? (<FormattedMessage id="RowMobileYouGet" defaultMessage="You get" />)
-                  : (<FormattedMessage id="MyOrdersYouSend" defaultMessage="You send" />)}
+                {type === PAIR_TYPES.BID ? (
+                  <FormattedMessage id="RowMobileYouGet" defaultMessage="You get" />
+                ) : (
+                  <FormattedMessage id="MyOrdersYouSend" defaultMessage="You send" />
+                )}
               </span>
-              <span styleName='rowAmount'>{`${mobileFormatCrypto(total, base)} ${this.renderCoinName(base)}`}</span>
+              <span styleName="rowAmount">{`${mobileFormatCrypto(
+                total,
+                base
+              )} ${this.renderCoinName(base)}`}</span>
             </div>
             <div styleName="tdContainer-3">
-              {
-                peer === ownerPeer ? (
-                  <RemoveButton onClick={() => removeOrder(id)} brand={true} />
-                ) : (
-                  <Fragment>
-                    {
-                      isRequested ? (
-                        <Fragment>
-                          <div style={{ color: 'red' }}>
-                            <FormattedMessage id="RowM136" defaultMessage="REQUESTING" />
-                          </div>
-                          {' '}
-                          <Link to={swapUri}>
-                            <FormattedMessage id="RowM139" defaultMessage="Swap" />
-                          </Link>
-                        </Fragment>
-                      ) : (
-                        isProcessing ? (
-                          <span>
-                            <FormattedMessage id="RowM145" defaultMessage="This order is in execution" />
-                          </span>
-                        ) : (
-                          isFetching ? (
-                            <Fragment>
-                              <InlineLoader />
-                              <br />
-                              <span>
-                                <FormattedMessage id="RowM153" defaultMessage="Please wait while we confirm your request" />
-                              </span>
-                            </Fragment>
-                          ) : (
-                            <RequestButton
-                              styleName="startButton"
-                              disabled={!isSwapButtonEnabled}
-                              onClick={isSwapButtonEnabled ?
-                                () => this.sendSwapRequest(id, isMy ? sellCurrency : buyCurrency)
-                                :
-                                () => {}
-                              }
-                              data={{
-                                type,
-                                main: this.renderCoinName(main),
-                                base: this.renderCoinName(base),
-                              }}
-                            />
-                          )
-                        )
-                      )
-                    }
-                  </Fragment>
-                )
-              }
+              {peer === ownerPeer ? (
+                <RemoveButton onClick={() => removeOrder(id)} brand={true} />
+              ) : (
+                <Fragment>
+                  {isRequested ? (
+                    <Fragment>
+                      <div style={{ color: 'red' }}>
+                        <FormattedMessage id="RowM136" defaultMessage="REQUESTING" />
+                      </div>{' '}
+                      <Link to={swapUri}>
+                        <FormattedMessage id="RowM139" defaultMessage="Swap" />
+                      </Link>
+                    </Fragment>
+                  ) : isProcessing ? (
+                    <span>
+                      <FormattedMessage id="RowM145" defaultMessage="This order is in execution" />
+                    </span>
+                  ) : isFetching ? (
+                    <Fragment>
+                      <InlineLoader />
+                      <br />
+                      <span>
+                        <FormattedMessage
+                          id="RowM153"
+                          defaultMessage="Please wait while we confirm your request"
+                        />
+                      </span>
+                    </Fragment>
+                  ) : (
+                    <RequestButton
+                      styleName="startButton"
+                      disabled={!isSwapButtonEnabled}
+                      onClick={
+                        isSwapButtonEnabled
+                          ? () => this.sendSwapRequest(id, isMy ? sellCurrency : buyCurrency)
+                          : () => {}
+                      }
+                      data={{
+                        type,
+                        main: this.renderCoinName(main),
+                        base: this.renderCoinName(base),
+                      }}
+                    />
+                  )}
+                </Fragment>
+              )}
             </div>
           </div>
         </td>

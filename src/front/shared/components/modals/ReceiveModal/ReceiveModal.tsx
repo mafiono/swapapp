@@ -1,5 +1,5 @@
 import { FormattedMessage, defineMessages, injectIntl } from 'react-intl'
-import React, { Fragment }  from 'react'
+import React, { Fragment } from 'react'
 import { withRouter } from 'react-router-dom'
 import actions from 'redux/actions'
 import cssModules from 'react-css-modules'
@@ -24,7 +24,7 @@ const langs = defineMessages({
   },
   pleaseSaveMnemonicToContinue: {
     id: `${langPrefix}_SaveYourMnemonic`,
-    defaultMessage: `Пожалуйста сохраните свою секретную фразу.`
+    defaultMessage: `Пожалуйста сохраните свою секретную фразу.`,
   },
   buttonSaveMnemonic: {
     id: `${langPrefix}_ButtonSaveMnemonic`,
@@ -42,28 +42,24 @@ class ReceiveModal extends React.Component<any, any> {
   constructor(props) {
     super(props)
     const {
-      data: {
-        address,
-        currency,
-        standard,
-      },
+      data: { address, currency, standard },
     } = props
 
     let howToDeposit = ''
 
     if (
-      standard
-      && externalConfig[standard]
-      && externalConfig[standard][currency.toLowerCase()]
-      && externalConfig[standard][currency.toLowerCase()].howToDeposit
+      standard &&
+      externalConfig[standard] &&
+      externalConfig[standard][currency.toLowerCase()] &&
+      externalConfig[standard][currency.toLowerCase()].howToDeposit
     ) {
       howToDeposit = externalConfig[standard][currency.toLowerCase()].howToDeposit
     }
 
     const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-    const mnemonicSaved = (mnemonic === `-`)
+    const mnemonicSaved = mnemonic === `-`
 
-    howToDeposit = howToDeposit.replace(/{userAddress}/g, address);
+    howToDeposit = howToDeposit.replace(/{userAddress}/g, address)
 
     const targetCurrency = getCurrencyKey(currency.toLowerCase(), true)
     const isToken = erc20Like.isToken({ name: currency })
@@ -72,7 +68,7 @@ class ReceiveModal extends React.Component<any, any> {
     props.history.push(recieveUrl)
 
     this.state = {
-      step: (mnemonicSaved) ? 'receive' : 'saveMnemonic',
+      step: mnemonicSaved ? 'receive' : 'saveMnemonic',
       howToDeposit,
     }
   }
@@ -81,19 +77,25 @@ class ReceiveModal extends React.Component<any, any> {
     actions.modals.open(constants.modals.SaveMnemonicModal, {
       onClose: () => {
         const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-        const mnemonicSaved = (mnemonic === `-`)
-        const step = (mnemonicSaved) ? 'receive' : 'saveMnemonicWords'
+        const mnemonicSaved = mnemonic === `-`
+        const step = mnemonicSaved ? 'receive' : 'saveMnemonicWords'
 
         this.setState({
           mnemonicSaved,
           step,
         })
-      }
+      },
     })
   }
 
   handleClose = () => {
-    const { name, history: { location: { pathname }, goBack } } = this.props
+    const {
+      name,
+      history: {
+        location: { pathname },
+        goBack,
+      },
+    } = this.props
 
     if (pathname.includes('receive')) {
       goBack()

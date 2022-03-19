@@ -22,5 +22,5 @@ export default {
     decimals: 18,
     fullName: 'BTCB Token',
     canSwap: true,
-  }
+  },
 }

@@ -1,7 +1,6 @@
 import { constants } from 'swap.app'
 import NextToEvm from './atomic/NextToEvm'
 
-
 class NEXT2ETH extends NextToEvm {
   static getName() {
     return `${this.getFromName()}2${this.getToName()}`

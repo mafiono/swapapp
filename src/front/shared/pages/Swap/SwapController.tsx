@@ -5,10 +5,8 @@ import { FormattedMessage } from 'react-intl'
 import CSSModules from 'react-css-modules'
 import styles from './Swap.scss'
 
-
 @CSSModules(styles)
 class SwapController extends React.PureComponent<any, any> {
-
   swap: any
   mount: any
 
@@ -64,17 +62,21 @@ class SwapController extends React.PureComponent<any, any> {
 
     return (
       <div styleName="onlineIndicator">
-        {
-          online ? (
-            <p styleName="online">
-              <FormattedMessage id="SwapController54" defaultMessage="Another participant is online" />
-            </p>
-          ) : (
-            <p styleName="offline">
-              <FormattedMessage id="SwapController60" defaultMessage="Another participant is offline" />
-            </p>
-          )
-        }
+        {online ? (
+          <p styleName="online">
+            <FormattedMessage
+              id="SwapController54"
+              defaultMessage="Another participant is online"
+            />
+          </p>
+        ) : (
+          <p styleName="offline">
+            <FormattedMessage
+              id="SwapController60"
+              defaultMessage="Another participant is offline"
+            />
+          </p>
+        )}
       </div>
     )
   }

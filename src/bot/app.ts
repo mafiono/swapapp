@@ -9,18 +9,12 @@ import ws from './ws'
 import router from './routes'
 import auth from './routes/auth'
 
-import {
-  colorString,
-  FG_COLORS,
-  BG_COLORS
-} from 'common/utils/colorString'
-
+import { colorString, FG_COLORS, BG_COLORS } from 'common/utils/colorString'
 
 const { app, wallet } = SwapApp
 
-app.ready = new Promise(resolve => app.services.room.once('ready', resolve))
-app.sync = new Promise(resolve => app.ready.then(() => setTimeout(resolve, 20000)))
-
+app.ready = new Promise((resolve) => app.services.room.once('ready', resolve))
+app.sync = new Promise((resolve) => app.ready.then(() => setTimeout(resolve, 20000)))
 
 app.services.room.once('ready', () => {
   console.log('swapApp ready')
@@ -51,9 +45,23 @@ const serverColor = {
   bg: BG_COLORS.GREEN,
 }
 
-console.log(colorString(`------------------------------------------------------------------------------`, serverColor))
-console.log(colorString(`                  [SERVER] listening on http://localhost:${port}                 `, serverColor))
-console.log(colorString(`------------------------------------------------------------------------------`, serverColor))
-
+console.log(
+  colorString(
+    `------------------------------------------------------------------------------`,
+    serverColor
+  )
+)
+console.log(
+  colorString(
+    `                  [SERVER] listening on http://localhost:${port}                 `,
+    serverColor
+  )
+)
+console.log(
+  colorString(
+    `------------------------------------------------------------------------------`,
+    serverColor
+  )
+)
 
 export { server, app, listener }

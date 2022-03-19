@@ -32,7 +32,6 @@ const defaultLanguage = defineMessages({
 @withRouter
 @CSSModules(styles, { allowMultiple: true })
 class AlertWindow extends Component<any, any> {
-
   handleClose = () => {
     const { name, data, onClose, history, intl } = this.props
     const { onClose: dataClose, currency, address, actionType } = data
@@ -67,12 +66,7 @@ class AlertWindow extends Component<any, any> {
 
   render() {
     const {
-      data: {
-        title,
-        message,
-        actionType,
-        canClose,
-      },
+      data: { title, message, actionType, canClose },
       intl,
     } = this.props
 
@@ -90,17 +84,17 @@ class AlertWindow extends Component<any, any> {
             <WidthContainer styleName="headerContent">
               <div styleName="title">{labels.title}</div>
 
-              {canClose && (<CloseIcon styleName="closeButton" onClick={this.handleClosePopup} />)}
+              {canClose && <CloseIcon styleName="closeButton" onClick={this.handleClosePopup} />}
             </WidthContainer>
           </div>
           <div styleName="content">
             <div styleName="notification-overlay">
-              <p styleName="notification">
-                {message}
-              </p>
+              <p styleName="notification">{message}</p>
             </div>
             <div styleName="button-overlay">
-              <Button styleName="button" gray onClick={this.handleClose}>{labels.actionLabel}</Button>
+              <Button styleName="button" gray onClick={this.handleClose}>
+                {labels.actionLabel}
+              </Button>
             </div>
           </div>
         </div>

@@ -10,21 +10,21 @@ import styles from './CreateWallet.scss'
 import { color } from './chooseColor'
 import check from './images/check'
 
-
-const Explanation = ({ subHeaderText, children, step, createWallet: { step: stepNum }, notMain, isShow }) => (
+const Explanation = ({
+  subHeaderText,
+  children,
+  step,
+  createWallet: { step: stepNum },
+  notMain,
+  isShow,
+}) => (
   <div styleName={`inLine ${notMain ? 'notMain' : ''}`}>
-    {!isMobile && !isShow &&
-      <div styleName={`stepNumber ${color(step, stepNum)}`}>
-        {stepNum > step ? check() : step}
-      </div>
-    }
+    {!isMobile && !isShow && (
+      <div styleName={`stepNumber ${color(step, stepNum)}`}>{stepNum > step ? check() : step}</div>
+    )}
     <div styleName={`subHeader ${step === '2' ? 'second' : ''}`}>
-      <h5>
-        {subHeaderText}
-      </h5>
-      <p styleName="capture">
-        {children}
-      </p>
+      <h5>{subHeaderText}</h5>
+      <p styleName="capture">{children}</p>
     </div>
   </div>
 )

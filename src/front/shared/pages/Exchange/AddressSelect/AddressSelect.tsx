@@ -26,11 +26,10 @@ import iconCustom from 'images/custom.svg'
 import getCoinInfo from 'common/coins/getCoinInfo'
 import config from 'helpers/externalConfig'
 
-
 import { AddressType, AddressRole } from 'domain/address'
 import { COIN_DATA, COIN_MODEL } from 'swap.app/constants/COINS'
 
-const disableInternalWallet = (config?.opts?.ui?.disableInternalWallet) ? true : false
+const disableInternalWallet = config?.opts?.ui?.disableInternalWallet ? true : false
 const langLabels = defineMessages({
   labelSpecifyAddress: {
     id: 'Exchange_SpecifyAddress',
@@ -101,8 +100,6 @@ type AddressSelectState = {
   dropDownOptions: Array<DropDownOptions>
 }
 
-
-
 @withRouter
 @cssModules(styles, { allowMultiple: true })
 class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
@@ -118,7 +115,7 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
       selectedType: selectedType || 'Internal',
       walletAddressFocused: false,
       isMetamaskConnected: metamask.isConnected(),
-      metamaskAddress: metamask.getAddress()|| '',
+      metamaskAddress: metamask.getAddress() || '',
       isScanActive: false,
       dropDownOptions: [],
     }
@@ -142,9 +139,7 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
     const ticker = this.getTicker()
     const internalAddress = this.getInternalAddress()
 
-    return !internalAddress
-      ? false
-      : isAllowedCurrency(ticker, internalAddress)
+    return !internalAddress ? false : isAllowedCurrency(ticker, internalAddress)
   }
 
   handleFocusAddress = () => {
@@ -172,24 +167,24 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
   componentDidUpdate(prevProps) {
     const { currency: newCurrency, selectedType, hasError = false, balance } = this.props
 
-    const {balance: oldBalance} = prevProps
+    const { balance: oldBalance } = prevProps
 
-    const {
-      currency: oldCurrency,
-      hasError: oldHasError = false,
-    } = this.state
+    const { currency: oldCurrency, hasError: oldHasError = false } = this.state
 
-    if(!isNaN(Number(oldBalance)) && !isNaN(Number(balance)) && oldBalance !== balance){
+    if (!isNaN(Number(oldBalance)) && !isNaN(Number(balance)) && oldBalance !== balance) {
       this.prepareDropDownOptions(selectedType)
     }
 
     if (newCurrency !== oldCurrency || hasError !== oldHasError) {
-      this.setState({
-        currency: newCurrency,
-        hasError,
-      }, () => {
-        this.prepareDropDownOptions(selectedType)
-      })
+      this.setState(
+        {
+          currency: newCurrency,
+          hasError,
+        },
+        () => {
+          this.prepareDropDownOptions(selectedType)
+        }
+      )
     }
   }
 
@@ -205,9 +200,7 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
   }
 
   goСreateWallet = () => {
-    const {
-      history,
-    } = this.props
+    const { history } = this.props
     const ticker = this.getTicker()
 
     feedback.exchangeForm.redirectedCreateWallet(ticker)
@@ -237,7 +230,8 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
             })
           }
         )
-      }).catch((error) => {
+      })
+      .catch((error) => {
         console.error('Metamask rejected', error)
       })
   }
@@ -321,21 +315,12 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
   }
 
   prepareDropDownOptions = (newSelectedType?) => {
-    const {
-      currency,
-      balance,
-      role,
-    } = this.props
+    const { currency, balance, role } = this.props
 
-    const {
-      selectedType: oldSelectedType,
-      isMetamaskConnected,
-      metamaskAddress,
-    } = this.state
+    const { selectedType: oldSelectedType, isMetamaskConnected, metamaskAddress } = this.state
 
-    let selectedType = (newSelectedType && oldSelectedType !== newSelectedType)
-      ? newSelectedType
-      : oldSelectedType
+    let selectedType =
+      newSelectedType && oldSelectedType !== newSelectedType ? newSelectedType : oldSelectedType
 
     const ticker = this.getTicker()
 
@@ -345,21 +330,23 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
     })
 
     if (
-      (selectedType === AddressType.Internal
-      || (selectedType === AddressType.Metamask && !metamask.isConnected()))
-      && !!balance) {
+      (selectedType === AddressType.Internal ||
+        (selectedType === AddressType.Metamask && !metamask.isConnected())) &&
+      !!balance
+    ) {
       internalBalance = balance
     }
 
     const isInternalOptionDisabled =
       role === AddressRole.Send && (!internalBalance || internalBalance === 0)
 
-    const isMetamaskOption = erc20Like.isToken({ name: currency }) || ['ETH', 'BNB', 'MATIC'].includes(ticker) // ToDo: replace at constant
+    const isMetamaskOption =
+      erc20Like.isToken({ name: currency }) || ['ETH', 'BNB', 'MATIC'].includes(ticker) // ToDo: replace at constant
 
     // Forbid `Custom address` option when using ethereum/tokens
     // because you need to make a request to the contract
-    const isCustomAddressOption = !erc20Like.isToken({ name: currency })
-      && !['ETH', 'BNB', 'MATIC'].includes(ticker) // ToDo: replace at constant
+    const isCustomAddressOption =
+      !erc20Like.isToken({ name: currency }) && !['ETH', 'BNB', 'MATIC'].includes(ticker) // ToDo: replace at constant
 
     const isUTXOModel = COIN_DATA[ticker] && COIN_DATA[ticker].model === COIN_MODEL.UTXO
     const isCustomOptionInputHidden = role === AddressRole.Send && isUTXOModel
@@ -374,75 +361,65 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
 
     if (!disableInternalWallet) {
       if (isCurrencyInInternalWallet) {
-        dropDownOptions.push(
-          {
-            value: AddressType.Internal,
-            icon: iconInternal,
-            title: !isInternalOptionDisabled ? (
-              <Fragment>
-                <FormattedMessage {...langLabels.optionInternal} />
-                <Address
-                  address={this.getInternalAddress()}
-                  format={AddressFormat.Short}
-                  type={AddressType.Internal}
-                />
-              </Fragment>
-            ) : (
-              <FormattedMessage {...langLabels.optionInternalDisabled} />
-            ),
-            disabled: isInternalOptionDisabled,
-          },
-        )
+        dropDownOptions.push({
+          value: AddressType.Internal,
+          icon: iconInternal,
+          title: !isInternalOptionDisabled ? (
+            <Fragment>
+              <FormattedMessage {...langLabels.optionInternal} />
+              <Address
+                address={this.getInternalAddress()}
+                format={AddressFormat.Short}
+                type={AddressType.Internal}
+              />
+            </Fragment>
+          ) : (
+            <FormattedMessage {...langLabels.optionInternalDisabled} />
+          ),
+          disabled: isInternalOptionDisabled,
+        })
       } else if (isUTXOModel || !isMetamaskConnected) {
-        dropDownOptions.push(
-          {
-            value: 'InternalAddressCreate',
-            icon: iconInternal,
-            title: <FormattedMessage {...langLabels.optionInternalCreate} />,
-          },
-        )
+        dropDownOptions.push({
+          value: 'InternalAddressCreate',
+          icon: iconInternal,
+          title: <FormattedMessage {...langLabels.optionInternalCreate} />,
+        })
       }
     }
 
     if (isMetamaskOption) {
       if (isMetamaskConnected) {
-        dropDownOptions.push(
-          {
-            value: AddressType.Metamask,
-            icon: web3Icon,
-            title: (
-              <Fragment>
-                {metamask.web3connect.getProviderTitle()}
-                <Address
-                  address={metamaskAddress}
-                  format={AddressFormat.Short}
-                  type={AddressType.Metamask}
-                />
-              </Fragment>
-            ),
-          },
-        )
+        dropDownOptions.push({
+          value: AddressType.Metamask,
+          icon: web3Icon,
+          title: (
+            <Fragment>
+              {metamask.web3connect.getProviderTitle()}
+              <Address
+                address={metamaskAddress}
+                format={AddressFormat.Short}
+                type={AddressType.Metamask}
+              />
+            </Fragment>
+          ),
+        })
       } else {
-        dropDownOptions.push(
-          {
-            value: AddressType.Metamask,
-            icon: web3Icon,
-            title: <FormattedMessage {...langLabels.optionConnect} />,
-            dontSelect: true,
-          },
-        )
+        dropDownOptions.push({
+          value: AddressType.Metamask,
+          icon: web3Icon,
+          title: <FormattedMessage {...langLabels.optionConnect} />,
+          dontSelect: true,
+        })
       }
     }
 
     if ((role === AddressRole.Receive || !isCurrencyInInternalWallet) && isCustomAddressOption) {
-      dropDownOptions.push(
-        {
-          value: AddressType.Custom,
-          icon: iconCustom,
-          title: <FormattedMessage {...langLabels.optionCustom} />,
-          reduceSelectedItemText: !isCustomOptionInputHidden,
-        },
-      )
+      dropDownOptions.push({
+        value: AddressType.Custom,
+        icon: iconCustom,
+        title: <FormattedMessage {...langLabels.optionCustom} />,
+        reduceSelectedItemText: !isCustomOptionInputHidden,
+      })
     }
 
     const hasSelectedType = dropDownOptions.filter(({ value }) => value === selectedType)
@@ -455,11 +432,7 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
   }
 
   render() {
-    const {
-      label,
-      role,
-      placeholder = 'Enter address',
-    } = this.props
+    const { label, role, placeholder = 'Enter address' } = this.props
 
     const {
       selectedType,
@@ -474,7 +447,6 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
 
     const isUTXOModel = COIN_DATA[ticker] && COIN_DATA[ticker].model === COIN_MODEL.UTXO
     const isCustomOptionInputHidden = role === AddressRole.Send && isUTXOModel
-
 
     // =======================================================
 
@@ -500,11 +472,7 @@ class AddressSelect extends Component<AddressSelectProps, AddressSelectState> {
         />
         {selectedType === AddressType.Metamask && metamask.isEnabled() && !isMetamaskConnected && (
           <div styleName="selectedInner connectWrapper">
-            <Button
-              blue
-              styleName="button"
-              onClick={this.handleConnectMetamask}
-            >
+            <Button blue styleName="button" onClick={this.handleConnectMetamask}>
               <FormattedMessage {...langLabels.connectMetamask} />
             </Button>
           </div>

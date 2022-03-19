@@ -44,7 +44,6 @@ export const getActivatedCurrencies = () => {
     const standard = TOKEN_STANDARDS[key].standard
 
     Object.keys(externalConfig[standard]).forEach((token) => {
-
       const baseCurrency = TOKEN_STANDARDS[standard].currency.toUpperCase()
       const tokenName = token.toUpperCase()
       const tokenValue = `{${baseCurrency}}${tokenName}`
@@ -57,17 +56,10 @@ export const getActivatedCurrencies = () => {
 }
 
 export const getWidgetCurrencies = () => {
-  const { core: { hiddenCoinsList } } = store.getState()
-  const widgetCurrencies = [
-    'BTC',
-    'ETH',
-    'BNB',
-    'MATIC',
-    'ARBETH',
-    'XDAI',
-    'GHOST',
-    'NEXT',
-  ]
+  const {
+    core: { hiddenCoinsList },
+  } = store.getState()
+  const widgetCurrencies = ['BTC', 'ETH', 'BNB', 'MATIC', 'ARBETH', 'XDAI', 'GHOST', 'NEXT']
 
   if (!hiddenCoinsList.includes('BTC (PIN-Protected)')) {
     widgetCurrencies.push('BTC (PIN-Protected)')
@@ -79,7 +71,6 @@ export const getWidgetCurrencies = () => {
   if (externalConfig.isWidget) {
     if (window?.widgetEvmLikeTokens?.length) {
       window.widgetEvmLikeTokens.forEach((token) => {
-
         const baseCurrency = TOKEN_STANDARDS[token.standard].currency.toUpperCase()
         const tokenName = token.name.toUpperCase()
         const tokenValue = `{${baseCurrency}}${tokenName}`
@@ -96,16 +87,22 @@ export const getWidgetCurrencies = () => {
 
 export const filterUserCurrencyData = (currencyData) =>
   currencyData.filter((wallet) =>
-    isAllowedCurrency(wallet.isToken ? wallet.tokenKey.toUpperCase() : wallet.currency, wallet.address, wallet.isMetamask)
+    isAllowedCurrency(
+      wallet.isToken ? wallet.tokenKey.toUpperCase() : wallet.currency,
+      wallet.address,
+      wallet.isMetamask
+    )
   )
 
 export const isAllowedCurrency = (currency = '', address = '', isMetamask = false) => {
-  const { core: { hiddenCoinsList } } = store.getState()
+  const {
+    core: { hiddenCoinsList },
+  } = store.getState()
   const enabledCurrencies = getActivatedCurrencies()
 
   return (
-    ((!hiddenCoinsList.includes(currency) && !hiddenCoinsList.includes(`${currency}:${address}`))
-      || isMetamask) &&
+    ((!hiddenCoinsList.includes(currency) && !hiddenCoinsList.includes(`${currency}:${address}`)) ||
+      isMetamask) &&
     enabledCurrencies.includes(currency)
   )
 }
@@ -142,7 +139,7 @@ export const getTransakLink = (params) => {
     // which is available for the fiat value that we've passed.
     // `&fiatCurrency=${user.activeFiat}`,
   ]
-  
+
   if (!isLocalHost) {
     parameters.push(`&redirectURL=${hostURL}`)
   }

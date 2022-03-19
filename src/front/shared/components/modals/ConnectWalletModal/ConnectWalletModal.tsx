@@ -17,7 +17,10 @@ import styles from './ConnectWalletModal.scss'
   dashboardModalsAllowed,
 }))
 @cssModules(styles, { allowMultiple: true })
-class ConnectWalletModal extends React.Component<any, { choseNetwork: boolean; currentBaseCurrency: string}> {
+class ConnectWalletModal extends React.Component<
+  any,
+  { choseNetwork: boolean; currentBaseCurrency: string }
+> {
   constructor(props) {
     super(props)
 
@@ -132,7 +135,10 @@ class ConnectWalletModal extends React.Component<any, { choseNetwork: boolean; c
     const { choseNetwork, currentBaseCurrency } = this.state
 
     const web3Type = metamask.web3connect.getInjectedType()
-    const web3Icon = (web3Icons[web3Type] && web3Type !== `UNKNOWN` && web3Type !== `NONE`) ? web3Icons[web3Type] : false
+    const web3Icon =
+      web3Icons[web3Type] && web3Type !== `UNKNOWN` && web3Type !== `NONE`
+        ? web3Icons[web3Type]
+        : false
     const walletConnectIcon = web3Icons.WALLETCONNECT
 
     return (
@@ -149,10 +155,10 @@ class ConnectWalletModal extends React.Component<any, { choseNetwork: boolean; c
           })}
         >
           <div styleName="header">
-            <h3 styleName="title"><FormattedMessage id="Connect" defaultMessage="Connect" /></h3>
-            {!noCloseButton && (
-              <CloseIcon onClick={this.handleClose} />
-            )}
+            <h3 styleName="title">
+              <FormattedMessage id="Connect" defaultMessage="Connect" />
+            </h3>
+            {!noCloseButton && <CloseIcon onClick={this.handleClose} />}
           </div>
 
           <div styleName="notification-overlay">
@@ -162,29 +168,33 @@ class ConnectWalletModal extends React.Component<any, { choseNetwork: boolean; c
               </h3>
               <div styleName="options">
                 {Object.values(externalConfig.evmNetworks)
-                  .filter((network: any) => externalConfig.opts.curEnabled[network.currency.toLowerCase()])
+                  .filter(
+                    (network: any) => externalConfig.opts.curEnabled[network.currency.toLowerCase()]
+                  )
                   .map(
                     (
                       item: {
-                      currency: string
-                      chainId: number
-                      networkVersion: number
-                      chainName: string
-                      rpcUrls: string[]
-                      blockExplorerUrls: string[]
-                    },
-                      index,
+                        currency: string
+                        chainId: number
+                        networkVersion: number
+                        chainName: string
+                        rpcUrls: string[]
+                        blockExplorerUrls: string[]
+                      },
+                      index
                     ) => (
                       <button
                         type="button"
                         key={index}
-                        styleName={`option ${currentBaseCurrency === item.currency ? 'selected' : ''}`}
+                        styleName={`option ${
+                          currentBaseCurrency === item.currency ? 'selected' : ''
+                        }`}
                         onClick={() => this.setNetwork(item.currency)}
                       >
                         <Coin size={50} name={item.currency.toLowerCase()} />
                         <span styleName="chainName">{item.chainName.split(' ')[0]}</span>
                       </button>
-                    ),
+                    )
                   )}
               </div>
             </div>
@@ -207,7 +217,10 @@ class ConnectWalletModal extends React.Component<any, { choseNetwork: boolean; c
                 <div styleName="provider">
                   <Button brand onClick={this.handleWalletConnect}>
                     <img src={walletConnectIcon} alt="WalletConnect" />
-                    <FormattedMessage id="ConnectWalletModal_WalletConnect" defaultMessage="WalletConnect" />
+                    <FormattedMessage
+                      id="ConnectWalletModal_WalletConnect"
+                      defaultMessage="WalletConnect"
+                    />
                   </Button>
                 </div>
               </div>

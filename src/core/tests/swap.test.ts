@@ -16,7 +16,7 @@ const _ORDER = {
 
 beforeAll(() => orders.getMyOrders().map(({ id }) => orders.remove(id)))
 
-afterAll(done => rimraf('.storage', done))
+afterAll((done) => rimraf('.storage', done))
 
 test('check app loaded', () => {
   //@ts-ignore: strictNullChecks
@@ -36,7 +36,12 @@ test('create an order', async () => {
 
   const myOrders = orders.items
     .filter(({ isMy }) => isMy)
-    .map(({ buyCurrency, sellCurrency, buyAmount, sellAmount }) => ({ buyCurrency, sellCurrency, buyAmount, sellAmount }))
+    .map(({ buyCurrency, sellCurrency, buyAmount, sellAmount }) => ({
+      buyCurrency,
+      sellCurrency,
+      buyAmount,
+      sellAmount,
+    }))
 
   expect(myOrders.length).toEqual(1)
 

@@ -3,9 +3,7 @@ import SwapApp, { constants, util } from 'swap.app'
 import { AtomicAB2UTXO } from 'swap.swap'
 import { BigNumber } from 'bignumber.js'
 
-
 class GHOST2ETH extends AtomicAB2UTXO {
-
   _flowName: string
   ghostSwap: any
   ethSwap: any
@@ -28,14 +26,14 @@ class GHOST2ETH extends AtomicAB2UTXO {
     this._flowName = GHOST2ETH.getName()
 
     this.stepNumbers = {
-      'sign': 1,
+      sign: 1,
       'submit-secret': 2,
       'sync-balance': 3,
       'lock-utxo': 4,
       'wait-lock-eth': 5,
       'withdraw-eth': 6,
-      'finish': 7,
-      'end': 8
+      finish: 7,
+      end: 8,
     }
 
     this.ethSwap = swap.ownerSwap
@@ -101,7 +99,6 @@ class GHOST2ETH extends AtomicAB2UTXO {
     const flow = this
 
     return [
-
       // 1. Signs
 
       async () => {
@@ -136,20 +133,20 @@ class GHOST2ETH extends AtomicAB2UTXO {
 
           flow.swap.room.once('request utxo script', () => {
             flow.swap.room.sendMessage({
-              event:  'create utxo script',
+              event: 'create utxo script',
               data: {
                 scriptValues: utxoScriptValues,
                 utxoScriptCreatingTransactionHash: txID,
-              }
+              },
             })
           })
 
           flow.swap.room.sendMessage({
             event: 'create utxo script',
             data: {
-              scriptValues : utxoScriptValues,
-              utxoScriptCreatingTransactionHash : txID,
-            }
+              scriptValues: utxoScriptValues,
+              utxoScriptCreatingTransactionHash: txID,
+            },
           })
         }
 
@@ -201,9 +198,12 @@ class GHOST2ETH extends AtomicAB2UTXO {
         const { isStoppedSwap } = flow.state
 
         if (!isStoppedSwap) {
-          flow.finishStep({
-            isGhostScriptFunded: true,
-          }, { step: 'lock-utxo' })
+          flow.finishStep(
+            {
+              isGhostScriptFunded: true,
+            },
+            { step: 'lock-utxo' }
+          )
         }
       },
 
@@ -225,7 +225,7 @@ class GHOST2ETH extends AtomicAB2UTXO {
       // 7. Finish
 
       () => {
-        flow.swap.room.once('swap finished', ({utxoSwapWithdrawTransactionHash}) => {
+        flow.swap.room.once('swap finished', ({ utxoSwapWithdrawTransactionHash }) => {
           flow.setState({
             utxoSwapWithdrawTransactionHash,
           })
@@ -235,14 +235,17 @@ class GHOST2ETH extends AtomicAB2UTXO {
           event: 'request swap finished',
         })
 
-        flow.finishStep({
-          isFinished: true,
-        }, 'finish')
+        flow.finishStep(
+          {
+            isFinished: true,
+          },
+          'finish'
+        )
       },
 
       // 8. Finished!
 
-      () => {}
+      () => {},
     ]
   }
 
@@ -251,10 +254,11 @@ class GHOST2ETH extends AtomicAB2UTXO {
   }
 
   getRefundTxHex = () => {
-    this.ghostSwap.getRefundHexTransaction({
-      scriptValues: this.state.utxoScriptValues,
-      secret: this.state.secret,
-    })
+    this.ghostSwap
+      .getRefundHexTransaction({
+        scriptValues: this.state.utxoScriptValues,
+        secret: this.state.secret,
+      })
       .then((txHex) => {
         this.setState({
           refundTxHex: txHex,
@@ -266,10 +270,11 @@ class GHOST2ETH extends AtomicAB2UTXO {
     const flow = this
     const { utxoScriptValues, secret } = flow.state
 
-    return flow.ghostSwap.refund({
-      scriptValues: utxoScriptValues,
-      secret: secret,
-    })
+    return flow.ghostSwap
+      .refund({
+        scriptValues: utxoScriptValues,
+        secret: secret,
+      })
       .then((hash) => {
         if (!hash) {
           return false
@@ -279,21 +284,27 @@ class GHOST2ETH extends AtomicAB2UTXO {
           event: 'utxo refund completed',
         })
 
-        flow.setState({
-          refundTransactionHash: hash,
-          isRefunded: true,
-          isSwapExist: false,
-        }, true)
+        flow.setState(
+          {
+            refundTransactionHash: hash,
+            isRefunded: true,
+            isSwapExist: false,
+          },
+          true
+        )
 
         return true
       })
       .catch((error) => {
         if (/Address is empty/.test(error)) {
           // TODO - fetch TX list to script for refund TX
-          flow.setState({
-            isRefunded: true,
-            isSwapExist: false,
-          }, true)
+          flow.setState(
+            {
+              isRefunded: true,
+              isSwapExist: false,
+            },
+            true
+          )
           return true
         } else {
           console.warn('Ghost refund:', error)
@@ -310,10 +321,10 @@ class GHOST2ETH extends AtomicAB2UTXO {
         return true
       } else {
         console.warn('GHOST2ETH - unknown refund transaction')
-        this.setState( {
+        this.setState({
           refundTransactionHash: null,
           isRefunded: false,
-        } )
+        })
         return false
       }
     }
@@ -329,12 +340,13 @@ class GHOST2ETH extends AtomicAB2UTXO {
     if (secret && secret != _secret)
       console.warn(`Secret already known and is different. Are you sure?`)
 
-    if (isEthWithdrawn)
-      console.warn(`Looks like money were already withdrawn, are you sure?`)
+    if (isEthWithdrawn) console.warn(`Looks like money were already withdrawn, are you sure?`)
 
     debug('swap.core:flow')(`WITHDRAW using secret = ${_secret}`)
 
-    const _secretHash = this.app.env.bitcoin.crypto.ripemd160(Buffer.from(_secret, 'hex')).toString('hex')
+    const _secretHash = this.app.env.bitcoin.crypto
+      .ripemd160(Buffer.from(_secret, 'hex'))
+      .toString('hex')
 
     if (secretHash != _secretHash)
       console.warn(`Hash does not match! state: ${secretHash}, given: ${_secretHash}`)
@@ -344,18 +356,22 @@ class GHOST2ETH extends AtomicAB2UTXO {
       secret: _secret,
     }
 
-    await this.ethSwap.withdraw(data, (hash) => {
-      debug('swap.core:flow')(`TX hash=${hash}`)
-      this.setState({
-        ethSwapWithdrawTransactionHash: hash,
-        canCreateEthTransaction: true,
+    await this.ethSwap
+      .withdraw(data, (hash) => {
+        debug('swap.core:flow')(`TX hash=${hash}`)
+        this.setState({
+          ethSwapWithdrawTransactionHash: hash,
+          canCreateEthTransaction: true,
+        })
       })
-    }).then(() => {
-
-      this.finishStep({
-        isEthWithdrawn: true,
-      }, 'withdraw-eth')
-    })
+      .then(() => {
+        this.finishStep(
+          {
+            isEthWithdrawn: true,
+          },
+          'withdraw-eth'
+        )
+      })
   }
 }
 

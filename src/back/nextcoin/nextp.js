@@ -5,14 +5,14 @@ const app = express()
 const cors = require('cors')
 const helmet = require('helmet')
 
-
 app.use(helmet())
 app.use(cors())
 app.use(express.json())
-app.use(express.urlencoded({
-  extended: true,
-}))
-
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+)
 
 const portDefault = 7079
 
@@ -33,7 +33,6 @@ const networks = Object.keys(nextCoinNode)
   'getblockchaininfo',
   'getaddressbalance'
 ]*/
-
 
 const sendRequest = ({ network, rpcMethod, rpcMethodParams = [], onSuccess, onError, appRes }) => {
   if (!networks.includes(network)) {
@@ -59,10 +58,10 @@ const sendRequest = ({ network, rpcMethod, rpcMethodParams = [], onSuccess, onEr
   const url = `http://${user.name}:${user.password}@${nodeIP}:${nodePort}`
 
   const bodyJson = {
-    'jsonrpc': '1.0',
-    'id': 'curltext',
-    'method': rpcMethod,
-    'params': rpcMethodParams,
+    jsonrpc: '1.0',
+    id: 'curltext',
+    method: rpcMethod,
+    params: rpcMethodParams,
   }
 
   const body = JSON.stringify(bodyJson)
@@ -90,7 +89,6 @@ const sendRequest = ({ network, rpcMethod, rpcMethodParams = [], onSuccess, onEr
       onError(resultError)
     })
 }
-
 
 /*
 Planning proxy interface:
@@ -121,14 +119,13 @@ app.get('/:network', async (req, res) => {
   })
 })
 
-
 app.get('/:network/:var(addr|address)/:address', async (req, res) => {
   const { network, address } = req.params
 
   sendRequest({
     network,
     rpcMethod: 'getaddressbalance',
-    rpcMethodParams: [{ 'addresses': [address] }],
+    rpcMethodParams: [{ addresses: [address] }],
     onSuccess: (data) => {
       res.status(200).json(data)
     },
@@ -144,7 +141,7 @@ app.get('/:network/txs/:address', async (req, res) => {
   sendRequest({
     network,
     rpcMethod: 'getaddresstxids',
-    rpcMethodParams: [{ 'addresses': [address] }],
+    rpcMethodParams: [{ addresses: [address] }],
     onSuccess: (data) => {
       const txs = data.reverse().slice(0, 10) // return last 10 transactions
       const ret = {
@@ -156,18 +153,20 @@ app.get('/:network/txs/:address', async (req, res) => {
           const txInfo = await sendRequest({
             network,
             rpcMethod: 'getrawtransaction',
-            rpcMethodParams: [ txid, 1 ],
+            rpcMethodParams: [txid, 1],
           })
           ret.txs[i] = txInfo
           resolve(txInfo)
         })
       })
 
-      Promise.all(fetchTxInfos).then(() => {
-        res.status(200).json(ret)
-      }).catch ((e) => {
-        res.status(503).json({ error: e.message })
-      })
+      Promise.all(fetchTxInfos)
+        .then(() => {
+          res.status(200).json(ret)
+        })
+        .catch((e) => {
+          res.status(503).json({ error: e.message })
+        })
     },
     onError: (e) => {
       res.status(503).json({ error: e.message })
@@ -181,7 +180,7 @@ app.get('/:network/tx/:txid', async (req, res) => {
   sendRequest({
     network,
     rpcMethod: 'getrawtransaction',
-    rpcMethodParams: [ txid, true ],
+    rpcMethodParams: [txid, true],
     onSuccess: (data) => {
       res.status(200).json(data)
     },
@@ -199,7 +198,7 @@ app.get('/:network/:var(addr|address)/:address/utxo', async (req, res) => {
   sendRequest({
     network,
     rpcMethod: 'getaddressutxos',
-    rpcMethodParams: [{ 'addresses': [address] }],
+    rpcMethodParams: [{ addresses: [address] }],
     onSuccess: (data) => {
       res.status(200).json(data)
     },
@@ -216,7 +215,7 @@ app.post('/:network/sendrawtransaction', async (req, res) => {
   sendRequest({
     network,
     rpcMethod: 'sendrawtransaction',
-    rpcMethodParams: [ rawtx ],
+    rpcMethodParams: [rawtx],
     onSuccess: (data) => {
       res.status(201).json({ raw: data })
     },
@@ -225,7 +224,6 @@ app.post('/:network/sendrawtransaction', async (req, res) => {
     },
   })
 })
-
 
 app.listen(process.env.PORT ? process.env.PORT : portDefault)
 console.log(`nextp (NEXT.coin proxy) listening: localhost:${portDefault} ⇄ NEXT.coin node`)

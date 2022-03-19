@@ -14,9 +14,11 @@ export default (settings) => {
   const config = getConfig({
     contracts: {},
     ...settings,
-    ...(useMnemonic) ? {
-      mnemonic: useMnemonic,
-    } : {}
+    ...(useMnemonic
+      ? {
+          mnemonic: useMnemonic,
+        }
+      : {}),
   })
 
   const swapApp = SwapApp.init(config, true)

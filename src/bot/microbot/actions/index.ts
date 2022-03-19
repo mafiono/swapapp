@@ -7,12 +7,4 @@ import fillOrderbook from './book/fillOrderbook'
 import handleRequest from './incoming/handleRequest'
 import handleOrder from './outcoming/handleOrder'
 
-
-export {
-  handleError,
-  startSaved,
-  handleKeyboardInput,
-  fillOrderbook,
-  handleRequest,
-  handleOrder
-}
+export { handleError, startSaved, handleKeyboardInput, fillOrderbook, handleRequest, handleOrder }

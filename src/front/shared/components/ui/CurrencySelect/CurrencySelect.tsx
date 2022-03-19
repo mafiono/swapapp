@@ -14,7 +14,7 @@ const CurrencySelect = (props) => {
   } = props
 
   const defaultRenderSelected = (item) => <Option {...item} />
-  const usedSelectedItemRender = (selectedItemRender || defaultRenderSelected)
+  const usedSelectedItemRender = selectedItemRender || defaultRenderSelected
   return (
     <DropDown
       className={className}

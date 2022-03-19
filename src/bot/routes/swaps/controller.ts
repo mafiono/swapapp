@@ -9,7 +9,6 @@ import Pair from '../../microbot/Pair'
 import * as flows from 'swap.flows'
 import { default as Swap } from 'swap.swap'
 
-
 //const Orders = app.services.orders
 
 const history = helpers.history
@@ -19,13 +18,10 @@ const genSecret = () => crypto.randomBytes(32).toString('hex')
 history.init(app)
 
 const until = (_step, swap) =>
-  new Promise(resolve => {
-    setInterval(
-      () => ( swap.flow.state.step >= _step )
-        ? resolve(true) : null,
-    500)
+  new Promise((resolve) => {
+    setInterval(() => (swap.flow.state.step >= _step ? resolve(true) : null), 500)
 
-    swap.on('enter step', (step) => ( step >= _step ) ? resolve(true) : null)
+    swap.on('enter step', (step) => (step >= _step ? resolve(true) : null))
   })
 
 const runSwap = (swap) => {
@@ -35,8 +31,12 @@ const runSwap = (swap) => {
   swap.on('enter step', (step) => {
     console.log('enter step', step)
 
-    if ( step + 1 === swap.flow.steps.length ) {
-      console.log(new Date().toISOString(), '[FINISHED] tx', swap.flow.state.ethSwapWithdrawTransactionHash)
+    if (step + 1 === swap.flow.steps.length) {
+      console.log(
+        new Date().toISOString(),
+        '[FINISHED] tx',
+        swap.flow.state.ethSwapWithdrawTransactionHash
+      )
     }
   })
 }
@@ -55,15 +55,14 @@ const getSwap = (req, res) => {
 
 const getState = (req, res) => {
   findSwap(app)(req, res).then((swap) => {
-    res.json((swap.flow.state))
+    res.json(swap.flow.state)
   })
 }
 
 const goSwap = async (req, res) => {
   const swap = await findSwap(app)(req, res)
 
-  if (swap.flow && swap.flow.state.step)
-    return res.json(swapView(swap))
+  if (swap.flow && swap.flow.state.step) return res.json(swapView(swap))
 
   runSwap(swap)
 
@@ -79,12 +78,15 @@ const withSwap = (swapHandler) => async (req, res) => {
   } catch (error) {
     const { code, name, message, stack } = error
     const info = {
-      code, name, message,
+      code,
+      name,
+      message,
       step: swap.flow.state.step,
-      type: swap.type, swap: swap.id,
+      type: swap.type,
+      swap: swap.id,
       stack,
       state: swap.flow.state,
-      error
+      error,
     }
     console.error(info)
     res.status(500).json(info)
@@ -115,8 +117,7 @@ const verifyScript = async (swap) => {
 }
 
 const submitSecret = async (swap) => {
-  if (swap.flow.state.secret)
-    throw new Error(`Already submit ${swap.flow.state.secretHash}`)
+  if (swap.flow.state.secret) throw new Error(`Already submit ${swap.flow.state.secretHash}`)
 
   await until(2, swap)
   await swap.flow.submitSecret(genSecret())
@@ -124,8 +125,7 @@ const submitSecret = async (swap) => {
 }
 
 const syncBalance = async (swap) => {
-  if (swap.flow.state.isBalanceEnough)
-    throw new Error(`Already synced ${swap.flow.state.balance}`)
+  if (swap.flow.state.isBalanceEnough) throw new Error(`Already synced ${swap.flow.state.balance}`)
 
   await until(3, swap)
   await swap.flow.syncBalance()
@@ -137,8 +137,11 @@ const tryRefund = async (swap) => {
     await swap.flow.tryRefund()
   } catch (err) {
     if (err.error == '64: non-final. Code:-26')
-      err.message =
-        `Can't be mined until lockTime = ${swap.flow.state.utxoScriptValues.lockTime}, now = ${Date.now()/1000}, secondsLeft = ${Math.ceil(swap.flow.state.utxoScriptValues.lockTime - Date.now()/1000)}`
+      err.message = `Can't be mined until lockTime = ${
+        swap.flow.state.utxoScriptValues.lockTime
+      }, now = ${Date.now() / 1000}, secondsLeft = ${Math.ceil(
+        swap.flow.state.utxoScriptValues.lockTime - Date.now() / 1000
+      )}`
 
     throw err
   }
@@ -157,15 +160,16 @@ const refund = (req, res) => {
         const { usdtScriptValues, utxoScriptValues } = swap.flow.state
         const scriptValues = usdtScriptValues || utxoScriptValues
 
-        err.description =
-          `Can't be mined until lockTime = ${scriptValues.lockTime}, now = ${Date.now()/1000}, secondsLeft = ${Math.ceil(scriptValues.lockTime - Date.now()/1000)}`
+        err.description = `Can't be mined until lockTime = ${scriptValues.lockTime}, now = ${
+          Date.now() / 1000
+        }, secondsLeft = ${Math.ceil(scriptValues.lockTime - Date.now() / 1000)}`
       }
 
       res.status(403).json({
         result: 'refund error',
         description: err.description,
         message: err.message,
-        error: err
+        error: err,
       })
       throw err
     }
@@ -173,13 +177,12 @@ const refund = (req, res) => {
 }
 
 const tryWithdraw = async (swap, { secret }) => {
-  if (!secret)
-    throw new Error(`You need to provide secret for manual withdrawal`)
+  if (!secret) throw new Error(`You need to provide secret for manual withdrawal`)
 
   await swap.flow.tryWithdraw(secret)
 }
 
-const getInProgress = ({ query: { parsed, withFees }}, res) => {
+const getInProgress = ({ query: { parsed, withFees } }, res) => {
   const swaps = history
     .getAllInProgress()
     .map((id) => {
@@ -190,13 +193,15 @@ const getInProgress = ({ query: { parsed, withFees }}, res) => {
         return false
       }
     })
-    .filter((swapData: Swap | boolean) => { return swapData !== false })
+    .filter((swapData: Swap | boolean) => {
+      return swapData !== false
+    })
 
   if (!parsed) {
     return res.json(swaps.map(swapView))
   }
 
-  const pairs = swaps.map(swap => {
+  const pairs = swaps.map((swap) => {
     const pair = Pair.fromOrder(swap)
     return { id: swap.id, pair, swap: swapView(swap) }
   })
@@ -204,29 +209,37 @@ const getInProgress = ({ query: { parsed, withFees }}, res) => {
   return res.json(pairs)
 }
 
-const getFinished = ({ query: { parsed, withFees }}, res) => {
+const getFinished = ({ query: { parsed, withFees } }, res) => {
   const swaps = history
     .getAllFinished()
     .map((id) => {
       try {
         const swapData = new Swap(id, app)
         return swapData
-      } catch (e) { return false }
+      } catch (e) {
+        return false
+      }
     })
-    .filter((swapData: Swap | boolean ) => { return swapData !== false })
+    .filter((swapData: Swap | boolean) => {
+      return swapData !== false
+    })
 
   if (!parsed) {
     return res.json(swaps.map(swapView))
   }
 
-  const pairs = swaps.map(swap => {
-    try {
-      const pair = Pair.fromOrder(swap)
-      return { id: swap.id, pair, swap: swapView(swap) }
-    } catch (e) {
-      return false
-    }
-  }).filter((pair: any) => { return pair !== false })
+  const pairs = swaps
+    .map((swap) => {
+      try {
+        const pair = Pair.fromOrder(swap)
+        return { id: swap.id, pair, swap: swapView(swap) }
+      } catch (e) {
+        return false
+      }
+    })
+    .filter((pair: any) => {
+      return pair !== false
+    })
 
   return res.json(pairs)
 }
@@ -234,11 +247,9 @@ const getFinished = ({ query: { parsed, withFees }}, res) => {
 export {
   getSwap,
   getSwapFormated,
-
   getState,
   goSwap,
   refund,
-
   nextStep,
   withSwap,
   sign,
@@ -246,7 +257,6 @@ export {
   verifyScript,
   syncBalance,
   tryWithdraw,
-
   getInProgress,
   getFinished,
 }

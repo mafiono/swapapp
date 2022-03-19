@@ -15,7 +15,6 @@ import BigNumber from 'bignumber.js'
 
 import SwapApp from 'swap.app'
 
-
 interface SwapRowProps {
   row: any
   swapState: any
@@ -31,9 +30,7 @@ class SwapRow extends Component<any, any> {
   constructor(props: SwapRowProps) {
     super(props)
 
-    const {
-      row: swapState,
-    } = props
+    const { row: swapState } = props
 
     this._handleSwapEnterStep = this.onSwapEnterStep.bind(this)
     this.state = {
@@ -94,14 +91,10 @@ class SwapRow extends Component<any, any> {
 
     const {
       swap,
-      swap: {
-        id: swapId,
-      }
+      swap: { id: swapId },
     } = data
     const {
-      swapState: {
-        id: mySwapId,
-      }
+      swapState: { id: mySwapId },
     } = this.state
     if (mySwapId === swapId) {
       console.log('>>> ON ENTER MY SWAP STEP')
@@ -139,15 +132,9 @@ class SwapRow extends Component<any, any> {
 
     this.tryRefund(timeLeft)
     */
-    
+
     const {
-      row: {
-        isFinished,
-        isRefunded,
-        isStoppedSwap,
-        isSwapTimeout,
-        id,
-      },
+      row: { isFinished, isRefunded, isStoppedSwap, isSwapTimeout, id },
     } = this.props
 
     if (!isFinished && !isRefunded && !isStoppedSwap && !isSwapTimeout) {
@@ -169,9 +156,7 @@ class SwapRow extends Component<any, any> {
       intl: { locale },
     } = this.props
 
-    const {
-      swapState,
-    } = this.state
+    const { swapState } = this.state
 
     let {
       buyAmount,
@@ -191,7 +176,7 @@ class SwapRow extends Component<any, any> {
       step,
     } = swapState
 
-    if (step <=1 && isSwapTimeout) return null
+    if (step <= 1 && isSwapTimeout) return null
 
     const canBeRefunded = values && scriptBalance > 0
     const isDeletedSwap = isFinished || isRefunded
@@ -204,10 +189,7 @@ class SwapRow extends Component<any, any> {
       lockDateAndTime = moment.unix(values.lockTime || date).format('HH:mm:ss DD/MM/YYYY')
     }
 
-    const swapUri = isTurbo ?
-      `${links.turboSwap}/${id}`
-      :
-      `${links.atomicSwap}/${id}`
+    const swapUri = isTurbo ? `${links.turboSwap}/${id}` : `${links.atomicSwap}/${id}`
 
     buyAmount = new BigNumber(buyAmount)
     sellAmount = new BigNumber(sellAmount)
@@ -216,9 +198,7 @@ class SwapRow extends Component<any, any> {
       <tr key={id}>
         {step <= 1 && (
           <Fragment>
-            <td colSpan={6}>
-              prepare swap
-            </td>
+            <td colSpan={6}>prepare swap</td>
           </Fragment>
         )}
         {step > 1 && (
@@ -228,16 +208,14 @@ class SwapRow extends Component<any, any> {
                 ? `${sellAmount.toFixed(5)} ${sellCurrency.toUpperCase()}`
                 : `${buyAmount.toFixed(5)} ${buyCurrency.toUpperCase()}`}
             </td>
-            <td>
-              {step}
-            </td>
+            <td>{step}</td>
             <td>
               {isMy
                 ? `${buyAmount.toFixed(5)} ${buyCurrency.toUpperCase()}`
                 : `${sellAmount.toFixed(5)} ${sellCurrency.toUpperCase()}`}
             </td>
             <td>
-              {(lockDateAndTime !== null) && (
+              {lockDateAndTime !== null && (
                 <Fragment>
                   {/* @ts-ignore: strictNullChecks */}
                   {lockDateAndTime.split(' ').map((item, key) => (

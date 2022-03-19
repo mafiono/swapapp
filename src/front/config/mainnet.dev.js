@@ -1,7 +1,6 @@
 import baseConfig from './default'
 import config from './mainnet'
 
-
 export default {
   env: 'development',
   entry: 'mainnet',

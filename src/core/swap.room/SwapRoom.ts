@@ -4,9 +4,7 @@ import SwapApp, { constants, Events, ServiceInterface } from 'swap.app'
 import createP2PNode from '../../common/messaging/pubsubRoom/createP2PNode'
 import p2pRoom from '../../common/messaging/pubsubRoom'
 
-
 class SwapRoom extends ServiceInterface {
-
   _serviceName: string
   _config: any
   _events: any
@@ -27,41 +25,38 @@ class SwapRoom extends ServiceInterface {
       throw new Error('SwapRoomService: "config" of type object required')
     }
 
-    this._serviceName   = 'room'
-    this._config        = config
-    this._events        = new Events()
-    this.peer           = null
-    this.connection     = null
+    this._serviceName = 'room'
+    this._config = config
+    this._events = new Events()
+    this.peer = null
+    this.connection = null
     //@ts-ignore: strictNullChecks
-    this.roomName       = null
+    this.roomName = null
   }
 
   initService() {
-    const peerIdJson = this.app.env.storage.getItem(
-      'libp2p:peerIdJson'
-    )
+    const peerIdJson = this.app.env.storage.getItem('libp2p:peerIdJson')
     createP2PNode({
       peerIdJson,
     }).then((p2pNode: any) => {
       // Save PeerId
-      this.app.env.storage.setItem(
-        'libp2p:peerIdJson',
-        p2pNode.peerId.toJSON()
-      )
+      this.app.env.storage.setItem('libp2p:peerIdJson', p2pNode.peerId.toJSON())
       // Start p2p node
-      p2pNode.start().then(async () => {
-        this._init({
-          peer: {
-            id: p2pNode.peerId._idB58String,
-          },
-          p2pConnection: p2pNode,
+      p2pNode
+        .start()
+        .then(async () => {
+          this._init({
+            peer: {
+              id: p2pNode.peerId._idB58String,
+            },
+            p2pConnection: p2pNode,
+          })
         })
-      }).catch((error) => {
-        console.log('Fail start p2pnode', error)
-      })
+        .catch((error) => {
+          console.log('Fail start p2pnode', error)
+        })
     })
   }
-
 
   _init({ peer, p2pConnection }) {
     console.info('Room: init...')
@@ -74,10 +69,11 @@ class SwapRoom extends ServiceInterface {
 
     this.peer = peer.id
 
-    const defaultRoomName = this.app.env.isTest ? 'tests.swap.online'
+    const defaultRoomName = this.app.env.isTest
+      ? 'tests.swap.online'
       : this.app.isMainNet()
-        ?  'swap.online'
-        :  'testnet-tt.swap.online'
+      ? 'swap.online'
+      : 'testnet-tt.swap.online'
 
     this.roomName = this._config.roomName || defaultRoomName
 
@@ -116,7 +112,6 @@ class SwapRoom extends ServiceInterface {
   _handleNewMessage = (message) => {
     const { from, data: rawData } = message
     debug('swap.verbose:room')('message from', from)
-
 
     if (from === this.peer) {
       return
@@ -181,15 +176,18 @@ class SwapRoom extends ServiceInterface {
   }
 
   _recoverMessage(message, sign) {
-    const hash      = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
-    const recover   = this.app.env.web3.eth.accounts.recover(hash, sign.signature)
+    const hash = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
+    const recover = this.app.env.web3.eth.accounts.recover(hash, sign.signature)
 
     return recover
   }
 
   _signMessage(message) {
-    const hash  = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
-    const sign  = this.app.env.web3.eth.accounts.sign(hash, this.app.services.auth.accounts.eth.privateKey)
+    const hash = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
+    const sign = this.app.env.web3.eth.accounts.sign(
+      hash,
+      this.app.services.auth.accounts.eth.privateKey
+    )
 
     return sign
   }
@@ -240,7 +238,7 @@ class SwapRoom extends ServiceInterface {
 
     message = this.sendMessagePeer(peer, message)
 
-    this.checkReceiving(message, delivered => {
+    this.checkReceiving(message, (delivered) => {
       if (!delivered && repeat > 0) {
         repeat--
         setTimeout(() => {
@@ -257,16 +255,19 @@ class SwapRoom extends ServiceInterface {
   }
 
   acknowledgeReceipt(message) {
-    if (!message.peer || !message.action
-      || message.action  === 'confirmation'
-      || message.action  === 'active') {
+    if (
+      !message.peer ||
+      !message.action ||
+      message.action === 'confirmation' ||
+      message.action === 'active'
+    ) {
       return
     }
 
     const { fromAddress, data } = message
 
     this.sendMessagePeer(fromAddress, {
-      action  : 'confirmation',
+      action: 'confirmation',
       data,
     })
   }
@@ -284,15 +285,18 @@ class SwapRoom extends ServiceInterface {
     debug('swap.verbose:room')('sent message to peer', peer)
     // debug('swap.verbose:room')('message', message)
 
-    const { data, event }  = message
+    const { data, event } = message
     const sign = this._signMessage(data)
 
-    this.connection.sendTo(peer, JSON.stringify({
-      fromAddress: this.app.services.auth.accounts.eth.address,
-      data,
-      event,
-      sign,
-    }))
+    this.connection.sendTo(
+      peer,
+      JSON.stringify({
+        fromAddress: this.app.services.auth.accounts.eth.address,
+        data,
+        event,
+        sign,
+      })
+    )
 
     return message
   }
@@ -308,14 +312,15 @@ class SwapRoom extends ServiceInterface {
     const { data, event } = message
     const sign = this._signMessage(data)
 
-    this.connection.broadcast(JSON.stringify({
-      fromAddress: this.app.services.auth.accounts.eth.address,
-      data,
-      event,
-      sign,
-    }))
+    this.connection.broadcast(
+      JSON.stringify({
+        fromAddress: this.app.services.auth.accounts.eth.address,
+        data,
+        event,
+        sign,
+      })
+    )
   }
 }
-
 
 export default SwapRoom

@@ -2,7 +2,6 @@ export const initialState = {
   dashboardModalsAllowed: false,
 }
 
-
 export const allowDashboardModals = (state) => ({
   ...state,
   dashboardModalsAllowed: true,

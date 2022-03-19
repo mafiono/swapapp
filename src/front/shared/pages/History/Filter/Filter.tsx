@@ -21,16 +21,14 @@ const Filter = (props: ComponentProps) => {
 
   return (
     <div styleName="filter">
-      {
-        filters.map((item, index) => (
-          <FilterLink
-            key={index}
-            name={item}
-            onClick={() => handleChangeFilter(item.toLowerCase())}
-            filter={filter}
-          />
-        ))
-      }
+      {filters.map((item, index) => (
+        <FilterLink
+          key={index}
+          name={item}
+          onClick={() => handleChangeFilter(item.toLowerCase())}
+          filter={filter}
+        />
+      ))}
     </div>
   )
 }

@@ -6,33 +6,22 @@ const initialState = {
 }
 
 const savedOrders = (state, orderId) => ({
-  savedOrders: [
-    ...state.savedOrders,
-    orderId,
-  ],
+  savedOrders: [...state.savedOrders, orderId],
 })
 
 const deletedOrders = (state, orderId) => ({
   ...state,
-  deletedOrders: [
-    orderId,
-  ],
+  deletedOrders: [orderId],
 })
 
 const forgetOrders = (state, orderId) => ({
   ...state,
-  savedOrders: state.savedOrders.filter(item => item !== orderId),
+  savedOrders: state.savedOrders.filter((item) => item !== orderId),
 })
 
 const getOrderIntheProcess = (state, orderId) => ({
   ...state,
-  savedOrders: state.savedOrders.filter(item => item === orderId),
+  savedOrders: state.savedOrders.filter((item) => item === orderId),
 })
 
-export {
-  initialState,
-  savedOrders,
-  forgetOrders,
-  deletedOrders,
-  getOrderIntheProcess,
-}
+export { initialState, savedOrders, forgetOrders, deletedOrders, getOrderIntheProcess }

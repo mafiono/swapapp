@@ -10,7 +10,7 @@ const {
 
 const { wallet, auth, room, orders } = swap.setup({})
 
-const doSwap = async order => {
+const doSwap = async (order) => {
   console.log('new order', order.id)
   if (Number(order.buyAmount) > 0.01) {
     const swap = await request(order)
@@ -29,7 +29,7 @@ const doSwap = async order => {
   }
 }
 
-(async () => {
+;(async () => {
   const info = await wallet.getBalance()
   console.log('balance:', info)
 
@@ -37,7 +37,7 @@ const doSwap = async order => {
   console.log('info:', wallet.view())
 
   //@ts-ignore: strictNullChecks
-  orders.on('new orders', orders => orders.map(doSwap))
+  orders.on('new orders', (orders) => orders.map(doSwap))
   //@ts-ignore: strictNullChecks
   orders.on('new order', doSwap)
 })()

@@ -132,7 +132,7 @@ export const updateMultisigStatus = (state, { address, last, total }) => {
     multisigPendingCount: totalPending,
     multisigStatus: {
       ...(state.multisigStatus ? state.multisigStatus : {}),
-      [address] : {
+      [address]: {
         address,
         pending: last,
         count: total,

@@ -16,27 +16,25 @@ const version = versionBuffer.toString('utf8')
 
 const globals = {
   'process.env': {
-    'NODE_ENV': JSON.stringify(config.env),
-    'ENTRY': JSON.stringify(config.entry),
-    'LOCAL': JSON.stringify(config.local),
-    'TESTNET': config.entry === 'testnet',
-    'MAINNET': config.entry === 'mainnet',
-    'EXTENSION': config.dir === 'chrome-extension/application',
-    'VERSION': JSON.stringify(version),
+    NODE_ENV: JSON.stringify(config.env),
+    ENTRY: JSON.stringify(config.entry),
+    LOCAL: JSON.stringify(config.local),
+    TESTNET: config.entry === 'testnet',
+    MAINNET: config.entry === 'mainnet',
+    EXTENSION: config.dir === 'chrome-extension/application',
+    VERSION: JSON.stringify(version),
   },
   __CONFIG__: JSON.stringify(config),
 }
 
-
 const rules = Object.keys(rulesMap)
   .map((k) => rulesMap[k])
-  .map((rule) => Array.isArray(rule) ? rule : (rule.default || rule[config.env]))
+  .map((rule) => (Array.isArray(rule) ? rule : rule.default || rule[config.env]))
   .reduce((result, rule) => result.concat(rule), [])
 
 const webpackConfig = {
-
   entry: {
-    'app': config.paths.client('index.tsx'),
+    app: config.paths.client('index.tsx'),
   },
 
   module: {
@@ -45,9 +43,9 @@ const webpackConfig = {
 
   resolve: {
     alias: {
-      'shared': config.paths.front('shared'),
-      'local_modules': config.paths.front('local_modules'),
-      'domain': config.paths.common('domain'),
+      shared: config.paths.front('shared'),
+      local_modules: config.paths.front('local_modules'),
+      domain: config.paths.common('domain'),
       'swap.auth': config.paths.core('swap.auth'),
       'swap.orders': config.paths.core('swap.orders'),
       'swap.room': config.paths.core('swap.room'),
@@ -56,7 +54,7 @@ const webpackConfig = {
       'swap.swap': config.paths.core('swap.swap'),
       'swap.swaps': config.paths.core('swap.swaps'),
       'simple.swap.core': config.paths.core('simple/src'),
-      'common': config.paths.common(),
+      common: config.paths.common(),
     },
     modules: [
       config.paths.front('client'),
@@ -66,7 +64,7 @@ const webpackConfig = {
       'node_modules',
       config.paths.core(''),
     ],
-    extensions: [ '.js', '.jsx', '.tsx', '.ts', '.scss' ],
+    extensions: ['.js', '.jsx', '.tsx', '.ts', '.scss'],
     fallback: {
       fs: false,
       os: false,
@@ -77,8 +75,8 @@ const webpackConfig = {
       assert: require.resolve('assert/'),
       path: require.resolve('path-browserify'),
       crypto: require.resolve('crypto-browserify'),
-      buffer: require.resolve('buffer/')
-    }
+      buffer: require.resolve('buffer/'),
+    },
   },
 
   plugins: [
@@ -92,9 +90,8 @@ const webpackConfig = {
       'swap.flows': 'swap.flows',
       'swap.swap': 'swap.swap',
       'swap.swaps': 'swap.swaps',
-      'Buffer': ['buffer', 'Buffer'],
-      'process': 'process/browser',
-
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser',
     }),
     new ProgressBarPlugin({ clear: false }),
     new FaviconsWebpackPlugin({
@@ -113,23 +110,22 @@ const webpackConfig = {
       hash: false,
       filename: 'index.html',
       inject: 'body',
-      ... (config.firebug) ? {
-        firebugMark: 'debug="true"',
-        firebugScript: '<script type="text/javascript" src="./firebug/firebug.js"></script>',
-      } : {},
+      ...(config.firebug
+        ? {
+            firebugMark: 'debug="true"',
+            firebugScript: '<script type="text/javascript" src="./firebug/firebug.js"></script>',
+          }
+        : {}),
     }),
-    new webpack.ContextReplacementPlugin(
-      /\.\/locale$/,
-      'empty-module',
-      false,
-      /js$/
-    ),
+    new webpack.ContextReplacementPlugin(/\.\/locale$/, 'empty-module', false, /js$/),
     new webpack.NormalModuleReplacementPlugin(/^leveldown$/, (result) => {
-      result.request = result.request.replace(/(leveldown)/,  config.paths.shared('helpers/leveldown'))
+      result.request = result.request.replace(
+        /(leveldown)/,
+        config.paths.shared('helpers/leveldown')
+      )
     }),
     new ForkTsCheckerWebpackPlugin(),
   ],
 }
-
 
 export default webpackConfig

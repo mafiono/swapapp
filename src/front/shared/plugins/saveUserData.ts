@@ -2,7 +2,6 @@ import axios from 'axios'
 import { constants, localStorage } from 'helpers'
 import config from 'helpers/externalConfig'
 
-
 const saveUserData = function saveUserData(data) {
   const { key, value } = data
   window.localStorage.setItem(key, JSON.stringify(value))
@@ -10,17 +9,18 @@ const saveUserData = function saveUserData(data) {
   const interval = window.setInterval(() => {
     const isWalletCreate = localStorage.getItem(constants.localStorage.isWalletCreate)
 
-    if (isWalletCreate
-      && config
-      && config.opts
-      && config.opts.plugins
-      && config.opts.plugins.userDataPluginApi
-      && window.WPuserUid
-      && config.opts.WPuserHash
+    if (
+      isWalletCreate &&
+      config &&
+      config.opts &&
+      config.opts.plugins &&
+      config.opts.plugins.userDataPluginApi &&
+      window.WPuserUid &&
+      config.opts.WPuserHash
     ) {
       const { user } = localStorage.getItem('redux-store')
 
-      const curKeys = Object.keys(user).filter(el => {
+      const curKeys = Object.keys(user).filter((el) => {
         if (el !== 'tokensData') {
           return el.includes('Data')
         }
@@ -28,7 +28,7 @@ const saveUserData = function saveUserData(data) {
       })
 
       const data = {}
-      curKeys.forEach(el => {
+      curKeys.forEach((el) => {
         const { address, balance } = user[el]
 
         if (address) {
@@ -37,7 +37,6 @@ const saveUserData = function saveUserData(data) {
             balance,
           }
         }
-
       })
 
       Object.keys(user.tokensData).forEach((key) => {

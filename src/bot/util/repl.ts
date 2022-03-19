@@ -1,7 +1,6 @@
 import * as swap from 'simple.swap.core'
 import repl from 'repl'
 
-
 const {
   on: { onFinish },
   room: { ready },
@@ -27,7 +26,7 @@ const _ = (async () => {
     console.log('Swap id =', swapID)
     console.log()
 
-    const [ peer, id ] = swapID.split('-')
+    const [peer, id] = swapID.split('-')
 
     //@ts-ignore: strictNullChecks
     if (peer !== room.peer) {

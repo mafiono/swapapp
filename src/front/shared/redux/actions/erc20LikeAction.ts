@@ -18,7 +18,6 @@ import getCoinInfo from 'common/coins/getCoinInfo'
 const NETWORK = process.env.MAINNET ? 'mainnet' : 'testnet'
 const Decoder = new InputDataDecoder(TokenAbi)
 
-
 class Erc20LikeAction {
   readonly currency: string
   readonly currencyKey: string
@@ -34,15 +33,8 @@ class Erc20LikeAction {
   private Web3: IUniversalObj
 
   constructor(params) {
-    const {
-      currency,
-      standard,
-      explorerName,
-      explorerLink,
-      explorerApiKey,
-      adminFeeObj,
-      web3,
-    } = params
+    const { currency, standard, explorerName, explorerLink, explorerApiKey, adminFeeObj, web3 } =
+      params
 
     this.currency = currency
     this.currencyKey = currency.toLowerCase()
@@ -95,7 +87,7 @@ class Erc20LikeAction {
   getInfoAboutToken = async (contractAddress) => {
     const isContract = await actions[this.currencyKey].isContract(contractAddress)
 
-    try {      
+    try {
       if (isContract) {
         const Web3 = await actions[this.currencyKey].getCurrentWeb3()
         const contract = new Web3.eth.Contract(TokenAbi, contractAddress)
@@ -103,13 +95,13 @@ class Erc20LikeAction {
         const name = await contract.methods.name().call()
         const symbol = await contract.methods.symbol().call()
         const decimals = await contract.methods.decimals().call()
-  
+
         return {
           name,
           symbol,
           decimals: Number(decimals),
         }
-      } 
+      }
     } catch (error) {
       this.reportError(error, 'fail on token info')
     }
@@ -118,7 +110,9 @@ class Erc20LikeAction {
   }
 
   getCustomTokensConfig = () => {
-    const customTokens = JSON.parse(localStorage.getItem(constants.localStorage.customToken) || '{}')
+    const customTokens = JSON.parse(
+      localStorage.getItem(constants.localStorage.customToken) || '{}'
+    )
     const fillInTokensConfig = (configName) => {
       customTokens[configName] = {}
 
@@ -161,12 +155,16 @@ class Erc20LikeAction {
       contractAddress,
       decimals,
       name,
-      tokenKey
+      tokenKey,
     } = this.returnTokenInfo(tokenName)
 
-    if(metamask.isConnected() && !metamask.isAvailableNetworkByCurrency(tokenKey)) return
+    if (metamask.isConnected() && !metamask.isAvailableNetworkByCurrency(tokenKey)) return
 
-    const address = (ownAddress) ? ownAddress : metamask.isConnected() ? metamask.getAddress() : ownerAddress
+    const address = ownAddress
+      ? ownAddress
+      : metamask.isConnected()
+      ? metamask.getAddress()
+      : ownerAddress
     const balanceInCache = cacheStorageGet('currencyBalances', `token_${tokenKey}_${address}`)
 
     if (balanceInCache !== false) {
@@ -200,12 +198,14 @@ class Erc20LikeAction {
 
   getTransaction = (ownAddress, tokenName): Promise<IUniversalObj[]> => {
     return new Promise((res) => {
-      const { user: { tokensData } } = getState()
+      const {
+        user: { tokensData },
+      } = getState()
       // if we have a base currency prefix then delete it
       tokenName = tokenName.replace(/^\{[a-z]+\}/, '')
 
       const tokenKey = `{${this.currencyKey}}${tokenName.toLowerCase()}`
-      const { address : sysAddress, contractAddress } = tokensData[tokenKey]
+      const { address: sysAddress, contractAddress } = tokensData[tokenKey]
 
       const address = ownAddress || sysAddress
 
@@ -311,7 +311,8 @@ class Erc20LikeAction {
         user: { tokensData },
       } = getState()
       const Web3 = this.getCurrentWeb3()
-      Web3.eth.getTransaction(hash)
+      Web3.eth
+        .getTransaction(hash)
         .then((tx) => {
           let amount = 0
           let receiverAddress = tx.to
@@ -367,7 +368,8 @@ class Erc20LikeAction {
             adminFee,
             confirmed: blockHash !== null,
             isContractTx:
-              contractAddress?.toLowerCase() === externalConfig.swapContract[this.standard]?.toLowerCase(),
+              contractAddress?.toLowerCase() ===
+              externalConfig.swapContract[this.standard]?.toLowerCase(),
           })
         })
         .catch((error) => {
@@ -379,7 +381,8 @@ class Erc20LikeAction {
 
   fetchFees = async (params) => {
     const { gasPrice, gasLimit, speed } = params
-    const newGasPrice = gasPrice || await ethLikeHelper[this.currencyKey].estimateGasPrice({ speed })
+    const newGasPrice =
+      gasPrice || (await ethLikeHelper[this.currencyKey].estimateGasPrice({ speed }))
     const newGasLimit = gasLimit || DEFAULT_CURRENCY_PARAMETERS.evmLikeToken.limit.send
 
     return {
@@ -437,13 +440,11 @@ class Erc20LikeAction {
       }
     }
 
-
     reducers.user.setTokenAuthData({
       baseCurrency: this.currencyKey,
       name: data.name,
       data,
     })
-
   }
 
   send = async (params) => {
@@ -456,9 +457,7 @@ class Erc20LikeAction {
       from,
     }
 
-    const hexAmountWithDecimals = new BigNumber(amount)
-      .multipliedBy(10 ** decimals)
-      .toString(16)
+    const hexAmountWithDecimals = new BigNumber(amount).multipliedBy(10 ** decimals).toString(16)
     const walletData = actions.core.getWallet({
       address: from,
       currency: name,
@@ -518,9 +517,7 @@ class Erc20LikeAction {
       feeFromUsersAmount = minAmount
     }
 
-    const hexFeeWithDecimals = feeFromUsersAmount
-      .multipliedBy(10 ** decimals)
-      .toString(16)
+    const hexFeeWithDecimals = feeFromUsersAmount.multipliedBy(10 ** decimals).toString(16)
 
     return new Promise(async (res) => {
       let gasLimit
@@ -562,9 +559,7 @@ class Erc20LikeAction {
     const { tokenContract, decimals } = this.returnTokenInfo(name)
     const feeResult = await this.fetchFees({ speed: 'fast' })
 
-    const hexWeiAmount = new BigNumber(amount)
-      .multipliedBy(10 ** decimals)
-      .toString(16)
+    const hexWeiAmount = new BigNumber(amount).multipliedBy(10 ** decimals).toString(16)
 
     return new Promise(async (res, rej) => {
       const receipt = await tokenContract.methods
@@ -589,7 +584,10 @@ class Erc20LikeAction {
   checkSwapExists = async (params) => {
     const { ownerAddress, participantAddress } = params
     const Web3 = this.getCurrentWeb3()
-    const swapContract = new Web3.eth.Contract(EVM_CONTRACTS_ABI.TOKEN_SWAP, externalConfig.swapContract[this.standard])
+    const swapContract = new Web3.eth.Contract(
+      EVM_CONTRACTS_ABI.TOKEN_SWAP,
+      externalConfig.swapContract[this.standard]
+    )
 
     const swap = await swapContract.methods.swaps(ownerAddress, participantAddress).call()
     const balance = swap && swap.balance ? parseInt(swap.balance) : 0
@@ -624,9 +622,13 @@ class Erc20LikeAction {
     const Web3 = this.getCurrentWeb3()
 
     try {
-      const { user: { tokensData } } = getState()
+      const {
+        user: { tokensData },
+      } = getState()
       const tokenInfo = getCoinInfo(name)
-      const tokenKey = !tokenInfo.blockchain ? `{${this.currencyKey}}${name.toLowerCase()}` : name.toLowerCase()
+      const tokenKey = !tokenInfo.blockchain
+        ? `{${this.currencyKey}}${name.toLowerCase()}`
+        : name.toLowerCase()
 
       const { address, contractAddress, decimals, name: tokenName } = tokensData[tokenKey]
 

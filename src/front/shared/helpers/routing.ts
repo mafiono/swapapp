@@ -34,9 +34,9 @@ export const getWalletLink = (currency, checkAddresses) => {
 
   if (!ourWallets.length) return false
 
-  const availableAddresses = checkAddresses.filter((address) => (
-    address && ourWallets.includes( address.toLowerCase() )
-  ))
+  const availableAddresses = checkAddresses.filter(
+    (address) => address && ourWallets.includes(address.toLowerCase())
+  )
 
   if (availableAddresses.length) {
     const targetWallet = availableAddresses[0]

@@ -26,7 +26,6 @@ import config from 'app-config'
 import feedback from 'shared/helpers/feedback'
 import getCoinInfo from 'common/coins/getCoinInfo'
 
-
 type OrderBookProps = {
   sellCurrency: string
   buyCurrency: string
@@ -45,7 +44,7 @@ type OrderBookProps = {
 
   pairFees: { [key: string]: any } | boolean
   balances: { [key: string]: number } | boolean
-  
+
   linkedOrderId: string
   orderId: string
 
@@ -59,32 +58,33 @@ type OrderBookState = {
   isShowAllMyOrders: boolean
 }
 
-const filterMyOrders = (orders, peer) => orders
-  .filter(order => order.owner.peer === peer)
+const filterMyOrders = (orders, peer) => orders.filter((order) => order.owner.peer === peer)
 
 const filterOrders = (orders, filter) => {
   return orders
-    .filter(order => order.isProcessing !== true)
-    .filter(order => order.isHidden !== true)
-    .filter(order => Pair.check(order, filter))
+    .filter((order) => order.isProcessing !== true)
+    .filter((order) => order.isHidden !== true)
+    .filter((order) => Pair.check(order, filter))
     .sort((a, b) => {
       return Pair.compareOrders(b, a)
     })
 }
 
-@connect(({
-  rememberedOrders,
-  core: { orders, filter },
-  pubsubRoom: { isOnline, isAllPeersLoaded, peer },
-  currencies: { items: currencies },
-}) => ({
-  orders: filterOrders(orders, filter),
-  myOrders: filterMyOrders(orders, peer),
-  isOnline,
-  isAllPeersLoaded,
-  currencies,
-  decline: rememberedOrders.savedOrders,
-}))
+@connect(
+  ({
+    rememberedOrders,
+    core: { orders, filter },
+    pubsubRoom: { isOnline, isAllPeersLoaded, peer },
+    currencies: { items: currencies },
+  }) => ({
+    orders: filterOrders(orders, filter),
+    myOrders: filterMyOrders(orders, peer),
+    isOnline,
+    isAllPeersLoaded,
+    currencies,
+    decline: rememberedOrders.savedOrders,
+  })
+)
 @withRouter
 @cssModules(styles, { allowMultiple: true })
 class OrderBook extends Component<OrderBookProps, OrderBookState> {
@@ -93,15 +93,21 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
       return null
     }
 
-    const sellOrders = orders.filter(order =>
-      order.buyCurrency.toLowerCase() === buyCurrency.toLowerCase() &&
-      order.sellCurrency.toLowerCase() === sellCurrency.toLowerCase()
-    ).sort((a, b) => Pair.compareOrders(b, a))
+    const sellOrders = orders
+      .filter(
+        (order) =>
+          order.buyCurrency.toLowerCase() === buyCurrency.toLowerCase() &&
+          order.sellCurrency.toLowerCase() === sellCurrency.toLowerCase()
+      )
+      .sort((a, b) => Pair.compareOrders(b, a))
 
-    const buyOrders = orders.filter(order =>
-      order.buyCurrency.toLowerCase() === sellCurrency.toLowerCase() &&
-      order.sellCurrency.toLowerCase() === buyCurrency.toLowerCase()
-    ).sort((a, b) => Pair.compareOrders(a, b))
+    const buyOrders = orders
+      .filter(
+        (order) =>
+          order.buyCurrency.toLowerCase() === sellCurrency.toLowerCase() &&
+          order.sellCurrency.toLowerCase() === buyCurrency.toLowerCase()
+      )
+      .sort((a, b) => Pair.compareOrders(a, b))
 
     return {
       buyOrders,
@@ -151,7 +157,10 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
         actions.core.updateCore()
       },
       message: (
-        <FormattedMessage id="orders94s" defaultMessage="Are you sure you want to delete the order?" />
+        <FormattedMessage
+          id="orders94s"
+          defaultMessage="Are you sure you want to delete the order?"
+        />
       ),
     })
   }
@@ -166,30 +175,25 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
     actions.core.updateCore()
   }
 
-  
   renderCoinName(coin) {
     return coin.toUpperCase()
   }
 
   render() {
-    const {
-      buyOrders,
-      sellOrders,
-      isShowAllMyOrders,
-    } = this.state
+    const { buyOrders, sellOrders, isShowAllMyOrders } = this.state
 
-    const { 
+    const {
       intl,
       decline,
       linkedOrderId,
       pairFees,
-      balances, 
-      history, 
-      isOnline, 
-      isAllPeersLoaded, 
-      myOrders, 
-      orderId, 
-      location, 
+      balances,
+      history,
+      isOnline,
+      isAllPeersLoaded,
+      myOrders,
+      orderId,
+      location,
       currencies,
       checkSwapAllow,
       checkSwapExists,
@@ -206,20 +210,21 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
       <FormattedMessage id="orders102" defaultMessage="Amount" />,
       <FormattedMessage id="orders104" defaultMessage="Total" />,
       <FormattedMessage id="orders105" defaultMessage="Price" />,
-      ' ', // empty title in the table 
+      ' ', // empty title in the table
     ]
 
     const seoPage = getSeoPage(location.pathname)
 
-    const isWidget = (config && config.isWidget)
+    const isWidget = config && config.isWidget
 
-    const buyCurrencyFullName = (currencies.find(c => c.name === buyCurrency) || {}).fullTitle
-    const sellCurrencyFullName = (currencies.find(c => c.name === sellCurrency) || {}).fullTitle
+    const buyCurrencyFullName = (currencies.find((c) => c.name === buyCurrency) || {}).fullTitle
+    const sellCurrencyFullName = (currencies.find((c) => c.name === sellCurrency) || {}).fullTitle
 
     const title = defineMessages({
       metaTitle: {
         id: 'Orders121',
-        defaultMessage: 'Atomic Swap {buyCurrencyFullName} ({buyCurrency}) to {sellCurrencyFullName} ({sellCurrency}) Instant Exchange',
+        defaultMessage:
+          'Atomic Swap {buyCurrencyFullName} ({buyCurrency}) to {sellCurrencyFullName} ({sellCurrency}) Instant Exchange',
       },
     })
     const description = defineMessages({
@@ -230,19 +235,19 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
       },
     })
 
-    const myOrdersThisMarket = myOrders.filter(order =>
-      order.buyCurrency === buyCurrency && order.sellCurrency === sellCurrency
-      ||
-      order.buyCurrency === sellCurrency && order.sellCurrency === buyCurrency
+    const myOrdersThisMarket = myOrders.filter(
+      (order) =>
+        (order.buyCurrency === buyCurrency && order.sellCurrency === sellCurrency) ||
+        (order.buyCurrency === sellCurrency && order.sellCurrency === buyCurrency)
     )
 
     const offersNoticeLoadingText = (
-      <div styleName='offersLoadingNotice'>
+      <div styleName="offersLoadingNotice">
         <FormattedMessage
           id="OrderBookOffersNoteOverLoader"
           defaultMessage="Requesting offers from peers online"
         />
-        <div styleName='loader'>
+        <div styleName="loader">
           <InlineLoader />
         </div>
         <FormattedMessage
@@ -279,14 +284,17 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
           })}
         />
 
-        {!!myOrders.length &&
+        {!!myOrders.length && (
           <Panel
             header={
               <Fragment>
                 <h3>
-                  <FormattedMessage id="MyOrders23" defaultMessage="Your offers" />
-                  {' '}
-                  <span>{ isShowAllMyOrders ? `(${myOrders.length})` : `(${myOrdersThisMarket.length}/${myOrders.length})` }</span>
+                  <FormattedMessage id="MyOrders23" defaultMessage="Your offers" />{' '}
+                  <span>
+                    {isShowAllMyOrders
+                      ? `(${myOrders.length})`
+                      : `(${myOrdersThisMarket.length}/${myOrders.length})`}
+                  </span>
                 </h3>
                 <div styleName="subtitle showAllSwitch">
                   <FormattedMessage
@@ -312,110 +320,113 @@ class OrderBook extends Component<OrderBookProps, OrderBookState> {
               acceptRequest={this.acceptRequest}
             />
           </Panel>
-        }
-        <Panel header={
-          <Fragment>
-            <h3 styleName="ordersHeading">
-              <FormattedMessage
-                id="orders159"
-                defaultMessage="{currency} offers"
-                values={{ currency: this.renderCoinName(buyCurrency) }} />
-            </h3>
-            <div styleName="subtitle">
-              <FormattedMessage
-                id="orders156"
-                defaultMessage="Buy {currency} here"
-                values={{ currency: this.renderCoinName(buyCurrency) }}
-              />
-            </div>
-          </Fragment>
-        }>
-          {isOnline
-            ? (
-              buyOrders.length > 0
-                ? (
-                  <Table
-                    id="table_exchange"
-                    className={tableStyles.exchange}
-                    styleName="orderBookTable"
-                    titles={titles}
-                    rows={buyOrders}
-                    rowRender={(row) => (
-                      <Row
-                        key={row.id}
-                        orderId={orderId}
-                        row={row}
-                        decline={decline}
-                        history={history}
-                        removeOrder={this.removeOrder}
-                        linkedOrderId={linkedOrderId}
-                        pairFees={pairFees}
-                        balances={balances}
-                        checkSwapAllow={checkSwapAllow}
-                        checkSwapExists={checkSwapExists}
-                        buy={buyCurrency}
-                        sell={sellCurrency}
-                      />
-                    )}
-                  />
-                )
-                : offersNoticeLoadingText
-            )
-            : offersNoticeOfflineText
+        )}
+        <Panel
+          header={
+            <Fragment>
+              <h3 styleName="ordersHeading">
+                <FormattedMessage
+                  id="orders159"
+                  defaultMessage="{currency} offers"
+                  values={{ currency: this.renderCoinName(buyCurrency) }}
+                />
+              </h3>
+              <div styleName="subtitle">
+                <FormattedMessage
+                  id="orders156"
+                  defaultMessage="Buy {currency} here"
+                  values={{ currency: this.renderCoinName(buyCurrency) }}
+                />
+              </div>
+            </Fragment>
           }
+        >
+          {isOnline ? (
+            buyOrders.length > 0 ? (
+              <Table
+                id="table_exchange"
+                className={tableStyles.exchange}
+                styleName="orderBookTable"
+                titles={titles}
+                rows={buyOrders}
+                rowRender={(row) => (
+                  <Row
+                    key={row.id}
+                    orderId={orderId}
+                    row={row}
+                    decline={decline}
+                    history={history}
+                    removeOrder={this.removeOrder}
+                    linkedOrderId={linkedOrderId}
+                    pairFees={pairFees}
+                    balances={balances}
+                    checkSwapAllow={checkSwapAllow}
+                    checkSwapExists={checkSwapExists}
+                    buy={buyCurrency}
+                    sell={sellCurrency}
+                  />
+                )}
+              />
+            ) : (
+              offersNoticeLoadingText
+            )
+          ) : (
+            offersNoticeOfflineText
+          )}
         </Panel>
 
-        <Panel header={
-          <Fragment>
-            <h3 styleName="ordersHeading">
-              <FormattedMessage
-                id="orders159"
-                defaultMessage="{currency} offers"
-                values={{ currency: this.renderCoinName(sellCurrency) }} />
-            </h3>
-            <div styleName="subtitle">
-              <FormattedMessage
-                id="orders156"
-                defaultMessage="Buy {currency} here"
-                values={{ currency: this.renderCoinName(sellCurrency) }}
-              />
-            </div>
-          </Fragment>
-        }
-        >
-          {isOnline
-            ? (
-              sellOrders.length > 0
-                ? (
-                  <Table
-                    id="table_exchange"
-                    className={tableStyles.exchange}
-                    styleName="orderBookTable"
-                    titles={titles}
-                    rows={sellOrders}
-                    rowRender={(row) => (
-                      <Row
-                        key={row.id}
-                        orderId={orderId}
-                        row={row}
-                        decline={decline}
-                        history={history}
-                        removeOrder={this.removeOrder}
-                        linkedOrderId={linkedOrderId}
-                        pairFees={pairFees}
-                        balances={balances}
-                        checkSwapAllow={checkSwapAllow}
-                        checkSwapExists={checkSwapExists}
-                        buy={sellCurrency}
-                        sell={buyCurrency}
-                      />
-                    )}
-                  />
-                )
-                : offersNoticeLoadingText
-            )
-            : offersNoticeOfflineText
+        <Panel
+          header={
+            <Fragment>
+              <h3 styleName="ordersHeading">
+                <FormattedMessage
+                  id="orders159"
+                  defaultMessage="{currency} offers"
+                  values={{ currency: this.renderCoinName(sellCurrency) }}
+                />
+              </h3>
+              <div styleName="subtitle">
+                <FormattedMessage
+                  id="orders156"
+                  defaultMessage="Buy {currency} here"
+                  values={{ currency: this.renderCoinName(sellCurrency) }}
+                />
+              </div>
+            </Fragment>
           }
+        >
+          {isOnline ? (
+            sellOrders.length > 0 ? (
+              <Table
+                id="table_exchange"
+                className={tableStyles.exchange}
+                styleName="orderBookTable"
+                titles={titles}
+                rows={sellOrders}
+                rowRender={(row) => (
+                  <Row
+                    key={row.id}
+                    orderId={orderId}
+                    row={row}
+                    decline={decline}
+                    history={history}
+                    removeOrder={this.removeOrder}
+                    linkedOrderId={linkedOrderId}
+                    pairFees={pairFees}
+                    balances={balances}
+                    checkSwapAllow={checkSwapAllow}
+                    checkSwapExists={checkSwapExists}
+                    buy={sellCurrency}
+                    sell={buyCurrency}
+                  />
+                )}
+              />
+            ) : (
+              offersNoticeLoadingText
+            )
+          ) : (
+            offersNoticeOfflineText
+          )}
         </Panel>
         {seoPage && seoPage.footer && <div>{seoPage.footer}</div>}
       </div>

@@ -5,31 +5,38 @@ import handleError from '../../../app/actions/errors/handleError'
 import fetchPrice from '../../../app/actions/fetchPrice'
 import * as configStorage from '../../../config/storage'
 import Pair from '../../Pair'
-import { FG_COLORS as COLORS, BG_COLORS , colorString } from 'common/utils/colorString'
+import { FG_COLORS as COLORS, BG_COLORS, colorString } from 'common/utils/colorString'
 import { checkSwapsCountLimit } from '../../core/checkSwapsCountLimit'
 
 import {
   TRADE_CONFIG as DEFAULT_TRADE_CONFIG,
   TRADE_ORDER_MINAMOUNTS as DEFAULT_TRADE_ORDER_MINAMOUNTS,
   TRADE_TICKERS as DEFAULT_TRADE_TICKERS,
-  PAIR_TYPES
+  PAIR_TYPES,
 } from '../../../config/constants'
 
 import { createOrder, removeMyOrders } from '../../core/orders'
 import Order from 'swap.orders/Order'
 
-
-const TRADE_ORDER_MINAMOUNTS = (configStorage.hasTradeConfig()) ? configStorage.getMinAmount() : DEFAULT_TRADE_ORDER_MINAMOUNTS
-const TRADE_CONFIG = (configStorage.hasTradeConfig()) ? configStorage.getTradePairs() : DEFAULT_TRADE_CONFIG
-const TRADE_TICKERS = (configStorage.hasTradeConfig()) ? configStorage.getTradeTickers() : DEFAULT_TRADE_TICKERS
-
+const TRADE_ORDER_MINAMOUNTS = configStorage.hasTradeConfig()
+  ? configStorage.getMinAmount()
+  : DEFAULT_TRADE_ORDER_MINAMOUNTS
+const TRADE_CONFIG = configStorage.hasTradeConfig()
+  ? configStorage.getTradePairs()
+  : DEFAULT_TRADE_CONFIG
+const TRADE_TICKERS = configStorage.hasTradeConfig()
+  ? configStorage.getTradeTickers()
+  : DEFAULT_TRADE_TICKERS
 
 const debug = (...args) => console.log(new Date().toISOString(), ...args) //_debug('swap.bot')
 
-const n = (n) => (cb) => Array(n).fill(null).map((el, i) => cb(i, el))
+const n = (n) => (cb) =>
+  Array(n)
+    .fill(null)
+    .map((el, i) => cb(i, el))
 
 const getCurrenciesBalance = (balances, ticker) => {
-  const [ pair_main, pair_base ] = ticker.split('-')
+  const [pair_main, pair_base] = ticker.split('-')
 
   const sell = balances[pair_main]
   const buy = balances[pair_base]
@@ -41,39 +48,29 @@ const getCurrenciesBalance = (balances, ticker) => {
   return { sell, buy }
 }
 
-
 const checkCanCreateCurrentOrder = (tickerOrder, orderType) =>
-  typeof(tickerOrder[orderType]) === 'undefined'
-    ? true
-    : tickerOrder[orderType]
+  typeof tickerOrder[orderType] === 'undefined' ? true : tickerOrder[orderType]
 
 const checkHaveSpread = (tickerOrder, orderType) =>
-  tickerOrder[`spread${orderType === 'buy' ? 'Buy' : 'Sell'}`] >= 0
-    ? true
-    : false
+  tickerOrder[`spread${orderType === 'buy' ? 'Buy' : 'Sell'}`] >= 0 ? true : false
 
 const getSpread = (tickerOrder, orderType) => {
   if (process.env.SPREAD) {
-    return new BigNumber(100)
-      .minus(process.env.SPREAD)
-      .dividedBy(100)
+    return new BigNumber(100).minus(process.env.SPREAD).dividedBy(100)
   }
   return orderType === 'buy'
-    ? new BigNumber(100)
-      .minus(tickerOrder.spreadBuy)
-      .dividedBy(100)
-    : new BigNumber(100)
-      .plus(tickerOrder.spreadSell)
-      .dividedBy(100)
+    ? new BigNumber(100).minus(tickerOrder.spreadBuy).dividedBy(100)
+    : new BigNumber(100).plus(tickerOrder.spreadSell).dividedBy(100)
 }
 
 const createOrders = (orderType, balance, ticker, tickerOrders, basePrice) => {
   const orders = []
   const type = orderType === 'buy' ? PAIR_TYPES.BID : PAIR_TYPES.ASK
   const canCreateOrders = TRADE_CONFIG[ticker][orderType] && balance > 0
-  const checkIsEnoughBalance = (price, amount) => orderType === 'buy'
-    ? new BigNumber(balance).isLessThan(amount)
-    : new BigNumber(balance).isLessThan(new BigNumber(amount).dividedBy(price))
+  const checkIsEnoughBalance = (price, amount) =>
+    orderType === 'buy'
+      ? new BigNumber(balance).isLessThan(amount)
+      : new BigNumber(balance).isLessThan(new BigNumber(amount).dividedBy(price))
 
   debug(ticker, `create ${orderType} orders`, canCreateOrders)
 
@@ -131,7 +128,7 @@ const createAllOrders = async (balances, ticker) => {
 
   return [
     ...createOrders('buy', currenciesBalance.buy, ticker, tickerOrders, price),
-    ...createOrders('sell', currenciesBalance.sell, ticker, tickerOrders, price)
+    ...createOrders('sell', currenciesBalance.sell, ticker, tickerOrders, price),
   ]
 }
 
@@ -145,10 +142,10 @@ const fillOrders = async (balances, ticker, create) => {
 
     orders
       //@ts-ignore: strictNullChecks
-      .map(pair => ({ ...pair.toOrder(), isPartial: true }))
+      .map((pair) => ({ ...pair.toOrder(), isPartial: true }))
       .map(create)
-      .map((order: Order) => order.setRequestHandlerForPartial('buyAmount',
-        ({ buyAmount }, oldOrder) => {
+      .map((order: Order) =>
+        order.setRequestHandlerForPartial('buyAmount', ({ buyAmount }, oldOrder) => {
           const oldPair = Pair.fromOrder(oldOrder)
 
           debug('oldPair', oldPair)
@@ -164,20 +161,19 @@ const fillOrders = async (balances, ticker, create) => {
           // price = 10 = buyAmount / sellAmount
           // newSellAmount = buyAmount / price
 
-          const sellAmount = oldPair.isBid()
-            ? buyAmount.times(price)
-            : buyAmount.div(price)
+          const sellAmount = oldPair.isBid() ? buyAmount.times(price) : buyAmount.div(price)
 
           debug('newSellAmount', sellAmount.toString())
 
-          const newOrder = ({ sellAmount, buyAmount })
+          const newOrder = { sellAmount, buyAmount }
 
           debug('newOrder', newOrder, newOrder.buyAmount.toString(), newOrder.sellAmount.toString())
 
           return Pair.fromOrder({ ...oldOrder, ...newOrder }).toOrder()
-        }))
-      .map((order: Order) => order.setRequestHandlerForPartial('sellAmount',
-        ({ sellAmount }, oldOrder) => {
+        })
+      )
+      .map((order: Order) =>
+        order.setRequestHandlerForPartial('sellAmount', ({ sellAmount }, oldOrder) => {
           const oldPair = Pair.fromOrder(oldOrder)
 
           debug('oldPair', oldPair, oldPair.price.toString())
@@ -189,27 +185,24 @@ const fillOrders = async (balances, ticker, create) => {
           // if BID, then
           // price == buyAmount / sellAmount
 
-          const buyAmount = oldPair.isBid()
-            ? sellAmount.div(price)
-            : sellAmount.times(price)
+          const buyAmount = oldPair.isBid() ? sellAmount.div(price) : sellAmount.times(price)
 
           debug('newBuyAmount', buyAmount.toString())
 
-          const newOrder = ({ sellAmount, buyAmount })
+          const newOrder = { sellAmount, buyAmount }
 
           debug('newOrder', newOrder, newOrder.buyAmount.toString(), newOrder.sellAmount.toString())
 
           return Pair.fromOrder({ ...oldOrder, ...newOrder }).toOrder()
-        }))
+        })
+      )
   } catch (err) {
     handleError(err)
   }
 }
 
 export default async (wallet, orders): Promise<Promise<void>[]> => {
-  console.log(
-    colorString(`Prepare order book...`, COLORS.GREEN)
-  )
+  console.log(colorString(`Prepare order book...`, COLORS.GREEN))
 
   removeMyOrders(orders)
 
@@ -224,23 +217,25 @@ export default async (wallet, orders): Promise<Promise<void>[]> => {
 
   const symbols = Object.keys(TRADE_CONFIG)
     .filter((item) => TRADE_CONFIG[item].active)
-    .map(ticker => ticker.split('-'))
+    .map((ticker) => ticker.split('-'))
     .reduce((sum, arr) => sum.concat(arr), [])
-    .sort((a, b) => a > b ? 1 : a == b ? 0 : -1)
+    .sort((a, b) => (a > b ? 1 : a == b ? 0 : -1))
 
   const balances = await wallet.getBalance(symbols)
 
-  const balanceForSymbol = balances
-    .reduce((obj, elem) => ({
+  const balanceForSymbol = balances.reduce(
+    (obj, elem) => ({
       ...obj,
       [elem.symbol]: elem.value,
-    }), {})
+    }),
+    {}
+  )
 
   debug('balances', balanceForSymbol)
 
   const filledOrders = Object.keys(TRADE_CONFIG)
     .filter((item) => TRADE_CONFIG[item].active)
-    .map(async ticker => await fillOrders(balanceForSymbol, ticker, createOrder(orders)))
+    .map(async (ticker) => await fillOrders(balanceForSymbol, ticker, createOrder(orders)))
 
   console.log(
     colorString(`Prepare order book:`, COLORS.GREEN),

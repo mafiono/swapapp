@@ -8,7 +8,6 @@ import { isMobile } from 'react-device-detect'
 import * as bip39 from 'bip39'
 import ReactTags from 'react-tag-autocomplete'
 
-
 const langPrefix = `MnemonicInputComponent`
 const langLabels = defineMessages({
   placeholder: {
@@ -42,28 +41,31 @@ type MnemonicInputState = {
 
 @cssModules(styles, { allowMultiple: true })
 class MnemonicInput extends Component<MnemonicInputProps, MnemonicInputState> {
-  /* 
-  * This phrase just for test
-  * If config entry point equals testnet
-  * Then fill in the input with a test phrase
-  */
-  private TESTNET_TEST_PHRASE = 'vast bronze oyster trade love once fog match rail lock cake science'
+  /*
+   * This phrase just for test
+   * If config entry point equals testnet
+   * Then fill in the input with a test phrase
+   */
+  private TESTNET_TEST_PHRASE =
+    'vast bronze oyster trade love once fog match rail lock cake science'
   private TESTNET_TAGS: Tags
   private isAutofill = false
 
   reactTags: RefObject<any>
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     const { autoFill = false } = props
-    const suggestions = bip39.wordlists.english.map((name, id) => { return { id, name } })
+    const suggestions = bip39.wordlists.english.map((name, id) => {
+      return { id, name }
+    })
 
     if (autoFill) {
       this.isAutofill = true
       //@ts-ignore: strictNullChecks
-      this.TESTNET_TAGS = this.TESTNET_TEST_PHRASE.split(' ').map(word => {
-        return suggestions.find(obj => obj.name === word)
+      this.TESTNET_TAGS = this.TESTNET_TEST_PHRASE.split(' ').map((word) => {
+        return suggestions.find((obj) => obj.name === word)
       })
     }
 
@@ -79,22 +81,19 @@ class MnemonicInput extends Component<MnemonicInputProps, MnemonicInputState> {
   componentDidMount() {
     const { autoFill = false } = this.props
 
-    if (autoFill) { // without last element
+    if (autoFill) {
+      // without last element
       this.onAddition(this.TESTNET_TAGS[this.TESTNET_TAGS.length - 1])
     }
   }
 
-  onChangeCallback () {
+  onChangeCallback() {
     const {
-      props: {
-        onChange,
-      },
-      state: {
-        tags,
-      },
+      props: { onChange },
+      state: { tags },
     } = this
 
-    const words = tags.map(tagData => tagData.name)
+    const words = tags.map((tagData) => tagData.name)
     this.setState({ isPlaceholderVisible: words.length < 12 })
 
     const mnemonic = words.join(` `)
@@ -107,19 +106,19 @@ class MnemonicInput extends Component<MnemonicInputProps, MnemonicInputState> {
   onDelete = (i) => {
     const tags = this.state.tags.slice(0)
     tags.splice(i, 1)
-    this.setState({ tags }, this.onChangeCallback )
+    this.setState({ tags }, this.onChangeCallback)
   }
 
   onAddition = (tag) => {
-    /* 
-    * there is probably a better solution to autofill ReactTags component 
-    * you need to call this callback at least once
-    * so pass the last element in the argument
-    */
-   const returnTags = () => {
-     if (this.isAutofill) {
+    /*
+     * there is probably a better solution to autofill ReactTags component
+     * you need to call this callback at least once
+     * so pass the last element in the argument
+     */
+    const returnTags = () => {
+      if (this.isAutofill) {
         const testnetTagsWithoutLastElement = this.TESTNET_TAGS.filter((tag, index) => {
-         return this.TESTNET_TAGS.length - 1 !== index
+          return this.TESTNET_TAGS.length - 1 !== index
         })
         this.isAutofill = false
         return [...testnetTagsWithoutLastElement, tag]
@@ -129,7 +128,7 @@ class MnemonicInput extends Component<MnemonicInputProps, MnemonicInputState> {
     }
 
     const tags = returnTags()
-    this.setState({ tags }, this.onChangeCallback )
+    this.setState({ tags }, this.onChangeCallback)
   }
 
   onInput = (query) => {
@@ -140,7 +139,9 @@ class MnemonicInput extends Component<MnemonicInputProps, MnemonicInputState> {
       return null
     } else if (isPasteWords.length === 12) {
       /* This pasted of phrase */
-      const tags = isPasteWords.map((name, id) => { return { id, name } })
+      const tags = isPasteWords.map((name, id) => {
+        return { id, name }
+      })
       this.setState({ tags }, () => {
         this.reactTags.current.clearInput()
         this.onChangeCallback()
@@ -151,25 +152,23 @@ class MnemonicInput extends Component<MnemonicInputProps, MnemonicInputState> {
       return fetch(`query=${query}`).then((result) => {
         this.setState({ busy: false })
       })
-    } 
+    }
   }
 
-  render () {
+  render() {
     const {
-      props: {
-        intl,
-        fullWidth,
-      },
-      state: {
-        tags,
-        suggestions,
-        isPlaceholderVisible
-      },
+      props: { intl, fullWidth },
+      state: { tags, suggestions, isPlaceholderVisible },
       reactTags,
     } = this
 
     return (
-      <div translate="no" className={`notranslate mnemonicInput ${(isMobile) ? '--is-mobile' : ''} ${(fullWidth) ? '--full-width' : ''}`}>
+      <div
+        translate="no"
+        className={`notranslate mnemonicInput ${isMobile ? '--is-mobile' : ''} ${
+          fullWidth ? '--full-width' : ''
+        }`}
+      >
         <ReactTags
           ref={reactTags}
           tags={tags}

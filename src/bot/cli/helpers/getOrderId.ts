@@ -3,18 +3,15 @@ const getOrderId = (orders, id) => {
   if (isIdNumeric) {
     const index = parseInt(id)
 
-    if (index <= 0)
-      throw new Error(`Only positive indices allowed: ${index}`)
+    if (index <= 0) throw new Error(`Only positive indices allowed: ${index}`)
 
     const order = orders[index - 1]
 
-    if (!order)
-      throw new Error(`No such order: ${index}`)
+    if (!order) throw new Error(`No such order: ${index}`)
 
     id = order.id
 
-    if (!id || id[0] != 'Q')
-      throw new Error(`Wrong ID format: ${id}`)
+    if (!id || id[0] != 'Q') throw new Error(`Wrong ID format: ${id}`)
   }
 
   return id

@@ -1,7 +1,6 @@
 import { getState } from 'redux/core'
 import { initialState as userInitialState } from 'redux/reducers/user'
 
-
 const getReduxState = () => {
   const reduxState = getState()
 

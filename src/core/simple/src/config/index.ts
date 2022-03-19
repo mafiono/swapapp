@@ -10,8 +10,4 @@ const testnet = getConfig(testnetConfig)
 const mainnet = getConfig(mainnetConfig)
 const tokenSwap = (config) => new EthTokenSwap(tokenSwapConfig(config))
 
-export {
-  testnet,
-  mainnet,
-  tokenSwap,
-}
+export { testnet, mainnet, tokenSwap }

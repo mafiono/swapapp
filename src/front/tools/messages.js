@@ -1,12 +1,5 @@
-import {
-  transform,
-} from '@babel/core'
-import {
-  readFile,
-  writeFile,
-  glob,
-} from './libs/fs'
-
+import { transform } from '@babel/core'
+import { readFile, writeFile, glob } from './libs/fs'
 
 const locales = {
   nl: 'Dutch',
@@ -23,7 +16,7 @@ const GLOB_IGNORE = []
 const fileToMessages = {}
 let messages = {}
 
-const posixPath = fileName => fileName.replace(/\\/g, '/')
+const posixPath = (fileName) => fileName.replace(/\\/g, '/')
 
 async function writeMessages(fileName, msgs) {
   return await writeFile(fileName, `${JSON.stringify(msgs, null, 2)}\n`)
@@ -44,7 +37,7 @@ async function mergeToJson(locale, toBuild) {
       throw new Error(`Error during parsing messages JSON in file ${fileName}`)
     }
 
-    oldJson.forEach(message => {
+    oldJson.forEach((message) => {
       oldMessages[message.id] = message
       delete oldMessages[message.id].files
     })
@@ -54,7 +47,7 @@ async function mergeToJson(locale, toBuild) {
     }
   }
 
-  Object.keys(messages).forEach(id => {
+  Object.keys(messages).forEach((id) => {
     const newMessage = messages[id]
     oldMessages[id] = oldMessages[id] || { id }
     const msg = oldMessages[id]
@@ -66,7 +59,9 @@ async function mergeToJson(locale, toBuild) {
     delete msg.defaultMessage
   })
 
-  const result = Object.keys(oldMessages).map(key => oldMessages[key]).filter(msg => msg.files || msg.message)
+  const result = Object.keys(oldMessages)
+    .map((key) => oldMessages[key])
+    .filter((msg) => msg.files || msg.message)
 
   await writeMessages(fileName, result)
 
@@ -88,20 +83,16 @@ async function mergeToJson(locale, toBuild) {
  * */
 function mergeMessages() {
   messages = {}
-  Object.keys(fileToMessages).forEach(fileName => {
-    fileToMessages[fileName].forEach(newMsg => {
+  Object.keys(fileToMessages).forEach((fileName) => {
+    fileToMessages[fileName].forEach((newMsg) => {
       if (messages[newMsg.id]) {
         if (messages[newMsg.id].defaultMessage !== newMsg.defaultMessage) {
-          console.warn(`Different message default messages for message id "${
-            newMsg.id
-            }":
+          console.warn(`Different message default messages for message id "${newMsg.id}":
           ${messages[newMsg.id].defaultMessage} -- ${messages[newMsg.id].files}
           ${newMsg.defaultMessage} -- ${fileName}`)
         }
         if (messages[newMsg.id].description && newMsg.description) {
-          console.warn(`Should be only one description for message id "${
-            newMsg.id
-            }":
+          console.warn(`Should be only one description for message id "${newMsg.id}":
           ${messages[newMsg.id].description} -- ${messages[newMsg.id].files}
           ${newMsg.description} -- ${fileName}`)
         }
@@ -122,9 +113,7 @@ function mergeMessages() {
  */
 async function updateMessages(toBuild) {
   mergeMessages()
-  await Promise.all(
-    [...Object.keys(locales)].map(locale => mergeToJson(locale, toBuild))
-  )
+  await Promise.all([...Object.keys(locales)].map((locale) => mergeToJson(locale, toBuild)))
 }
 
 /**
@@ -141,7 +130,7 @@ async function extractMessages() {
 
   const compareMessages = (a, b) => compare(a.id, b.id)
 
-  const extractFromSingleFile = async fileName => {
+  const extractFromSingleFile = async (fileName) => {
     try {
       const source = await readFile(fileName)
       const posixName = posixPath(fileName)
@@ -149,22 +138,24 @@ async function extractMessages() {
         babelrc: true,
         plugins: [
           'react-intl',
-          ['@babel/plugin-proposal-decorators', { 'legacy': true }],
+          ['@babel/plugin-proposal-decorators', { legacy: true }],
           '@babel/plugin-proposal-class-properties',
           '@babel/plugin-proposal-function-bind',
           '@babel/plugin-transform-destructuring',
           '@babel/plugin-proposal-object-rest-spread',
           '@babel/plugin-transform-runtime',
           '@babel/plugin-syntax-dynamic-import',
-          ['@babel/plugin-transform-modules-commonjs', {
-            'allowTopLevelThis': true,
-          }],
+          [
+            '@babel/plugin-transform-modules-commonjs',
+            {
+              allowTopLevelThis: true,
+            },
+          ],
           '@babel/plugin-proposal-function-sent',
           '@babel/plugin-proposal-throw-expressions',
         ],
         filename: fileName,
-      })
-        .metadata['react-intl']
+      }).metadata['react-intl']
       if (result.messages && result.messages.length) {
         fileToMessages[posixName] = result.messages.sort(compareMessages)
       } else {

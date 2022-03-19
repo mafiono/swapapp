@@ -13,8 +13,7 @@ let cfgDir = process.env.CONFIG_DIR
 // figure out where the config files are at
 if (!cfgDir) {
   cfgDir = `${path.resolve(process.cwd(), 'src/front/config/')}/`
-}
-else {
+} else {
   cfgDir = `${path.resolve(cfgDir)}/`
 }
 
@@ -25,8 +24,7 @@ if (env) {
 
 try {
   defaultConfig = require(defaultConfigPath).default
-}
-catch (err) {
+} catch (err) {
   defaultConfig = {} // no default specified
 }
 
@@ -34,12 +32,10 @@ try {
   if (envConfigPath) {
     envConfig = require(envConfigPath).default
   }
-}
-catch (err) {
+} catch (err) {
   throw new Error(err)
 }
 
 const config = merge(defaultConfig, envConfig)
-
 
 export default config

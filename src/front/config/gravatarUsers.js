@@ -9,5 +9,4 @@ const gravatarUsers = {
   '0x700b42Cf65dE2b74a5570723FfE278eFfD58823e': 'ec849eedf69dc1adea2f25aa63d59504', //mainnet bot
 }
 
-
 export default gravatarUsers

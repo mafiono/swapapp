@@ -16,17 +16,13 @@ import bitcore from 'bitcore-lib'
 import * as mnemonicUtils from 'common/utils/mnemonic'
 import { default as nextUtils } from 'common/utils/coin/next'
 
-
-const NETWORK = (process.env.MAINNET) ? `MAINNET` : `TESTNET`
-
+const NETWORK = process.env.MAINNET ? `MAINNET` : `TESTNET`
 
 const hasAdminFee = !!config?.opts?.fee?.next?.min && config.opts.fee.next
 
 const getMainPublicKey = () => {
   const {
-    user: {
-      nextData,
-    },
+    user: { nextData },
   } = getState()
 
   return nextData.publicKey.toString('Hex')
@@ -35,7 +31,6 @@ const getMainPublicKey = () => {
 const getWalletByWords = (mnemonic: string, walletNumber: number = 0, path: string = '') => {
   return mnemonicUtils.getNextWallet(next.network, mnemonic, walletNumber, path)
 }
-
 
 const auth = (privateKey) => {
   if (!privateKey) {
@@ -66,10 +61,7 @@ const auth = (privateKey) => {
 const getPrivateKeyByAddress = (address) => {
   const {
     user: {
-      nextData: {
-        address: oldAddress,
-        privateKey,
-      },
+      nextData: { address: oldAddress, privateKey },
     },
   } = getState()
 
@@ -78,11 +70,7 @@ const getPrivateKeyByAddress = (address) => {
   if (mnemonicAddress === address) return mnemonicKey
 }
 
-const login = (
-  privateKey,
-  mnemonic: string | null = null,
-) => {
-
+const login = (privateKey, mnemonic: string | null = null) => {
   if (privateKey) {
     const hash = bitcoin.crypto.sha256(privateKey)
     const d = BigInteger.fromBuffer(hash)
@@ -121,12 +109,12 @@ const login = (
   return privateKey
 }
 
-
 const getTx = (txRaw) => {
-  if (txRaw
-    && txRaw.getId
+  if (
+    txRaw &&
+    txRaw.getId &&
     //@ts-ignore
-    && txRaw.getId instanceof 'function'
+    txRaw.getId instanceof 'function'
   ) {
     return txRaw.getId()
   } else {
@@ -144,80 +132,106 @@ const getLinkToInfo = (tx) => {
 }
 
 const fetchBalanceStatus = (address) => {
-  return apiLooper.get('nextExplorer', `/address/${address}`, {
-    checkStatus: (answer) => {
-      try {
-        if (answer && answer.balance !== undefined) return true
-      } catch (e) { /* */console.log(e) }
-      return false
-    },
-  }).then(({ balance, unconfirmedBalance }) => ({
-    address,
-    balance,
-    unconfirmedBalance,
-  })).catch((e) => false)
+  return apiLooper
+    .get('nextExplorer', `/address/${address}`, {
+      checkStatus: (answer) => {
+        try {
+          if (answer && answer.balance !== undefined) return true
+        } catch (e) {
+          /* */ console.log(e)
+        }
+        return false
+      },
+    })
+    .then(({ balance, unconfirmedBalance }) => ({
+      address,
+      balance,
+      unconfirmedBalance,
+    }))
+    .catch((e) => false)
 }
 
 const getBalance = () => {
-  const { user: { nextData: { address } } } = getState()
-
-  return apiLooper.get('nextExplorer', `/address/${address}`, {
-    inQuery: {
-      delay: 500,
-      name: `balance`,
+  const {
+    user: {
+      nextData: { address },
     },
-    checkStatus: (answer) => {
-      try {
-        if (answer && answer.balance !== undefined) return true
-      } catch (e) { /* */ }
-      return false
-    },
-    ignoreErrors: true,
-  }).then((answer: any) => {
-    const balance = (typeof answer.balance === 'undefined') ? 0 : answer.balance
-    const unconfirmedBalance = (typeof answer.unconfirmedBalance === 'undefined') ? 0 : answer.unconfirmedBalance
+  } = getState()
 
-    reducers.user.setBalance({
-      name: 'nextData',
-      amount: balance,
-      unconfirmedBalance,
+  return apiLooper
+    .get('nextExplorer', `/address/${address}`, {
+      inQuery: {
+        delay: 500,
+        name: `balance`,
+      },
+      checkStatus: (answer) => {
+        try {
+          if (answer && answer.balance !== undefined) return true
+        } catch (e) {
+          /* */
+        }
+        return false
+      },
+      ignoreErrors: true,
     })
-    return balance
-  }).catch((e) => {
-    reducers.user.setBalanceError({ name: 'nextData' })
-  })
+    .then((answer: any) => {
+      const balance = typeof answer.balance === 'undefined' ? 0 : answer.balance
+      const unconfirmedBalance =
+        typeof answer.unconfirmedBalance === 'undefined' ? 0 : answer.unconfirmedBalance
+
+      reducers.user.setBalance({
+        name: 'nextData',
+        amount: balance,
+        unconfirmedBalance,
+      })
+      return balance
+    })
+    .catch((e) => {
+      reducers.user.setBalanceError({ name: 'nextData' })
+    })
 }
 
-const fetchBalance = (address) => nextUtils.fetchBalance({
-  address,
-  NETWORK,
-})
+const fetchBalance = (address) =>
+  nextUtils.fetchBalance({
+    address,
+    NETWORK,
+  })
 
-const fetchTx = (hash, cacheResponse) => nextUtils.fetchTx({
-  hash,
-  cacheResponse,
-  NETWORK,
-})
+const fetchTx = (hash, cacheResponse) =>
+  nextUtils.fetchTx({
+    hash,
+    cacheResponse,
+    NETWORK,
+  })
 
 const fetchTxRaw = (txId, cacheResponse) =>
-  apiLooper.get('nextExplorer', `/rawtx/${txId}`, {
-    cacheResponse,
-    checkStatus: (answer) => {
-      try {
-        if (answer && answer.rawtx !== undefined) return true
-      } catch (e) { /* */ }
-      return false
-    },
-  }).then(({ rawtx }) => rawtx)
+  apiLooper
+    .get('nextExplorer', `/rawtx/${txId}`, {
+      cacheResponse,
+      checkStatus: (answer) => {
+        try {
+          if (answer && answer.rawtx !== undefined) return true
+        } catch (e) {
+          /* */
+        }
+        return false
+      },
+    })
+    .then(({ rawtx }) => rawtx)
 
-const fetchTxInfo = (hash, cacheResponse) => nextUtils.fetchTxInfo({
-  hash,
-  cacheResponse,
-  NETWORK,
-})
+const fetchTxInfo = (hash, cacheResponse) =>
+  nextUtils.fetchTxInfo({
+    hash,
+    cacheResponse,
+    NETWORK,
+  })
 
 const getInvoices = (address) => {
-  const { user: { nextData: { userAddress } } } = getState()
+  const {
+    user: {
+      nextData: { userAddress },
+    },
+  } = getState()
 
   address = address || userAddress
 
@@ -229,12 +243,7 @@ const getInvoices = (address) => {
 
 const getAllMyAddresses = () => {
   const {
-    user: {
-      nextData,
-      nextMultisigSMSData,
-      nextMultisigUserData,
-      nextMultisigPinData,
-    },
+    user: { nextData, nextMultisigSMSData, nextMultisigUserData, nextMultisigPinData },
   } = getState()
 
   const retData = []
@@ -263,82 +272,81 @@ const getAllMyAddresses = () => {
 
 const getDataByAddress = (address) => {
   const {
-    user: {
-      nextData,
-      nextMultisigSMSData,
-      nextMultisigUserData,
-      nextMultisigG2FAData,
-    },
+    user: { nextData, nextMultisigSMSData, nextMultisigUserData, nextMultisigG2FAData },
   } = getState()
 
   const founded = [
     nextData,
     nextMultisigSMSData,
     nextMultisigUserData,
-    ...(
-      nextMultisigUserData
-      && nextMultisigUserData.wallets
-      && nextMultisigUserData.wallets.length
-    )
+    ...(nextMultisigUserData && nextMultisigUserData.wallets && nextMultisigUserData.wallets.length
       ? nextMultisigUserData.wallets
-      : [],
+      : []),
     nextMultisigG2FAData,
-  ].filter(data => data && data.address && data.address.toLowerCase() === address.toLowerCase())
+  ].filter((data) => data && data.address && data.address.toLowerCase() === address.toLowerCase())
 
-  return (founded.length) ? founded[0] : false
+  return founded.length ? founded[0] : false
 }
 
 const getTransaction = (address: string = ``, ownType: string = ``) =>
   new Promise((resolve) => {
     const myAllWallets = getAllMyAddresses()
 
-    let { user: { nextData: { address: userAddress } } } = getState()
+    let {
+      user: {
+        nextData: { address: userAddress },
+      },
+    } = getState()
     address = address || userAddress
 
-    const type = (ownType) || 'next'
+    const type = ownType || 'next'
 
     if (!typeforce.isCoinAddress.NEXT(address)) {
       resolve([])
     }
 
-    return apiLooper.get('nextExplorer', `/txs/${address}`, {
-      checkStatus: (answer) => {
-        try {
-          if (answer && answer.txs !== undefined) return true
-        } catch (e) { /* */ }
-        return false
-      },
-    }).then((res: any) => {
-      const transactions = res.txs.map((item) => {
-        const direction = item.vin[0].address !== address ? 'in' : 'out'
-
-        const isSelf = direction === 'out'
-          && item.vout.filter((item) =>
-            item.scriptPubKey.addresses[0] === address
-          ).length === item.vout.length
-
-        return ({
-          type,
-          hash: item.txid,
-          //@ts-ignore: strictNullChecks
-          canEdit: (myAllWallets.indexOf(address) !== -1),
-          confirmations: item.confirmations,
-          value: isSelf
-            ? item.fees
-            : item.vout.filter((item) => {
-              if (!item.scriptPubKey.addresses) return false
-              const currentAddress = item.scriptPubKey.addresses[0]
-
-              return direction === 'in'
-                ? (currentAddress === address)
-                : (currentAddress !== address)
-            })[0].value,
-          date: item.time * 1000,
-          direction: isSelf ? 'self' : direction,
-        })
+    return apiLooper
+      .get('nextExplorer', `/txs/${address}`, {
+        checkStatus: (answer) => {
+          try {
+            if (answer && answer.txs !== undefined) return true
+          } catch (e) {
+            /* */
+          }
+          return false
+        },
       })
-      resolve(transactions)
-    })
+      .then((res: any) => {
+        const transactions = res.txs.map((item) => {
+          const direction = item.vin[0].address !== address ? 'in' : 'out'
+
+          const isSelf =
+            direction === 'out' &&
+            item.vout.filter((item) => item.scriptPubKey.addresses[0] === address).length ===
+              item.vout.length
+
+          return {
+            type,
+            hash: item.txid,
+            //@ts-ignore: strictNullChecks
+            canEdit: myAllWallets.indexOf(address) !== -1,
+            confirmations: item.confirmations,
+            value: isSelf
+              ? item.fees
+              : item.vout.filter((item) => {
+                  if (!item.scriptPubKey.addresses) return false
+                  const currentAddress = item.scriptPubKey.addresses[0]
+
+                  return direction === 'in'
+                    ? currentAddress === address
+                    : currentAddress !== address
+                })[0].value,
+            date: item.time * 1000,
+            direction: isSelf ? 'self' : direction,
+          }
+        })
+        resolve(transactions)
+      })
       .catch(() => {
         resolve([])
       })
@@ -346,7 +354,6 @@ const getTransaction = (address: string = ``, ownType: string = ``) =>
 
 //@ts-ignore
 const send = ({ from, to, amount, feeValue, speed } = {}) => {
-
   return new Promise(async (ready) => {
     const networks = bitcore.Networks
     const nextNetwork = {
@@ -355,13 +362,11 @@ const send = ({ from, to, amount, feeValue, speed } = {}) => {
       pubkeyhash: 0x4b,
       privatekey: 0x80,
       scripthash: 0x05,
-      xpubkey: 0x0488B21E,
-      xprivkey: 0x0488ADE4,
+      xpubkey: 0x0488b21e,
+      xprivkey: 0x0488ade4,
       networkMagic: 0xcbe4d0a1,
       port: 7078,
-      dnsSeeds: [
-        config.api.nextExplorer,
-      ]
+      dnsSeeds: [config.api.nextExplorer],
     }
     networks.add(nextNetwork)
 
@@ -377,7 +382,7 @@ const send = ({ from, to, amount, feeValue, speed } = {}) => {
     const publicKey = bitcore.PublicKey.fromPrivateKey(privateKey)
     const addressFrom = new bitcore.Address(publicKey, bitcoreNextNetwork)
 
-    const unspents: bitcore.Transaction.UnspentOutput[] = await fetchUnspents(from) || []
+    const unspents: bitcore.Transaction.UnspentOutput[] = (await fetchUnspents(from)) || []
     const amountSat = new BigNumber(String(amount)).multipliedBy(1e8).integerValue().toNumber()
 
     const transaction = new bitcore.Transaction()
@@ -394,24 +399,27 @@ const send = ({ from, to, amount, feeValue, speed } = {}) => {
   })
 }
 
+const fetchUnspents = (address) =>
+  nextUtils
+    .fetchUnspents({
+      address,
+      NETWORK,
+    })
+    .then((unspents: any) =>
+      unspents.map((unspent) => ({
+        address: unspent.address,
+        txId: unspent.txid,
+        outputIndex: unspent.outputIndex,
+        script: unspent.script,
+        satoshis: unspent.satoshis,
+      }))
+    )
 
-const fetchUnspents = (address) => nextUtils.fetchUnspents({
-  address,
-  NETWORK,
-}).then((unspents: any) => unspents.map(unspent => ({
-    address: unspent.address,
-    txId: unspent.txid,
-    outputIndex: unspent.outputIndex,
-    script: unspent.script,
-    satoshis: unspent.satoshis,
-  }))
-)
-
-
-const broadcastTx = (txRaw) => nextUtils.broadcastTx({
-  txRaw,
-  NETWORK,
-})
+const broadcastTx = (txRaw) =>
+  nextUtils.broadcastTx({
+    txRaw,
+    NETWORK,
+  })
 
 const signMessage = (message, encodedPrivateKey) => {
   //@ts-ignore
@@ -424,10 +432,11 @@ const signMessage = (message, encodedPrivateKey) => {
   return signature.toString('base64')
 }
 
-const checkWithdraw = (scriptAddress) => nextUtils.checkWithdraw({
-  scriptAddress,
-  NETWORK,
-})
+const checkWithdraw = (scriptAddress) =>
+  nextUtils.checkWithdraw({
+    scriptAddress,
+    NETWORK,
+  })
 
 export default {
   login,

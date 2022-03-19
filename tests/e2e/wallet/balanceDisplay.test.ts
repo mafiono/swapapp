@@ -3,7 +3,6 @@ import { createBrowser, importWallet, timeOut, takeScreenshot, testWallets } fro
 jest.setTimeout(80_000) // ms
 
 describe('Wallet tests', () => {
-
   test('Restore wallet', async () => {
     const { browser, page } = await createBrowser()
 
@@ -16,10 +15,9 @@ describe('Wallet tests', () => {
 
       await page.waitForSelector('#btcAddress')
 
-      const recoveredRWBtcAddress = await page.$eval('#btcAddress', el => el.textContent)
+      const recoveredRWBtcAddress = await page.$eval('#btcAddress', (el) => el.textContent)
 
       expect(recoveredRWBtcAddress).toBe(testWallets.btcRW.address)
-
     } catch (error) {
       await takeScreenshot(page, 'RestoreWalletTestError')
       await browser.close()
@@ -46,9 +44,8 @@ describe('Wallet tests', () => {
       await page.waitForSelector('#walletRowUpdateBalanceBtn')
       await page.waitForSelector('#walletRowCryptoBalance')
 
-      const balances = await page.$$eval(
-        '#walletRowCryptoBalance',
-        (balanceTags) => balanceTags.map((tag) => tag.textContent),
+      const balances = await page.$$eval('#walletRowCryptoBalance', (balanceTags) =>
+        balanceTags.map((tag) => tag.textContent)
       )
 
       expect(balances).toBeDefined()
@@ -75,5 +72,4 @@ describe('Wallet tests', () => {
       await browser.close()
     }
   })
-
 })

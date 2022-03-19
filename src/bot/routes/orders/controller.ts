@@ -2,38 +2,36 @@ import swapApp from '../../swapApp'
 
 import { findOrder, orderView } from '../../helpers'
 
-
 const app = swapApp.app
 const Orders = swapApp.app.services.orders
 
 let orders
 
-
 const listMyOrders = (req, res) => {
-  orders = Orders.getMyOrders().filter(order => !!order)
+  orders = Orders.getMyOrders().filter((order) => !!order)
   orders = orders.map(orderView)
 
   res.json(orders)
 }
 
 const listOthersOrders = (req, res) => {
-  orders = Orders.items.filter(order => !!order)
-  orders = orders.filter(order => !order.isMy)
+  orders = Orders.items.filter((order) => !!order)
+  orders = orders.filter((order) => !order.isMy)
   orders = orders.map(orderView)
 
   res.json(orders)
 }
 
 const listOrders = (req, res) => {
-  orders = Orders.items.filter(order => !!order)
-  orders = Orders.items.filter(order => !order.isProcessing)
+  orders = Orders.items.filter((order) => !!order)
+  orders = Orders.items.filter((order) => !order.isProcessing)
   orders = orders.map(orderView)
 
   res.json(orders)
 }
 
 const listAllOrders = (req, res) => {
-  orders = Orders.items.filter(order => !!order)
+  orders = Orders.items.filter((order) => !!order)
   orders = orders.map(orderView)
 
   res.json(orders)
@@ -43,14 +41,13 @@ const filterOrders = (req, res) => {
   const peer = req.query.peer
   const isProcessing = req.query.isProcessing
 
-  orders = Orders.items.filter(order => !!order)
+  orders = Orders.items.filter((order) => !!order)
 
-  if (peer !== undefined)
-    orders = orders.filter(order => order.owner.peer == peer)
+  if (peer !== undefined) orders = orders.filter((order) => order.owner.peer == peer)
 
   if (isProcessing === 'false' || isProcessing === 'true') {
     const filterProcessing = isProcessing == 'true'
-    orders = orders.filter(order => order.isProcessing === filterProcessing)
+    orders = orders.filter((order) => order.isProcessing === filterProcessing)
   }
 
   orders = orders.map(orderView)
@@ -59,7 +56,7 @@ const filterOrders = (req, res) => {
 }
 
 const requestedOrders = (req, res) => {
-  orders = Orders.items.filter(order => !!order)
+  orders = Orders.items.filter((order) => !!order)
 
   orders = orders.filter(({ requests }) => requests.length)
   orders = orders.map(orderView)
@@ -101,8 +98,8 @@ const deleteOrder = (req, res) => {
 const deleteAllOrders = (req, res) => {
   try {
     Orders.getMyOrders()
-      .filter(order => !order.isProcessing)
-      .map(order => Orders.remove(order.id))
+      .filter((order) => !order.isProcessing)
+      .map((order) => Orders.remove(order.id))
 
     res.status(200).json({})
   } catch (err) {
@@ -113,8 +110,7 @@ const deleteAllOrders = (req, res) => {
 
 const forceDeleteAllOrders = (req, res) => {
   try {
-    Orders.getMyOrders()
-      .map(order => Orders.remove(order.id))
+    Orders.getMyOrders().map((order) => Orders.remove(order.id))
 
     res.status(200).json({})
   } catch (err) {
@@ -125,7 +121,7 @@ const forceDeleteAllOrders = (req, res) => {
 
 const requestOrder = (req, res) => {
   findOrder(app)(req, res, (order) => {
-    order.sendRequest(accepted => {
+    order.sendRequest((accepted) => {
       order.isAccepted = accepted
       console.log(new Date().toISOString(), 'accepted', accepted)
       if (!accepted) return
@@ -142,20 +138,24 @@ const requestPartialFulfilment = (req, res) => {
   const sellAmount = req.query.sellAmount
   const updatedOrder = { buyAmount, sellAmount }
 
-  if(!buyAmount && !sellAmount)
+  if (!buyAmount && !sellAmount)
     return res.status(404).json({ error: 'no updatedOrder buyAmount or sellAmount given' })
 
   findOrder(app)(req, res, (order) => {
-    order.sendRequestForPartial(updatedOrder, (newOrder, accepted) => {
-      console.log('accepted', accepted)
-      order.isAccepted = accepted
+    order.sendRequestForPartial(
+      updatedOrder,
+      (newOrder, accepted) => {
+        console.log('accepted', accepted)
+        order.isAccepted = accepted
 
-      if (!accepted) return res.status(400).json(orderView(newOrder || {}))
+        if (!accepted) return res.status(400).json(orderView(newOrder || {}))
 
-      console.log(new Date().toISOString(), 'peer accepted order', orderView(newOrder))
+        console.log(new Date().toISOString(), 'peer accepted order', orderView(newOrder))
 
-      res.json(orderView(newOrder))
-    }, newOrderId => true)
+        res.json(orderView(newOrder))
+      },
+      (newOrderId) => true
+    )
   })
 }
 
@@ -163,11 +163,9 @@ const acceptRequest = (req, res) => {
   findOrder(app)(req, res, (order) => {
     let peer = req.params.peer
 
-    if (order.requests.length == 1)
-      peer = order.requests[0].peer
+    if (order.requests.length == 1) peer = order.requests[0].peer
 
-    if (!peer)
-      return res.status(404).json({ error: 'no peer' })
+    if (!peer) return res.status(404).json({ error: 'no peer' })
 
     order.acceptRequest(peer)
 
@@ -178,7 +176,6 @@ const acceptRequest = (req, res) => {
   })
 }
 
-
 export {
   filterOrders,
   listOrders,
@@ -186,13 +183,11 @@ export {
   listMyOrders,
   listOthersOrders,
   requestedOrders,
-
   getOrder,
   createOrder,
   deleteOrder,
   deleteAllOrders,
   forceDeleteAllOrders,
-
   requestOrder,
   acceptRequest,
   requestPartialFulfilment,

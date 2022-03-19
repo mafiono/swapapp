@@ -1,9 +1,8 @@
 import { InjectedConnector } from '@web3-react/injected-connector'
 import {
   NoEthereumProviderError,
-  UserRejectedRequestError as UserRejectedRequestErrorInjected
+  UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from '@web3-react/injected-connector'
-
 
 export default class InjectedProvider extends InjectedConnector {
   _web3Connect = null
@@ -16,7 +15,11 @@ export default class InjectedProvider extends InjectedConnector {
 
   async isConnected() {
     // This is opera
-    if ((!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+    if (
+      (!!window.opr && !!window.opr.addons) ||
+      !!window.opera ||
+      navigator.userAgent.indexOf(' OPR/') >= 0
+    ) {
       await window.ethereum?.enable()
 
       return window.ethereum?.isConnected()
@@ -39,7 +42,7 @@ export default class InjectedProvider extends InjectedConnector {
     this._isLocked = false
     try {
       const connection = await super.activate()
-      return (connection) ? true : false
+      return connection ? true : false
     } catch (err) {
       if (err instanceof UserRejectedRequestErrorInjected) {
         console.warn('User reject connect to Injected provider')

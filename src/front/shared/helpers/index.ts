@@ -27,12 +27,7 @@ import transactions from './transactions'
 
 import { migrate } from './migrations'
 
-import {
-  cacheStorageGet,
-  cacheStorageSet,
-  cacheStorageClear,
-  cacheStorageClearPart,
-} from './cache'
+import { cacheStorageGet, cacheStorageSet, cacheStorageClear, cacheStorageClearPart } from './cache'
 import lsDataCache from './lsDataCache'
 
 import apiLooper from './apiLooper'
@@ -91,31 +86,21 @@ export {
   // Methods
   ignoreProps,
   handleGoTrade,
-
   // Getters
   getPageOffset,
   externalConfig,
-
   feedback,
   cacheStorageGet,
   cacheStorageSet,
   cacheStorageClear,
   cacheStorageClearPart,
-
   apiLooper,
-
   metamask,
-
   routing,
-
   adminFee,
-
   swaps,
-
   stats,
-
   wpLogoutModal,
-
   getPairFees,
 }
 export { getItezUrl } from './getItezUrl'

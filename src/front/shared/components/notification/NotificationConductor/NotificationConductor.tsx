@@ -7,13 +7,11 @@ import Notifications from 'components/notifications'
 import cssModules from 'react-css-modules'
 import styles from './NotificationConductor.scss'
 
-
 @connect({
   notifications: 'notifications',
 })
 @cssModules(styles)
 export default class NotificationConductor extends Component<any, any> {
-
   static propTypes = {
     notifications: PropTypes.object,
   }
@@ -24,10 +22,10 @@ export default class NotificationConductor extends Component<any, any> {
     const notificationNames = Object.keys(notifications)
     const areNotificationsExist = Boolean(notificationNames.length)
 
-    return areNotificationsExist && (
-      <div styleName="notificationConductor">
-        {
-          notificationNames.map((key, index) => {
+    return (
+      areNotificationsExist && (
+        <div styleName="notificationConductor">
+          {notificationNames.map((key, index) => {
             const { name, data = {} } = notifications[key]
 
             return React.createElement(Notifications[name], {
@@ -36,9 +34,9 @@ export default class NotificationConductor extends Component<any, any> {
               data,
               history,
             })
-          })
-        }
-      </div>
+          })}
+        </div>
+      )
     )
   }
 }

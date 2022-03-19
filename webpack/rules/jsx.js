@@ -12,7 +12,7 @@ export default [
           presets: ['@babel/preset-env'],
           plugins: ['@babel/plugin-proposal-object-rest-spread'],
           cacheDirectory: true,
-        }
+        },
       },
     ],
   },
@@ -25,16 +25,15 @@ export default [
         options: {
           filterSourceMappingUrl: (url, resourcePath) => {
             if (
-              /.*\/node_modules\/.*/.test(resourcePath) // Unix
-              ||
+              /.*\/node_modules\/.*/.test(resourcePath) || // Unix
               /.*\\node_modules\\.*/.test(resourcePath) // Windows
             ) {
               return false
             }
             return true
-          }
-        }
-      }
+          },
+        },
+      },
     ],
   },
 ]

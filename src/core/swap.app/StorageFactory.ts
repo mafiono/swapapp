@@ -1,5 +1,4 @@
 class StorageFactory {
-
   prefix: string
   storage: any
 
@@ -11,8 +10,7 @@ class StorageFactory {
       this.storage.setItem('test', 'test')
       this.storage.getItem('test')
       this.storage.removeItem('test')
-    }
-    catch (err) {
+    } catch (err) {
       throw new Error(`SwapApp.env.StorageFactory: ${err}`)
     }
   }
@@ -26,9 +24,10 @@ class StorageFactory {
 
     try {
       return JSON.parse(value)
-    }
-    catch (err) {
-      console.error(`SwapApp.env.storage.getItem(${key}) parse error. Looks like the value was created w/o setItem method`)
+    } catch (err) {
+      console.error(
+        `SwapApp.env.storage.getItem(${key}) parse error. Looks like the value was created w/o setItem method`
+      )
       console.error(err)
       return undefined
     }
@@ -38,6 +37,5 @@ class StorageFactory {
     return this.storage.removeItem(`${this.prefix}${key}`)
   }
 }
-
 
 export default StorageFactory

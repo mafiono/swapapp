@@ -91,7 +91,7 @@ const isWidgetBuild = config && config.isWidget
       },
       modals,
     }
-  },
+  }
 )
 @withRouter
 @cssModules(styles, { allowMultiple: true })
@@ -162,8 +162,8 @@ class Wallet extends PureComponent<any, any> {
     } = this.props
 
     if (
-      pathname.toLowerCase() !== prevPathname.toLowerCase()
-      && pathname.toLowerCase() === links.connectWallet.toLowerCase()
+      pathname.toLowerCase() !== prevPathname.toLowerCase() &&
+      pathname.toLowerCase() === links.connectWallet.toLowerCase()
     ) {
       this.handleConnectWallet()
     }
@@ -237,7 +237,7 @@ class Wallet extends PureComponent<any, any> {
     const { userCurrencyData } = this.state
     const { address, amount } = params
     const item = userCurrencyData.find(
-      ({ currency }) => currency.toLowerCase() === params.currency.toLowerCase(),
+      ({ currency }) => currency.toLowerCase() === params.currency.toLowerCase()
     )
 
     actions.modals.open(constants.modals.Withdraw, {
@@ -265,9 +265,9 @@ class Wallet extends PureComponent<any, any> {
       const { isMetamask, isConnected, currency, balance } = item
 
       return (
-        (context !== 'Send' || balance)
-        && (!isMetamask || (isMetamask && isConnected))
-        && (!isWidgetBuild || widgetCurrencies.includes(currency))
+        (context !== 'Send' || balance) &&
+        (!isMetamask || (isMetamask && isConnected)) &&
+        (!isWidgetBuild || widgetCurrencies.includes(currency))
       )
     })
 
@@ -278,15 +278,9 @@ class Wallet extends PureComponent<any, any> {
   }
 
   showNoWalletsNotification = () => {
-    actions.notifications.show(
-      constants.notifications.Message,
-      { message: (
-        <FormattedMessage
-          id="WalletEmptyBalance"
-          defaultMessage="No wallets available"
-        />
-      ) },
-    )
+    actions.notifications.show(constants.notifications.Message, {
+      message: <FormattedMessage id="WalletEmptyBalance" defaultMessage="No wallets available" />,
+    })
   }
 
   handleWithdrawFirstAsset = () => {
@@ -298,18 +292,20 @@ class Wallet extends PureComponent<any, any> {
     const availableWallets = user.filterUserCurrencyData(userCurrencyData)
 
     if (
-      !Object.keys(availableWallets).length
-      || (Object.keys(availableWallets).length === 1 && !user.isCorrectWalletToShow(availableWallets[0]))
+      !Object.keys(availableWallets).length ||
+      (Object.keys(availableWallets).length === 1 &&
+        !user.isCorrectWalletToShow(availableWallets[0]))
     ) {
       this.showNoWalletsNotification()
       return
     }
 
-    const firstAvailableWallet = availableWallets.find((wallet) => (
-      user.isCorrectWalletToShow(wallet)
-        && !wallet.balanceError
-        && new BigNumber(wallet.balance).isPositive()
-    ))
+    const firstAvailableWallet = availableWallets.find(
+      (wallet) =>
+        user.isCorrectWalletToShow(wallet) &&
+        !wallet.balanceError &&
+        new BigNumber(wallet.balance).isPositive()
+    )
 
     if (!firstAvailableWallet) {
       this.showNoWalletsNotification()
@@ -328,9 +324,7 @@ class Wallet extends PureComponent<any, any> {
 
     const firstUrlPart = tokenKey ? `/token/${tokenKey}` : `/${targetCurrency}`
 
-    history.push(
-      localisedUrl(locale, `${firstUrlPart}/${address}/send`),
-    )
+    history.push(localisedUrl(locale, `${firstUrlPart}/${address}/send`))
   }
 
   returnFiatBalanceByWallet = (wallet) => {
@@ -356,15 +350,13 @@ class Wallet extends PureComponent<any, any> {
 
   returnBalanceInBtc = (wallet) => {
     const widgetCurrencies = user.getWidgetCurrencies()
-    const name = wallet.isToken
-      ? wallet.tokenKey.toUpperCase()
-      : (wallet.currency || wallet.name)
+    const name = wallet.isToken ? wallet.tokenKey.toUpperCase() : wallet.currency || wallet.name
 
     if (
-      (!isWidgetBuild || widgetCurrencies.includes(name))
-      && !wallet.balanceError
-      && wallet.infoAboutCurrency?.price_btc
-      && wallet.balance > 0
+      (!isWidgetBuild || widgetCurrencies.includes(name)) &&
+      !wallet.balanceError &&
+      wallet.infoAboutCurrency?.price_btc &&
+      wallet.balance > 0
     ) {
       return wallet.balance * wallet.infoAboutCurrency.price_btc
     }
@@ -400,7 +392,7 @@ class Wallet extends PureComponent<any, any> {
 
     const isFirstCheck = moment(now, 'HH:mm:ss DD/MM/YYYY').isSame(lastCheckMoment)
     const isOneHourAfter = moment(now, 'HH:mm:ss DD/MM/YYYY').isAfter(
-      lastCheckMoment.add(1, 'hours'),
+      lastCheckMoment.add(1, 'hours')
     )
 
     const { coinsData, coinsData: ethData } = this.props
@@ -421,8 +413,8 @@ class Wallet extends PureComponent<any, any> {
             wallets?: IUniversalObj[]
           } = {
             locale:
-              ipInfo.locale
-              || (navigator.userLanguage || navigator.language || 'en-gb').split('-')[0],
+              ipInfo.locale ||
+              (navigator.userLanguage || navigator.language || 'en-gb').split('-')[0],
             ip: ipInfo.ip,
           }
 
@@ -457,10 +449,7 @@ class Wallet extends PureComponent<any, any> {
   }
 
   render() {
-    const {
-      activeComponentNum,
-      multisigPendingCount,
-    } = this.state
+    const { activeComponentNum, multisigPendingCount } = this.state
 
     const {
       hiddenCoinsList,
@@ -486,7 +475,7 @@ class Wallet extends PureComponent<any, any> {
     return (
       <DashboardLayout
         page={page}
-        BalanceForm={(
+        BalanceForm={
           <BalanceForm
             activeFiat={activeFiat}
             fiatBalance={allFiatBalance}
@@ -499,7 +488,7 @@ class Wallet extends PureComponent<any, any> {
             currency="btc"
             multisigPendingCount={multisigPendingCount}
           />
-        )}
+        }
       >
         {activeComponentNum === 0 && (
           <CurrenciesList

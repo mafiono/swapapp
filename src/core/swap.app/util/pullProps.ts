@@ -8,5 +8,4 @@ const pullProps = (obj, ...props) => {
   return result
 }
 
-
 export default pullProps

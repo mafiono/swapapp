@@ -1,6 +1,5 @@
 import ws from 'ws'
 
-
 const checkOrderID = ({ id, orderId }) => {
   if (id) return { id }
   if (orderId) return { id: orderId }
@@ -15,7 +14,7 @@ class SocketBot {
   isAutoSearching: boolean
 
   constructor(rest, url, auto) {
-    if (!rest) throw new Error (`Cant init without Worker`)
+    if (!rest) throw new Error(`Cant init without Worker`)
 
     this.ws = new ws(url || 'ws://localhost:7333')
     this.rest = rest
@@ -41,18 +40,17 @@ class SocketBot {
   async until(_event) {
     return new Promise((resolve, reject) => {
       setTimeout(reject, 60 * 1000 * 5)
-      this.on(_event, payload => resolve(payload))
+      this.on(_event, (payload) => resolve(payload))
     })
   }
 
   async mainCycle() {
     await this.until('ready')
 
-    this.on('new order', order => this.maybeSwap(order))
-    this.on('new orders', orders =>
-      orders.map(order => this.maybeSwap(order)))
+    this.on('new order', (order) => this.maybeSwap(order))
+    this.on('new orders', (orders) => orders.map((order) => this.maybeSwap(order)))
 
-    this.on('new order request', request => this.maybeAccept(request))
+    this.on('new order request', (request) => this.maybeAccept(request))
 
     const priceUpdate = setInterval(async () => {
       await this.rest.algo.syncPrices()
@@ -99,7 +97,6 @@ class SocketBot {
     const id = orderId
     const order = await this.rest.getOrder({ id })
 
-
     console.log('maybe accept order, processing', order.isProcessing)
     if (order.isProcessing) {
       return
@@ -127,14 +124,13 @@ class SocketBot {
         case 3:
         case 4:
           const { isBalanceEnough, balance } = swap.flow
-          if (isBalanceEnough === false && balance)
-            console.error(`Not enough balance: ${balance}`)
+          if (isBalanceEnough === false && balance) console.error(`Not enough balance: ${balance}`)
           return
 
         default:
           const { isEthWithdrawn, isbtcWithdrawn, isFinished } = swap.flow
 
-          if (isFinished || isEthWithdrawn && isbtcWithdrawn) {
+          if (isFinished || (isEthWithdrawn && isbtcWithdrawn)) {
             clearInterval(update)
             console.log(`[SWAP] finished ${id}`)
           }

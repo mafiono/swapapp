@@ -3,23 +3,14 @@ import { getState } from 'redux/core'
 import config from './externalConfig'
 import btcUtils from 'common/utils/coin/btc'
 
-const hasAdminFee = (
-  config
-    && config.opts
-    && config.opts.fee
-    && config.opts.fee.btc
-    && config.opts.fee.btc.fee
-) ? config.opts.fee.btc : false
+const hasAdminFee =
+  config && config.opts && config.opts.fee && config.opts.fee.btc && config.opts.fee.btc.fee
+    ? config.opts.fee.btc
+    : false
 
-const network = process.env.MAINNET
-  ? bitcoin.networks.bitcoin
-  : bitcoin.networks.testnet
+const network = process.env.MAINNET ? bitcoin.networks.bitcoin : bitcoin.networks.testnet
 
-
-const NETWORK = process.env.MAINNET
-  ? 'MAINNET'
-  : 'TESTNET'
-
+const NETWORK = process.env.MAINNET ? 'MAINNET' : 'TESTNET'
 
 type EstimateFeeValueParams = {
   method?: string
@@ -50,11 +41,7 @@ const estimateFeeValue = async (params: EstimateFeeValueParams): Promise<any> =>
     moreInfo,
   } = params
   const {
-    user: {
-      btcData,
-      btcMultisigSMSData,
-      btcMultisigUserData,
-    },
+    user: { btcData, btcMultisigSMSData, btcMultisigUserData },
   } = getState()
 
   if (!address) {
@@ -81,8 +68,6 @@ const estimateFeeValue = async (params: EstimateFeeValueParams): Promise<any> =>
 
   return feeValue
 }
-
-
 
 export default {
   estimateFeeValue,

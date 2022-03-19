@@ -14,7 +14,6 @@ import { constants } from 'helpers'
 import styles from './SaveKeysModal.scss'
 import { FormattedMessage, injectIntl, defineMessages } from 'react-intl'
 
-
 const views = {
   saveKeys: 'saveKeys',
   confirm: 'confirm',
@@ -32,7 +31,7 @@ const langLabels = defineMessages({
   title: {
     id: `SaveKeysModal_Title`,
     defaultMessage: `Private keys export`,
-  }
+  },
 })
 
 type SaveKeysModalProps = {
@@ -90,23 +89,26 @@ class SaveKeysModal extends React.Component<SaveKeysModalProps, SaveKeysModalSta
 
     return (
       //@ts-ignore: strictNullChecks
-      <Modal name="SaveKeysModal" title={`${intl.formatMessage(langLabels.title)}`} onClose={this.handleClose} showCloseButton>
-        {
-          process.env.TESTNET && (
-            <div styleName="testnetSkip">
-              <a
-                href="#"
-                onClick={() => {
-                  localStorage.setItem(constants.localStorage.testnetSkipPKCheck, 'true')
-                  this.forceUpdate()
-                }}>
-                <FormattedMessage id="SaveKeysModal" defaultMessage="Testnet: Don`t ask again" />
-              </a>
-            </div>
-          )
-        }
-        {
-          view === views.saveKeys &&
+      <Modal
+        name="SaveKeysModal"
+        title={`${intl.formatMessage(langLabels.title)}`}
+        onClose={this.handleClose}
+        showCloseButton
+      >
+        {process.env.TESTNET && (
+          <div styleName="testnetSkip">
+            <a
+              href="#"
+              onClick={() => {
+                localStorage.setItem(constants.localStorage.testnetSkipPKCheck, 'true')
+                this.forceUpdate()
+              }}
+            >
+              <FormattedMessage id="SaveKeysModal" defaultMessage="Testnet: Don`t ask again" />
+            </a>
+          </div>
+        )}
+        {view === views.saveKeys && (
           //@ts-ignore: strictNullChecks
           <SaveKeys
             onDownload={this.handleDownload}
@@ -115,9 +117,8 @@ class SaveKeysModal extends React.Component<SaveKeysModalProps, SaveKeysModalSta
               this.handleClose()
             }}
           />
-        }
-        {
-          view === views.confirm &&
+        )}
+        {view === views.confirm &&
           createPortal(
             <Confirm
               rootClassName={styles.areYouSure}
@@ -126,14 +127,9 @@ class SaveKeysModal extends React.Component<SaveKeysModalProps, SaveKeysModalSta
               isReject={() => this.changeView(views.saveKeys)}
               animation={view === views.confirm}
             />
-          )
-        }
-        {
-          view === views.approve &&
-          createPortal(<PrivateKeysModal />)
-        }
-
-      </Modal >
+          )}
+        {view === views.approve && createPortal(<PrivateKeysModal />)}
+      </Modal>
     )
   }
 }

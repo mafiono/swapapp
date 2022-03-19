@@ -1,12 +1,11 @@
 import Pair from './Pair'
 import { PAIR_TYPES } from '../config/constants'
 
-
 const _ORDER = {
-  'buyCurrency': 'ETH',
-  'sellCurrency': 'BTC',
-  'buyAmount': '2.6666666666666665',
-  'sellAmount': '0.18666733', // bitcoin only has 8 decimals
+  buyCurrency: 'ETH',
+  sellCurrency: 'BTC',
+  buyAmount: '2.6666666666666665',
+  sellAmount: '0.18666733', // bitcoin only has 8 decimals
   // 'exchangeRate': '0.07000024875000000438'
 }
 
@@ -31,9 +30,7 @@ describe('Trade Pair', () => {
 
     expect(order).toEqual(_ORDER)
     expect(
-      exchangeRate.times(_ORDER.buyAmount).precision(8)
-        .minus(_ORDER.sellAmount)
-        .isEqualTo(0)
+      exchangeRate.times(_ORDER.buyAmount).precision(8).minus(_ORDER.sellAmount).isEqualTo(0)
     ).toBeTruthy()
   })
 

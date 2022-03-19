@@ -1,7 +1,6 @@
 import config from 'app-config'
 
-
-const resolveRule = (options) => ([
+const resolveRule = (options) => [
   {
     test: /fonts.*\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
     loader: 'url-loader',
@@ -18,8 +17,7 @@ const resolveRule = (options) => ([
       ...options,
     },
   },
-])
-
+]
 
 export const development = resolveRule({
   name: 'fonts/[name].[ext]',

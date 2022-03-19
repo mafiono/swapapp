@@ -6,7 +6,7 @@ const UTXO_2_AB = (from, to) => ({
   [`wait-lock-${to}`]: 5,
   [`withdraw-${to}`]: 6,
   [`finish`]: 7,
-  [`end`]: 8
+  [`end`]: 8,
 })
 
 const AB_2_AB = UTXO_2_AB
@@ -20,7 +20,7 @@ const UTXO_2_UTXO = (from, to) => ({
   [`wait-withdraw-${from}`]: 6, // aka getSecret
   [`withdraw-utxo`]: 7,
   [`finish`]: 8,
-  [`end`]: 9
+  [`end`]: 9,
 })
 
 const AB_2_UTXO = UTXO_2_UTXO
@@ -29,7 +29,7 @@ const stepsFromDirection = {
   UTXO_2_AB,
   AB_2_AB,
   UTXO_2_UTXO,
-  AB_2_UTXO
+  AB_2_UTXO,
 }
 
 const stepsForCoins = (fromCoin, toCoin) => {
@@ -40,4 +40,4 @@ const stepsForCoins = (fromCoin, toCoin) => {
   return steps
 }
 
-export default stepsForCoins;
+export default stepsForCoins

@@ -30,12 +30,10 @@ import WithdrawBtcMultisig from './WithdrawBtcMultisig/WithdrawBtcMultisig'
 
 import WalletAddressModal from './WalletAddressModal/WalletAddressModal'
 
-import AlertWindow from "./AlertWindow"
+import AlertWindow from './AlertWindow'
 
 import ConnectWalletModal from './ConnectWalletModal/ConnectWalletModal'
 import WalletConnectAccount from './WalletConnectAccount/WalletConnectAccount'
-
-
 
 export default {
   DeclineOrdersModal,
@@ -69,7 +67,7 @@ export default {
 
   WalletAddressModal,
 
-  WithdrawBtcMultisig, 
+  WithdrawBtcMultisig,
 
   AlertWindow,
 

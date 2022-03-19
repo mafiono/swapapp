@@ -27,12 +27,15 @@ const setTransactions = async (address, name) => {
     actionName = name
   }
 
-  const isMultisigBtcAddress = actionName === 'btc' && actions.btcmultisig.isBTCMSUserAddress(address)
+  const isMultisigBtcAddress =
+    actionName === 'btc' && actions.btcmultisig.isBTCMSUserAddress(address)
 
   try {
     const result: [][] = await Promise.all([
       actions[actionName].getTransaction(address, name),
-      isMultisigBtcAddress ? actions.multisigTx.fetch(address) : new Promise((resolve) => resolve([])),
+      isMultisigBtcAddress
+        ? actions.multisigTx.fetch(address)
+        : new Promise((resolve) => resolve([])),
     ])
     const transactions = [].concat(...result)
 

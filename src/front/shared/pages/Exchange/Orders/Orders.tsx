@@ -21,11 +21,7 @@ import OrderBook from './OrderBook/OrderBook'
 
 import config from 'app-config'
 
-
-@connect(({
-  core: { filter },
-  currencies: { items: currencies },
-}) => ({
+@connect(({ core: { filter }, currencies: { items: currencies } }) => ({
   filter,
   currencies,
 }))
@@ -33,7 +29,10 @@ import config from 'app-config'
 class Offers extends Component<any, any> {
   constructor(props) {
     super(props)
-    const { initialData, intl: { locale } } = props
+    const {
+      initialData,
+      intl: { locale },
+    } = props
     const { buyCurrency, sellCurrency } = initialData || {}
 
     const { buy, sell } = this.getCurrentCurrencies(props)
@@ -161,70 +160,69 @@ class Offers extends Component<any, any> {
     const sectionContainerStyleName = isMobile ? 'sectionContainerMobile' : 'sectionContainer'
     const isWidgetBuild = config && config.isWidget
 
-    const {
-      pairFees,
-      balances,
-    } = this.props
+    const { pairFees, balances } = this.props
 
     return (
-      <section styleName={isWidgetBuild ? `${sectionContainerStyleName} ${sectionContainerStyleName}_widget` : sectionContainerStyleName}>
-        {
-          history.location && history.location.pathname === exchange ? (
-            //@ts-ignore
-            <PageHeadline>
-              <CurrencyDirectionChooser
-                handleSellCurrencySelect={this.handleSellCurrencySelect}
-                handleBuyCurrencySelect={this.handleBuyCurrencySelect}
-                handleSubmit={this.handleShowOrders}
-                buyCurrency={buyCurrency}
-                sellCurrency={sellCurrency}
-                flipCurrency={this.flipCurrency}
-                currencies={currencies}
-              />
-              <div styleName="videoContainer">
-                <Center relative centerVertically={false}>
-                  <SubTitle>
-                    <FormattedMessage id="Home153" defaultMessage="What is atomic swap?" />
-                  </SubTitle>
-                </Center>
-
-                <div styleName="videoFaqContainer">
-                  <iframe
-                    title="What is atomic swap?"
-                    width="700"
-                    height="480"
-                    src="https://www.youtube.com/embed/Jhrb7xOT_7s"
-                    frameBorder="0"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                  />
-                  <div styleName="faqContainer">
-                    {
-                      links.faq.map((question, idx) =>
-                        <FaqExpandableItem key={idx} {...question} />
-                      )
-                    }
-                  </div>
-                </div>
-              </div>
-            </PageHeadline>
-          ) : (
-            <OrderBook
+      <section
+        styleName={
+          isWidgetBuild
+            ? `${sectionContainerStyleName} ${sectionContainerStyleName}_widget`
+            : sectionContainerStyleName
+        }
+      >
+        {history.location && history.location.pathname === exchange ? (
+          //@ts-ignore
+          <PageHeadline>
+            <CurrencyDirectionChooser
               handleSellCurrencySelect={this.handleSellCurrencySelect}
               handleBuyCurrencySelect={this.handleBuyCurrencySelect}
+              handleSubmit={this.handleShowOrders}
               buyCurrency={buyCurrency}
               sellCurrency={sellCurrency}
               flipCurrency={this.flipCurrency}
-              orderId={match.params && match.params.orderId}
-              invalidPair={invalidPair}
-              linkedOrderId={linkedOrderId}
-              pairFees={pairFees}
-              balances={balances}
-              checkSwapAllow={this.props.checkSwapAllow}
-              checkSwapExists={this.props.checkSwapExists}
+              currencies={currencies}
             />
-          )
-        }
+            <div styleName="videoContainer">
+              <Center relative centerVertically={false}>
+                <SubTitle>
+                  <FormattedMessage id="Home153" defaultMessage="What is atomic swap?" />
+                </SubTitle>
+              </Center>
+
+              <div styleName="videoFaqContainer">
+                <iframe
+                  title="What is atomic swap?"
+                  width="700"
+                  height="480"
+                  src="https://www.youtube.com/embed/Jhrb7xOT_7s"
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                />
+                <div styleName="faqContainer">
+                  {links.faq.map((question, idx) => (
+                    <FaqExpandableItem key={idx} {...question} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </PageHeadline>
+        ) : (
+          <OrderBook
+            handleSellCurrencySelect={this.handleSellCurrencySelect}
+            handleBuyCurrencySelect={this.handleBuyCurrencySelect}
+            buyCurrency={buyCurrency}
+            sellCurrency={sellCurrency}
+            flipCurrency={this.flipCurrency}
+            orderId={match.params && match.params.orderId}
+            invalidPair={invalidPair}
+            linkedOrderId={linkedOrderId}
+            pairFees={pairFees}
+            balances={balances}
+            checkSwapAllow={this.props.checkSwapAllow}
+            checkSwapExists={this.props.checkSwapExists}
+          />
+        )}
       </section>
     )
   }

@@ -22,12 +22,7 @@ export default class ModalBox extends Component<any, any> {
   }
 
   render() {
-    const {
-      title,
-      children,
-      onClose,
-    } = this.props
-
+    const { title, children, onClose } = this.props
 
     return (
       <div styleName="modal-box">
@@ -41,9 +36,7 @@ export default class ModalBox extends Component<any, any> {
           </WidthContainer>
         </div>
         <div styleName="contentContainer">
-          <div styleName="content">
-            {children}
-          </div>
+          <div styleName="content">{children}</div>
         </div>
       </div>
     )

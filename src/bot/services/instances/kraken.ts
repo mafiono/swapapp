@@ -1,11 +1,9 @@
 import KrakenClient from 'kraken-api'
 
-
 //const { wallet } = require('../services')
 const wallet = ''
 
 class KrakenApi {
-
   key: string
   core: KrakenClient
   pair: string
@@ -30,7 +28,7 @@ class KrakenApi {
 
   deposit() {
     //@ts-ignore
-    wallet.withdraw(amount,)
+    wallet.withdraw(amount)
   }
 
   run(amount, type) {
@@ -39,49 +37,56 @@ class KrakenApi {
   }
 
   /*
-  * @ToDo check */
+   * @ToDo check */
   createOrder(amount, type) {
     if (!this.key) {
       return
     }
 
-    return this.core.api('AddOrder', {
-      'pair': 'ETHXBT', //XBTUSD & ETHUSD
-      'type': type, //sell & buy
-      'volume': amount,
-      'ordertype': 'market',
-      //  'validate': !this.isMainnet,
-      //  'pair' : '',
-    })//
-    // .then(this.returnMoney(amount))
-      .then(console.log)
-      .catch(console.log)
+    return (
+      this.core
+        .api('AddOrder', {
+          pair: 'ETHXBT', //XBTUSD & ETHUSD
+          type: type, //sell & buy
+          volume: amount,
+          ordertype: 'market',
+          //  'validate': !this.isMainnet,
+          //  'pair' : '',
+        }) //
+        // .then(this.returnMoney(amount))
+        .then(console.log)
+        .catch(console.log)
+    )
   }
 
   returnMoney(amount) {
-    let result = this.core.api('Withdraw', {
-      //@ts-ignore
-      'key': type, //sell & buy
-      'amount': amount,
-      'asset': 'ETH' //@ToDo переделать XBT
-      //  'pair' : '',
-    }).then(this.returnMoney(amount))
+    let result = this.core
+      .api('Withdraw', {
+        //@ts-ignore
+        key: type, //sell & buy
+        amount: amount,
+        asset: 'ETH', //@ToDo переделать XBT
+        //  'pair' : '',
+      })
+      .then(this.returnMoney(amount))
       .catch(console.log)
   }
 
   /*
-  * get all orders
-  * */
+   * get all orders
+   * */
   async getTrades() {
     let that = this
 
     return new Promise(async function (resolve, reject) {
-      that.core.api('Trades', { pair: that.pair }).then((r) => {
-        resolve(r.result[that.pair])
-      }).catch(reject)
-    });
+      that.core
+        .api('Trades', { pair: that.pair })
+        .then((r) => {
+          resolve(r.result[that.pair])
+        })
+        .catch(reject)
+    })
   }
-
 }
 
 export default new KrakenApi()

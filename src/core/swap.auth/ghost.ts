@@ -1,12 +1,8 @@
 import SwapApp from 'swap.app'
 import * as mnemonicUtils from '../../common/utils/mnemonic'
 
-const loginMnemonic = (mnemonic, walletNumber=0, path, app) => {
-  const network = (
-    app.isMainNet()
-      ? app.env.coininfo.ghost.main
-      : app.env.coininfo.ghost.test
-  )
+const loginMnemonic = (mnemonic, walletNumber = 0, path, app) => {
+  const network = app.isMainNet() ? app.env.coininfo.ghost.main : app.env.coininfo.ghost.test
 
   const wallet = mnemonicUtils.getGhostWallet(network, mnemonic, walletNumber, path)
   return login(wallet.WIF, app)
@@ -19,11 +15,7 @@ const login = (_privateKey, app) => {
   let privateKey = _privateKey || app.env.storage.getItem(storageKey)
   let account
 
-  const network = (
-    app.isMainNet()
-      ? app.env.coininfo.ghost.main
-      : app.env.coininfo.ghost.test
-  )
+  const network = app.isMainNet() ? app.env.coininfo.ghost.main : app.env.coininfo.ghost.test
 
   if (!privateKey) {
     privateKey = app.env.bitcoin.ECPair.makeRandom({ network }).toWIF()
@@ -50,7 +42,6 @@ const getPublicData = (account) => ({
   address: account.getAddress(),
   publicKey: account.getPublicKey(),
 })
-
 
 export default {
   login,

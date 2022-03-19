@@ -7,7 +7,6 @@ import { FormattedMessage } from 'react-intl'
 
 import BtcScript from './BtcScript'
 
-
 @CSSModules(styles)
 export default class ShowBtcScript extends Component<any, any> {
   render() {

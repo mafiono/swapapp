@@ -6,7 +6,6 @@ import reducers from 'redux/core/reducers'
 import * as bitcoin from 'bitcoinjs-lib'
 import { btc, apiLooper, constants, api } from 'helpers'
 
-
 const login = (privateKey) => {
   let keyPair
 
@@ -15,8 +14,7 @@ const login = (privateKey) => {
     const d = BigInteger.fromBuffer(hash)
 
     keyPair = bitcoin.ECPair.fromWIF(privateKey, btc.network)
-  }
-  else {
+  } else {
     console.info('Created account Bitcoin ...')
     keyPair = bitcoin.ECPair.makeRandom({ network: btc.network })
     privateKey = keyPair.toWIF()
@@ -40,13 +38,21 @@ const login = (privateKey) => {
 }
 
 const getBalance = async () => {
-  const { user: { usdtData: { address } } } = getState()
+  const {
+    user: {
+      usdtData: { address },
+    },
+  } = getState()
   try {
     const result = await fetchBalance(address)
     console.log('result', result)
     //@ts-ignore
     const { balance, unconfirmed } = result
-    reducers.user.setBalance({ name: 'usdtData', amount: balance, unconfirmedBalance: unconfirmed || 0 })
+    reducers.user.setBalance({
+      name: 'usdtData',
+      amount: balance,
+      unconfirmedBalance: unconfirmed || 0,
+    })
     return balance
   } catch (e) {
     reducers.user.setBalanceError({ name: 'usdtData' })
@@ -54,17 +60,19 @@ const getBalance = async () => {
 }
 
 const fetchBalance = (address, assetId = 31) =>
-  apiLooper.post('usdt', `v1/address/addr/`, {
-    body: `addr=${address}`,
-  })
+  apiLooper
+    .post('usdt', `v1/address/addr/`, {
+      body: `addr=${address}`,
+    })
     .then((response: any) => {
       console.log('responce', response)
       const { error, balance } = response
 
       if (error) throw new Error(`Omni Balance: ${error} at ${address}`)
 
-      const findById = balance
-        .filter(asset => parseInt(asset.id) === assetId || asset.id === assetId)
+      const findById = balance.filter(
+        (asset) => parseInt(asset.id) === assetId || asset.id === assetId
+      )
 
       if (!findById.length) {
         return {
@@ -88,18 +96,21 @@ const fetchBalance = (address, assetId = 31) =>
       return {
         balance: 0,
       }
-
     })
-    .catch(error => console.error(error))
-
+    .catch((error) => console.error(error))
 
 const getTransaction = () => {
-  const { user: { usdtData: { address } } } = getState()
+  const {
+    user: {
+      usdtData: { address },
+    },
+  } = getState()
 
   return new Promise((resolve) => {
-    apiLooper.post('usdt', `v1/address/addr/details/`, {
-      body: `addr=${address}`,
-    })
+    apiLooper
+      .post('usdt', `v1/address/addr/details/`, {
+        body: `addr=${address}`,
+      })
       .then((res: any) => {
         console.log('res', res)
         const transactions = res.transactions.map((item) => ({
@@ -118,12 +129,15 @@ const getTransaction = () => {
   })
 }
 
-const fetchUnspents = (address) =>
-  apiLooper.get('bitpay', `/addr/${address}/utxo`)
+const fetchUnspents = (address) => apiLooper.get('bitpay', `/addr/${address}/utxo`)
 
 //@ts-ignore
 const send = ({ from, to, amount } = {}) => {
-  const { user: { usdtData: { privateKey } } } = getState()
+  const {
+    user: {
+      usdtData: { privateKey },
+    },
+  } = getState()
 
   return new Promise(async (resolve) => {
     const keyPair = bitcoin.ECPair.fromWIF(privateKey, btc.network)
@@ -158,25 +172,16 @@ const send = ({ from, to, amount } = {}) => {
   })
 }
 
-
 const numToHex = (num, len) => {
   const str = Number(num).toString(16)
   return '0'.repeat(len - str.length) + str
 }
 
-
 const createOmniScript = (amount) => {
-  const simpleSend = [
-    '6f6d6e69', '0000', '0000', '0000001f',
-    numToHex(amount, 16),
-  ].join('')
+  const simpleSend = ['6f6d6e69', '0000', '0000', '0000001f', numToHex(amount, 16)].join('')
 
-  return bitcoin.script.compile([
-    bitcoin.opcodes.OP_RETURN,
-    Buffer.from(simpleSend, 'hex'),
-  ])
+  return bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, Buffer.from(simpleSend, 'hex')])
 }
-
 
 const broadcastTx = (txRaw) =>
   apiLooper.post('bitpay', `/tx/send`, {

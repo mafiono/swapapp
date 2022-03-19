@@ -91,7 +91,7 @@ export default class MarketmakerPromo extends React.Component<{}, ComponentState
               id="MM_Promo_Title"
               defaultMessage="Earn interest on {utxoTitle}"
               values={{
-                utxoTitle: 'Bitcoin'
+                utxoTitle: 'Bitcoin',
               }}
             />
           </h2>
@@ -101,9 +101,13 @@ export default class MarketmakerPromo extends React.Component<{}, ComponentState
               defaultMessage="On swap.io users exchange {utxoCoin} for {token} (a token that costs like {utxoCoin}, but works on {Ab_Title}), and vice versa."
               values={{
                 utxoCoin: 'BTC',
-                token: (config.binance) ? `BTCB` : `WBTC`,
-                Ab_Title: (config.binance) ? `Binance Smart Chain` : `Ethereum`,
-                link: <a href={links.impermanentLoss} target="_blank">(?)</a>,
+                token: config.binance ? `BTCB` : `WBTC`,
+                Ab_Title: config.binance ? `Binance Smart Chain` : `Ethereum`,
+                link: (
+                  <a href={links.impermanentLoss} target="_blank">
+                    (?)
+                  </a>
+                ),
               }}
             />
           </p>
@@ -118,7 +122,11 @@ export default class MarketmakerPromo extends React.Component<{}, ComponentState
           </h2>
 
           <div styleName="installExtensionBody">
-            <img styleName="extensionPromoImg" src={isDark ? extensionPromoDark : extensionPromoLight} alt="extention_promo"/>
+            <img
+              styleName="extensionPromoImg"
+              src={isDark ? extensionPromoDark : extensionPromoLight}
+              alt="extention_promo"
+            />
             <Button brand onClick={this.openChromeStore}>
               <FormattedMessage
                 id="MM_InstallExtentionBtn"
@@ -139,10 +147,7 @@ export default class MarketmakerPromo extends React.Component<{}, ComponentState
             {userTokens.length ? (
               <div styleName="pseudLinksWrapper">
                 {userTokens.map((token, index) => {
-                  if (
-                    token.includes('wbtc') ||
-                    token.includes('btcb')
-                  ) {
+                  if (token.includes('wbtc') || token.includes('btcb')) {
                     return (
                       <Link key={index} to={`/marketmaker/${token}`} styleName="pseudLink">
                         {token.toUpperCase()}
@@ -156,7 +161,6 @@ export default class MarketmakerPromo extends React.Component<{}, ComponentState
             ) : null}
           </div>
         </section>
-
 
         {/* <section styleName="select-mode">
           <h2 styleName="section-title">
@@ -293,5 +297,4 @@ export default class MarketmakerPromo extends React.Component<{}, ComponentState
       </div>
     )
   }
-
 }

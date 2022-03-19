@@ -4,9 +4,7 @@ import PropTypes from 'prop-types'
 import Button from 'components/controls/Button/Button'
 import Timer from 'components/Timer/Timer'
 
-
 export default class TimerButton extends Component<any, any> {
-
   static propTypes = {
     onClick: PropTypes.func.isRequired,
     timeLeft: PropTypes.number.isRequired,
@@ -20,10 +18,7 @@ export default class TimerButton extends Component<any, any> {
   }
 
   componentDidMount() {
-    const {
-      forceClick,
-      onClick,
-    } = this.props
+    const { forceClick, onClick } = this.props
 
     if (forceClick) onClick()
   }
@@ -35,12 +30,11 @@ export default class TimerButton extends Component<any, any> {
     if (forceClick) return null
 
     return (
-      <Button className={className} onClick={onClick} {...rest} >
+      <Button className={className} onClick={onClick} {...rest}>
         {children}
         {` `}
         {!disabledTimer && <Timer timeLeft={timeLeft} handleClick={onClick} />}
       </Button>
     )
-
   }
 }

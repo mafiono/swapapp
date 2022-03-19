@@ -1,9 +1,7 @@
 import { constants } from 'swap.app'
 import EvmTokenToNext from './atomic/EvmTokenToNext'
 
-
 export default (tokenName) => {
-
   class ETHTOKEN2NEXT extends EvmTokenToNext {
     _flowName: string
 

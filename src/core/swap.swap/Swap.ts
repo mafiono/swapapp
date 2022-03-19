@@ -7,9 +7,7 @@ import { Flow as FlowType } from 'swap.swap'
 import { COIN_DATA, COIN_MODEL, COIN_TYPE } from 'swap.app/constants/COINS'
 import getCoinInfo from 'common/coins/getCoinInfo'
 
-
 class Swap {
-
   id: string
   isMy: boolean
   isTurbo: boolean
@@ -17,7 +15,7 @@ class Swap {
   participant: any
   buyCurrency: string // @ToDo CoinType
   buyBlockchain: string
-  sellCurrency: string// @ToDo CoinType
+  sellCurrency: string // @ToDo CoinType
   sellBlockchain: string
   buyAmount: BigNumber
   sellAmount: BigNumber
@@ -36,36 +34,36 @@ class Swap {
   constructor(id, app, order?) {
     SwapApp.required(app)
     //@ts-ignore: strictNullChecks
-    this.id                     = null
+    this.id = null
     //@ts-ignore: strictNullChecks
-    this.isMy                   = null
+    this.isMy = null
     //@ts-ignore: strictNullChecks
-    this.isTurbo                = null
-    this.owner                  = null
-    this.participant            = null
+    this.isTurbo = null
+    this.owner = null
+    this.participant = null
     //@ts-ignore: strictNullChecks
-    this.buyCurrency            = null
+    this.buyCurrency = null
     //@ts-ignore: strictNullChecks
-    this.buyBlockchain          = null
+    this.buyBlockchain = null
     //@ts-ignore: strictNullChecks
-    this.sellCurrency           = null
+    this.sellCurrency = null
     //@ts-ignore: strictNullChecks
-    this.sellBlockchain         = null
+    this.sellBlockchain = null
     //@ts-ignore: strictNullChecks
-    this.buyAmount              = null
+    this.buyAmount = null
     //@ts-ignore: strictNullChecks
-    this.sellAmount             = null
-    this.ownerSwap              = null
-    this.participantSwap        = null
-    this.destinationBuyAddress  = null
+    this.sellAmount = null
+    this.ownerSwap = null
+    this.participantSwap = null
+    this.destinationBuyAddress = null
     this.destinationSellAddress = null
-    this.app                    = app
-    this.createUnixTimeStamp    = Math.floor(new Date().getTime() / 1000)
+    this.app = app
+    this.createUnixTimeStamp = Math.floor(new Date().getTime() / 1000)
 
     this.participantMetamaskAddress = null
 
     // Wait confirm > 1
-    this.waitConfirm            = false
+    this.waitConfirm = false
 
     let data = this.app.env.storage.getItem(`swap.${id}`)
 
@@ -95,16 +93,25 @@ class Swap {
     const buyCurrencyInfo = getCoinInfo(data.buyCurrency)
     const sellCurrencyInfo = getCoinInfo(data.sellCurrency)
 
-    const buyCoin = ((data.buyBlockchain && !buyCurrencyInfo.blockchain) ? `{${data.buyBlockchain}}${data.buyCurrency}` : data.buyCurrency).toUpperCase()
-    const sellCoin = ((data.sellBlockchain && !sellCurrencyInfo.blockchain) ? `{${data.sellBlockchain}}${data.sellCurrency}` : data.sellCurrency).toUpperCase()
+    const buyCoin = (
+      data.buyBlockchain && !buyCurrencyInfo.blockchain
+        ? `{${data.buyBlockchain}}${data.buyCurrency}`
+        : data.buyCurrency
+    ).toUpperCase()
+    const sellCoin = (
+      data.sellBlockchain && !sellCurrencyInfo.blockchain
+        ? `{${data.sellBlockchain}}${data.sellCurrency}`
+        : data.sellCurrency
+    ).toUpperCase()
 
-    this.ownerSwap        = this.app.swaps[buyCoin]
-    this.participantSwap  = this.app.swaps[sellCoin]
+    this.ownerSwap = this.app.swaps[buyCoin]
+    this.participantSwap = this.app.swaps[sellCoin]
 
-    const flowKey = this.isTurbo ?
-      (this.isMy ? 'TurboMaker' : 'TurboTaker')
-      :
-      `${sellCoin}2${buyCoin}`
+    const flowKey = this.isTurbo
+      ? this.isMy
+        ? 'TurboMaker'
+        : 'TurboTaker'
+      : `${sellCoin}2${buyCoin}`
 
     if (!this.app.flows[flowKey]) {
       throw new Error(`Flow with name "${flowKey}" not found in SwapApp.flows`)
@@ -148,7 +155,7 @@ class Swap {
     })
   }
 
-/* static read(app, { id }) {
+  /* static read(app, { id }) {
     SwapApp.required(app)
 
     if (!id) {
@@ -202,7 +209,7 @@ class Swap {
       'buyCurrency',
       'buyBlockchain',
       'buyAmount',
-      'destination',
+      'destination'
     )
 
     const {
@@ -269,7 +276,7 @@ class Swap {
       'destinationSellAddress',
       'createUnixTimeStamp',
       'participantMetamaskAddress',
-      'waitConfirm',
+      'waitConfirm'
     )
   }
 
@@ -281,20 +288,18 @@ class Swap {
 
   checkTimeout(timeoutUTS) {
     // return true if timeout passed
-    return !((this.createUnixTimeStamp + timeoutUTS) > Math.floor(new Date().getTime() / 1000))
+    return !(this.createUnixTimeStamp + timeoutUTS > Math.floor(new Date().getTime() / 1000))
   }
 
   setupEvents() {
-    const {
-      sellCurrency: sellCoin,
-      buyCurrency: buyCoin,
-    } = this
+    const { sellCurrency: sellCoin, buyCurrency: buyCoin } = this
 
     if (!this.flow.isTakerMakerModel) {
-      if (COIN_DATA[sellCoin.toUpperCase()]
-        && COIN_DATA[sellCoin.toUpperCase()].model
-        && COIN_DATA[buyCoin.toUpperCase()]
-        && COIN_DATA[buyCoin.toUpperCase()].model
+      if (
+        COIN_DATA[sellCoin.toUpperCase()] &&
+        COIN_DATA[sellCoin.toUpperCase()].model &&
+        COIN_DATA[buyCoin.toUpperCase()] &&
+        COIN_DATA[buyCoin.toUpperCase()].model
       ) {
         const _Sell = sellCoin.toLowerCase()
         const _Buy = buyCoin.toLowerCase()
@@ -302,7 +307,7 @@ class Swap {
         const sellModel = COIN_DATA[sellCoin.toUpperCase()].model
         const buyModel = COIN_DATA[buyCoin.toUpperCase()].model
 
-        // sell UTXO buy AB 
+        // sell UTXO buy AB
         if (sellModel === COIN_MODEL.UTXO && buyModel === COIN_MODEL.AB) {
           // @ToDo after refactoring use 'request script'
           this.room.on(`request utxo script`, () => {
@@ -311,14 +316,14 @@ class Swap {
                 utxoScriptValues: scriptValues,
                 utxoScriptCreatingTransactionHash: scriptCreatingTransactionHash,
               } = this.flow.state
-              
+
               if (scriptValues && scriptCreatingTransactionHash) {
                 this.room.sendMessage({
-                  event:  `create utxo script`,
+                  event: `create utxo script`,
                   data: {
                     scriptValues,
                     utxoScriptCreatingTransactionHash: scriptCreatingTransactionHash,
-                  }
+                  },
                 })
               }
             }
@@ -330,7 +335,7 @@ class Swap {
             if (this.flow) {
               const {
                 scriptValues,
-                utxoScriptCreatingTransactionHash: scriptCreatingTransactionHash, 
+                utxoScriptCreatingTransactionHash: scriptCreatingTransactionHash,
               } = eventData
 
               const { step } = this.flow.state
@@ -339,18 +344,24 @@ class Swap {
                 return
               }
 
-              this.flow.finishStep({
-                secretHash: scriptValues.secretHash,
-                utxoScriptValues: scriptValues,
-                utxoScriptCreatingTransactionHash: scriptCreatingTransactionHash,
-              }, { step: `wait-lock-utxo`, silentError: true })
+              this.flow.finishStep(
+                {
+                  secretHash: scriptValues.secretHash,
+                  utxoScriptValues: scriptValues,
+                  utxoScriptCreatingTransactionHash: scriptCreatingTransactionHash,
+                },
+                { step: `wait-lock-utxo`, silentError: true }
+              )
             }
           })
           // Seller has unconfirmed tx in mem pool
           this.room.on('wait utxo unlock', () => {
-            this.flow.setState({
-              participantHasLockedUTXO: true,
-            }, true)
+            this.flow.setState(
+              {
+                participantHasLockedUTXO: true,
+              },
+              true
+            )
           })
 
           const requestScriptFunc = () => {
@@ -365,17 +376,23 @@ class Swap {
                 event: `request ${_Buy} script`,
               })
 
-              setTimeout( requestScriptFunc, 5000 )
+              setTimeout(requestScriptFunc, 5000)
             }
           }
           requestScriptFunc()
         }
         // sell UTXO buy UTXO
-        if (sellModel === COIN_MODEL.UTXO && buyModel === COIN_MODEL.UTXO) { /* ---- */ }
+        if (sellModel === COIN_MODEL.UTXO && buyModel === COIN_MODEL.UTXO) {
+          /* ---- */
+        }
         // sell AB buy AB
-        if (sellModel === COIN_MODEL.AB && buyModel === COIN_MODEL.AB) { /* ----- */ }
+        if (sellModel === COIN_MODEL.AB && buyModel === COIN_MODEL.AB) {
+          /* ----- */
+        }
       } else {
-        console.warn(`Core->Swap->setupEvents - Unknown coins models Sell(${sellCoin}) Buy(${buyCoin})`)
+        console.warn(
+          `Core->Swap->setupEvents - Unknown coins models Sell(${sellCoin}) Buy(${buyCoin})`
+        )
       }
     }
   }
@@ -387,9 +404,10 @@ class Swap {
   }
 
   processMetamask() {
-    if (this.app.env.metamask
-      && this.app.env.metamask.isEnabled()
-      && this.app.env.metamask.isConnected()
+    if (
+      this.app.env.metamask &&
+      this.app.env.metamask.isEnabled() &&
+      this.app.env.metamask.isConnected()
     ) {
       this.room.sendMessage({
         event: 'set metamask address',
@@ -430,8 +448,7 @@ class Swap {
     Object.keys(values).forEach((key) => {
       if (key === 'buyAmount' || key === 'sellAmount') {
         this[key] = new BigNumber(String(values[key]))
-      }
-      else {
+      } else {
         this[key] = values[key]
       }
     })
@@ -446,6 +463,5 @@ class Swap {
     this.events.unsubscribe(eventName, handler)
   }
 }
-
 
 export default Swap

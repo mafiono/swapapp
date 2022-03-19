@@ -1,6 +1,5 @@
 import { COIN_DATA, COIN_MODEL, COIN_TYPE } from 'swap.app/constants/COINS'
 
-
 const defaultLockTime = 60 * 60 * 3
 
 // Date.now() gives ms
@@ -53,15 +52,12 @@ export const needsRefund = (swap) => {
   }
 
   const { lockTime } = utxoScriptValues
-  const [ head, base ] = swap.flow._flowName.split('2')
+  const [head, base] = swap.flow._flowName.split('2')
   //const head = swap.flow.getFromName()
   //const base = swap.flow.getToName()
 
-  if (COIN_DATA
-    && COIN_DATA[head]
-    && COIN_DATA[head].model === COIN_MODEL.UTXO
-  ) {
-  // if (head === 'BTC') { // ['BTC', 'USDT'].includes(head)) {
+  if (COIN_DATA && COIN_DATA[head] && COIN_DATA[head].model === COIN_MODEL.UTXO) {
+    // if (head === 'BTC') { // ['BTC', 'USDT'].includes(head)) {
     // BTC to _ETH_
 
     //const { btcScriptCreatingTransactionHash } = state
@@ -83,7 +79,7 @@ export const needsRefund = (swap) => {
   }
 }
 
-export const canBeDeleted = async swap => {
+export const canBeDeleted = async (swap) => {
   const { state } = swap.flow
 
   const isParticipantOnline = swap.room.getOnlineParticipant()
@@ -98,10 +94,16 @@ export const canBeDeleted = async swap => {
   if (isRefunded) {
     const RefundIsSuccess = await swap.flow.isRefundSuccess()
     if (!RefundIsSuccess) {
-      console.log(new Date().toISOString(), `[SWAP ${swap.id}]: isRefunded=true, but TX id is not correct.`)
+      console.log(
+        new Date().toISOString(),
+        `[SWAP ${swap.id}]: isRefunded=true, but TX id is not correct.`
+      )
       return false
     } else {
-      console.log(new Date().toISOString(), `[SWAP ${swap.id}]: isRefunded=true, probably can be deleted, needs manual interference`)
+      console.log(
+        new Date().toISOString(),
+        `[SWAP ${swap.id}]: isRefunded=true, probably can be deleted, needs manual interference`
+      )
     }
   }
 

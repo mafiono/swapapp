@@ -18,15 +18,18 @@ class Copy extends Component<any, any> {
     if (this.state.showTip) {
       return
     }
-    this.setState({
-      showTip: true,
-    }, () => {
-      setTimeout(() => {
-        this.setState({
-          showTip: false,
-        })
-      }, 1000)
-    })
+    this.setState(
+      {
+        showTip: true,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            showTip: false,
+          })
+        }, 1000)
+      }
+    )
   }
 
   render() {
@@ -35,15 +38,12 @@ class Copy extends Component<any, any> {
 
     return (
       <div styleName="copyWrapper" title="Copy">
-        {showTip &&
-        <div styleName="copyTip">
-          <FormattedMessage id="RowFeeds64" defaultMessage="Copied!" />
-        </div>
-        }
-        <CopyToClipboard
-          onCopy={this.handleCopyLink}
-          text={text}
-        >
+        {showTip && (
+          <div styleName="copyTip">
+            <FormattedMessage id="RowFeeds64" defaultMessage="Copied!" />
+          </div>
+        )}
+        <CopyToClipboard onCopy={this.handleCopyLink} text={text}>
           {children}
         </CopyToClipboard>
       </div>

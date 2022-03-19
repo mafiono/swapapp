@@ -1,20 +1,17 @@
 import SwapApp from './SwapApp'
 
-
 class ServiceInterface {
-
   _serviceName: any
   _dependsOn: any
   _spyHandlers: any
   app: any
 
-
   // _constructor for aggregation
   _constructor() {
     // service name, within it will be stored in this.app.services
-    this._serviceName     = null
-    this._dependsOn       = null
-    this._spyHandlers     = []
+    this._serviceName = null
+    this._dependsOn = null
+    this._spyHandlers = []
   }
 
   constructor() {
@@ -41,9 +38,9 @@ class ServiceInterface {
         this.app.services[Service.name]._addWaitRelationHandler(() => {
           dependsOnMap[Service.name].initialized = true
 
-          const areAllExpectsInitialized = Object.keys(dependsOnMap).every((serviceName) => (
-            dependsOnMap[serviceName].initialized
-          ))
+          const areAllExpectsInitialized = Object.keys(dependsOnMap).every(
+            (serviceName) => dependsOnMap[serviceName].initialized
+          )
 
           if (areAllExpectsInitialized) {
             this.initService()
@@ -72,6 +69,5 @@ class ServiceInterface {
     // init service on SwapApp mounting
   }
 }
-
 
 export default ServiceInterface

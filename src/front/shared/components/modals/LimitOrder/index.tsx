@@ -38,12 +38,14 @@ type ComponentState = {
   enoughSwapCurrencies: boolean
 }
 
-const noCurrenciesTemplate = [{
-  blockchain: '-',
-  fullTitle: '-',
-  name: '-',
-  notExist: true,
-}]
+const noCurrenciesTemplate = [
+  {
+    blockchain: '-',
+    fullTitle: '-',
+    name: '-',
+    notExist: true,
+  },
+]
 
 class LimitOrder extends Component<ComponentProps, ComponentState> {
   constructor(props) {
@@ -65,7 +67,8 @@ class LimitOrder extends Component<ComponentProps, ComponentState> {
 
     const makerAsset = currencies[0]
     const makerWallet = actions.core.getWallet({ currency: makerAsset.value })
-    const network = externalConfig.evmNetworks[makerAsset.blockchain || makerAsset.value.toUpperCase()]
+    const network =
+      externalConfig.evmNetworks[makerAsset.blockchain || makerAsset.value.toUpperCase()]
 
     let takerList = this.returnTakerList(currencies, makerAsset)
 
@@ -105,11 +108,8 @@ class LimitOrder extends Component<ComponentProps, ComponentState> {
 
     const needUpdate =
       metamask.isConnected() &&
-      (
-        (prevWrongNetwork && (isMakerAssetNetworkAvailable || isCurrentNetworkAvailable))
-        ||
-        (!prevWrongNetwork && !isMakerAssetNetworkAvailable)
-      )
+      ((prevWrongNetwork && (isMakerAssetNetworkAvailable || isCurrentNetworkAvailable)) ||
+        (!prevWrongNetwork && !isMakerAssetNetworkAvailable))
 
     if (needUpdate) {
       let { currencies, wrongNetwork } = actions.oneinch.filterCurrencies({
@@ -131,7 +131,8 @@ class LimitOrder extends Component<ComponentProps, ComponentState> {
         makerAsset,
         takerList,
         takerAsset,
-        network: externalConfig.evmNetworks[makerAsset.blockchain || makerAsset.value.toUpperCase()]
+        network:
+          externalConfig.evmNetworks[makerAsset.blockchain || makerAsset.value.toUpperCase()],
       }))
     }
   }

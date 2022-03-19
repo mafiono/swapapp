@@ -26,16 +26,15 @@ const getValue = (swap, method, values) => {
     }
 
     res
-      .then(value => {
+      .then((value) => {
         resolve(value)
       })
-      .catch(err => {
+      .catch((err) => {
         resolve(null)
         console.error(err)
       })
   })
 }
-
 
 const _ = (async () => {
   console.clear()
@@ -56,7 +55,7 @@ const _ = (async () => {
   console.log(`swap.flow.${method}(${values})`)
   console.log()
 
-  getValue(swap, method, values).then(value => {
+  getValue(swap, method, values).then((value) => {
     console.log(`swap.flow.${method}(${values}) =>`, value)
     process.exit(0)
   })

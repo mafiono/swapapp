@@ -57,7 +57,7 @@ const cleanup = () => {
   //@ts-ignore: strictNullChecks
   Object.keys(cacheKeys).forEach((key) => {
     //@ts-ignore: strictNullChecks
-    if (!cacheKeys[key] || (curTime > cacheKeys[key])) {
+    if (!cacheKeys[key] || curTime > cacheKeys[key]) {
       remove(key)
     } else {
       //@ts-ignore: strictNullChecks

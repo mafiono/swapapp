@@ -3,14 +3,12 @@ import { util } from 'swap.app'
 import { AtomicAB2UTXO } from 'swap.swap'
 import { EthLikeSwap, NextSwap } from 'swap.swaps'
 
-
 interface IEvmToNext {
   flowName: string
   getMyAddress: Function
   getParticipantAddress: Function
 }
 class EvmToNext extends AtomicAB2UTXO {
-
   _flowName: string
   evmCoin: string
 
@@ -34,7 +32,9 @@ class EvmToNext extends AtomicAB2UTXO {
       throw new Error(`EvmToNext ${options.flowName} - option getMyAddress - function requery`)
     }
     if (!options.getParticipantAddress || typeof options.getParticipantAddress !== 'function') {
-      throw new Error(`EvmToNext ${options.flowName} - option getParticipantAddress - function requery`)
+      throw new Error(
+        `EvmToNext ${options.flowName} - option getParticipantAddress - function requery`
+      )
     }
 
     this.getMyAddress = options.getMyAddress
@@ -73,7 +73,7 @@ class EvmToNext extends AtomicAB2UTXO {
       isSignFetching: false,
       isMeSigned: false,
 
-      targetWallet : null,
+      targetWallet: null,
       secretHash: null,
 
       isBalanceFetching: false,
@@ -111,17 +111,16 @@ class EvmToNext extends AtomicAB2UTXO {
 
     if (this.isTaker()) {
       flow.swap.room.on('create utxo script', (data) => {
-        const {
-          utxoScriptCreatingTransactionHash,
-        } = data
-        flow.setState({
-          utxoScriptCreatingTransactionHash,
-        }, true)
+        const { utxoScriptCreatingTransactionHash } = data
+        flow.setState(
+          {
+            utxoScriptCreatingTransactionHash,
+          },
+          true
+        )
       })
       flow.swap.room.on('ethWithdrawTxHash', (data) => {
-        const {
-          ethLikeSwapWithdrawTransactionHash,
-        } = data
+        const { ethLikeSwapWithdrawTransactionHash } = data
         flow.setState({
           ethLikeSwapWithdrawTransactionHash,
         })
@@ -161,7 +160,6 @@ class EvmToNext extends AtomicAB2UTXO {
 
     if (this.isMaker()) {
       return [
-
         // 1. Sign swap to start
 
         () => {
@@ -201,9 +199,7 @@ class EvmToNext extends AtomicAB2UTXO {
         // 6. Wait participant withdraw
 
         async () => {
-          const {
-            secretHash,
-          } = this.state
+          const { secretHash } = this.state
 
           await util.helpers.repeatAsyncUntilResult(async () => {
             const isSwapCreated = await flow.evmSwap.isSwapCreated({
@@ -242,14 +238,17 @@ class EvmToNext extends AtomicAB2UTXO {
             })
           })
 
-          flow.finishStep({
-            isFinished: true,
-          }, { step: 'finish' })
+          flow.finishStep(
+            {
+              isFinished: true,
+            },
+            { step: 'finish' }
+          )
         },
 
         // 9. Finished!
 
-        () => {}
+        () => {},
       ]
     } else {
       return [
@@ -266,17 +265,17 @@ class EvmToNext extends AtomicAB2UTXO {
         // 3 - `lock-eth` - create secret and secretHash - create EVM contract
         async () => {
           if (!this.state.secret) {
-            const {
-              secret,
-              secretHash,
-            } = this.generateSecret()
+            const { secret, secretHash } = this.generateSecret()
 
             this.createWorkUTXOScript(secretHash, false)
 
-            this.setState({
-              secret,
-              secretHash,
-            }, true)
+            this.setState(
+              {
+                secret,
+                secretHash,
+              },
+              true
+            )
           }
 
           await flow.evmSwap.fundContract({
@@ -291,12 +290,11 @@ class EvmToNext extends AtomicAB2UTXO {
 
         // 4 - `wait-lock-utxo` - wait when UTXO script created and funded
         async () => {
-          this.waitUTXOScriptFunded()
-            .then((funded) => {
-              if (funded) {
-                this.finishStep({}, 'wait-lock-utxo`')
-              }
-            })
+          this.waitUTXOScriptFunded().then((funded) => {
+            if (funded) {
+              this.finishStep({}, 'wait-lock-utxo`')
+            }
+          })
         },
 
         // 5 - `withdraw-utxo` - withdraw from UTXO
@@ -309,9 +307,12 @@ class EvmToNext extends AtomicAB2UTXO {
         // 6 - `finish`
         async () => {
           // @to-do - txids room events
-          flow.finishStep({
-            isFinished: true,
-          }, 'finish')
+          flow.finishStep(
+            {
+              isFinished: true,
+            },
+            'finish'
+          )
         },
 
         // 7 - `end`
@@ -323,7 +324,7 @@ class EvmToNext extends AtomicAB2UTXO {
   _checkSwapAlreadyExists() {
     const swapData = {
       ownerAddress: this.getMyAddress(),
-      participantAddress: this.getParticipantAddress(this.swap)
+      participantAddress: this.getParticipantAddress(this.swap),
     }
 
     return this.evmSwap.checkSwapExists(swapData)
@@ -337,11 +338,14 @@ class EvmToNext extends AtomicAB2UTXO {
         event: 'eth refund completed',
       })
 
-      this.setState({
-        refundTransactionHash: hash,
-        isRefunded: true,
-        isSwapExist: false,
-      }, true)
+      this.setState(
+        {
+          refundTransactionHash: hash,
+          isRefunded: true,
+          isSwapExist: false,
+        },
+        true
+      )
     }
 
     try {
@@ -360,9 +364,10 @@ class EvmToNext extends AtomicAB2UTXO {
       return false
     }
 
-    return this.evmSwap.refund({
-      participantAddress: this.getParticipantAddress(this.swap),
-    })
+    return this.evmSwap
+      .refund({
+        participantAddress: this.getParticipantAddress(this.swap),
+      })
       .then((hash) => {
         if (!hash) {
           return false
@@ -386,18 +391,18 @@ class EvmToNext extends AtomicAB2UTXO {
     if (!_secret)
       throw new Error(`Withdrawal is automatic. For manual withdrawal, provide a secret`)
 
-    if (!utxoScriptValues)
-      throw new Error(`Cannot withdraw without script values`)
+    if (!utxoScriptValues) throw new Error(`Cannot withdraw without script values`)
 
     if (secret && secret != _secret)
       console.warn(`Secret already known and is different. Are you sure?`)
 
-    if (isbtcWithdrawn)
-      console.warn(`Looks like money were already withdrawn, are you sure?`)
+    if (isbtcWithdrawn) console.warn(`Looks like money were already withdrawn, are you sure?`)
 
     debug('swap.core:flow')(`WITHDRAW using secret = ${_secret}`)
 
-    const _secretHash = this.app.env.bitcoin.crypto.ripemd160(Buffer.from(_secret, 'hex')).toString('hex')
+    const _secretHash = this.app.env.bitcoin.crypto
+      .ripemd160(Buffer.from(_secret, 'hex'))
+      .toString('hex')
 
     if (secretHash != _secretHash)
       console.warn(`Hash does not match! state: ${secretHash}, given: ${_secretHash}`)
@@ -408,29 +413,36 @@ class EvmToNext extends AtomicAB2UTXO {
     debug('swap.core:flow')(`address=${scriptAddress}, balance=${balance}`)
 
     if (balance === 0) {
-      this.finishStep({
-        isbtcWithdrawn: true,
-      }, { step: 'withdraw-utxo' })
+      this.finishStep(
+        {
+          isbtcWithdrawn: true,
+        },
+        { step: 'withdraw-utxo' }
+      )
       throw new Error(`Already withdrawn: address=${scriptAddress},balance=${balance}`)
     }
 
-    this.utxoSwap.withdraw({
-      scriptValues: utxoScriptValues,
-      secret: _secret,
-    }).then((hash) => {
-      debug('swap.core:flow')(`TX hash=${hash}`)
-      this.setState({
-        utxoSwapWithdrawTransactionHash: hash,
+    this.utxoSwap
+      .withdraw({
+        scriptValues: utxoScriptValues,
+        secret: _secret,
       })
+      .then((hash) => {
+        debug('swap.core:flow')(`TX hash=${hash}`)
+        this.setState({
+          utxoSwapWithdrawTransactionHash: hash,
+        })
 
-      debug('swap.core:flow')(`TX withdraw sent: ${this.state.utxoSwapWithdrawTransactionHash}`)
+        debug('swap.core:flow')(`TX withdraw sent: ${this.state.utxoSwapWithdrawTransactionHash}`)
 
-      this.finishStep({
-        isbtcWithdrawn: true,
-      }, { step: 'withdraw-utxo' })
-    })
+        this.finishStep(
+          {
+            isbtcWithdrawn: true,
+          },
+          { step: 'withdraw-utxo' }
+        )
+      })
   }
 }
-
 
 export default EvmToNext

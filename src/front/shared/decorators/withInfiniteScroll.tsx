@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-
-export const withInfiniteScroll = () => Component => {
+export const withInfiniteScroll = () => (Component) => {
   class InfiniteScroll extends React.Component<any, any> {
     componentDidMount() {
       window.addEventListener('scroll', this.onScroll)
@@ -15,9 +14,14 @@ export const withInfiniteScroll = () => Component => {
     onScroll = () => {
       const { bottomOffset, items, itemsCount } = this.props
 
-      const bottomSidePositionOnPage = document.documentElement.scrollTop + document.documentElement.clientHeight
+      const bottomSidePositionOnPage =
+        document.documentElement.scrollTop + document.documentElement.clientHeight
 
-      if (bottomSidePositionOnPage >= document.body.offsetHeight - bottomOffset && items.length !== itemsCount && items.length) {
+      if (
+        bottomSidePositionOnPage >= document.body.offsetHeight - bottomOffset &&
+        items.length !== itemsCount &&
+        items.length
+      ) {
         this.props.getMore()
       }
     }

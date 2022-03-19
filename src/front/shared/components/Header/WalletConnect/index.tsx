@@ -10,11 +10,8 @@ import { AddressFormat } from 'domain/address'
 import { metamask, constants } from 'helpers'
 import actions from 'redux/actions'
 
-
 const WalletConnect = (props) => {
-  const {
-    metamaskData
-  } = props
+  const { metamaskData } = props
 
   const isMetamaskConnected = metamaskData.isConnected
 
@@ -42,42 +39,33 @@ const WalletConnect = (props) => {
     <div
       styleName="connectWallet"
       onClick={
-        isMetamaskConnected ?
-          (isNotAvailableMetamaskNetwork ?
-            disconnectWallet :
-            openWalletConnectAccountModal) :
-          connectWallet
+        isMetamaskConnected
+          ? isNotAvailableMetamaskNetwork
+            ? disconnectWallet
+            : openWalletConnectAccountModal
+          : connectWallet
       }
     >
-      {disconnectedOrNetworkNotAvailable ?
-        <Coin
-          size={40}
-          name={web3Type}
-        /> :
-        <Coin
-          size={30}
-          name={currencyName}
-        />
-      }
-      <span styleName={`connectWalletText ${disconnectedOrNetworkNotAvailable ? '' : 'hasCoinIcon'}`}>
-        {isNotAvailableMetamaskNetwork ?
-          <FormattedMessage id="UnknownNetworkConnectedWallet" defaultMessage="Unknown Network" /> :
-          isMetamaskConnected ?
-            <Address
-              address={metamaskData.address}
-              format={AddressFormat.Short}
-            /> :
-            <FormattedMessage id="Exchange_ConnectAddressOption" defaultMessage="Connect Wallet" />
-        }
+      {disconnectedOrNetworkNotAvailable ? (
+        <Coin size={40} name={web3Type} />
+      ) : (
+        <Coin size={30} name={currencyName} />
+      )}
+      <span
+        styleName={`connectWalletText ${disconnectedOrNetworkNotAvailable ? '' : 'hasCoinIcon'}`}
+      >
+        {isNotAvailableMetamaskNetwork ? (
+          <FormattedMessage id="UnknownNetworkConnectedWallet" defaultMessage="Unknown Network" />
+        ) : isMetamaskConnected ? (
+          <Address address={metamaskData.address} format={AddressFormat.Short} />
+        ) : (
+          <FormattedMessage id="Exchange_ConnectAddressOption" defaultMessage="Connect Wallet" />
+        )}
       </span>
     </div>
   )
 }
 
-export default connect(
-  ({
-    user,
-  }) => ({
-    metamaskData: user.metamaskData,
-  })
-)(cssModules(WalletConnect, styles, { allowMultiple: true }))
+export default connect(({ user }) => ({
+  metamaskData: user.metamaskData,
+}))(cssModules(WalletConnect, styles, { allowMultiple: true }))

@@ -28,10 +28,7 @@ class Invoice extends PureComponent<InvoceProps, InvoceState> {
 
     const {
       match: {
-        params: {
-          uniqhash = null,
-          doshare = false,
-        },
+        params: { uniqhash = null, doshare = false },
       },
     } = props
 
@@ -45,38 +42,42 @@ class Invoice extends PureComponent<InvoceProps, InvoceState> {
 
   fetchInvoice = () => {
     const { uniqhash, infoModal } = this.state
-    const { history, intl: { locale } } = this.props
+    const {
+      history,
+      intl: { locale },
+    } = this.props
 
-    if(uniqhash) {
+    if (uniqhash) {
       //@ts-ignore: strictNullChecks
-      infoModal.setState({
-        isFetching: true,
-        uniqhash,
-      }, () => {
-        actions.invoices.getInvoice(
-          uniqhash
-        ).then((invoice) => {
-          if (invoice) {
-            //@ts-ignore: strictNullChecks
-            infoModal.setState({
-              isFetching: false,
-              invoice,
-            })
-          } else {
-            history.push(localisedUrl(locale, links.notFound))
-          }
-        })
-      })
+      infoModal.setState(
+        {
+          isFetching: true,
+          uniqhash,
+        },
+        () => {
+          actions.invoices.getInvoice(uniqhash).then((invoice) => {
+            if (invoice) {
+              //@ts-ignore: strictNullChecks
+              infoModal.setState({
+                isFetching: false,
+                invoice,
+              })
+            } else {
+              history.push(localisedUrl(locale, links.notFound))
+            }
+          })
+        }
+      )
     }
   }
 
   async componentDidMount() {
-    const {
-      uniqhash,
-      doshare,
-    } = this.state
+    const { uniqhash, doshare } = this.state
 
-    const { history, intl: { locale } } = this.props
+    const {
+      history,
+      intl: { locale },
+    } = this.props
 
     actions.modals.open(constants.modals.InfoInvoice, {
       onClose: (isLocationChange) => {
@@ -88,57 +89,60 @@ class Invoice extends PureComponent<InvoceProps, InvoceState> {
       uniqhash,
       doshare,
       onFetching: (infoModal) => {
-        this.setState({
-          infoModal,
-        }, () => {
-          this.fetchInvoice()
-        })
-      }
+        this.setState(
+          {
+            infoModal,
+          },
+          () => {
+            this.fetchInvoice()
+          }
+        )
+      },
     })
   }
 
   componentDidUpdate(prevProps) {
     let {
       match: {
-        params: {
-          uniqhash = null,
-          doshare = false,
-        },
+        params: { uniqhash = null, doshare = false },
       },
     } = this.props
 
     let {
       match: {
-        params: {
-          uniqhash: prevUniqhash = null,
-          doshare: prevDoshare = false,
-        },
+        params: { uniqhash: prevUniqhash = null, doshare: prevDoshare = false },
       },
     } = prevProps
 
-    if ((prevUniqhash !== uniqhash)
-      || (prevDoshare !== doshare)
-    ) {
+    if (prevUniqhash !== uniqhash || prevDoshare !== doshare) {
       const { infoModal } = this.state
 
-      this.setState({
-        uniqhash,
-        doshare,
-      }, () => {
-        //@ts-ignore: strictNullChecks
-        infoModal.setState((prevUniqhash !== uniqhash) ? {
-          invoice: false,
+      this.setState(
+        {
           uniqhash,
-          isFetching: true,
           doshare,
-          isShareReady: !(doshare),
-        } : {
-          doshare,
-          isShareReady: !(doshare),
-        } , () => {
-          this.fetchInvoice()
-        })
-      })
+        },
+        () => {
+          //@ts-ignore: strictNullChecks
+          infoModal.setState(
+            prevUniqhash !== uniqhash
+              ? {
+                  invoice: false,
+                  uniqhash,
+                  isFetching: true,
+                  doshare,
+                  isShareReady: !doshare,
+                }
+              : {
+                  doshare,
+                  isShareReady: !doshare,
+                },
+            () => {
+              this.fetchInvoice()
+            }
+          )
+        }
+      )
     }
   }
 

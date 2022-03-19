@@ -5,25 +5,30 @@ import cx from 'classnames'
 import cssModules from 'react-css-modules'
 import styles from './WidthContainer.scss'
 
-
-const WidthContainer = ({ children, className, main, fullHeight, relative, contentCentering, ...rest }) => {
+const WidthContainer = ({
+  children,
+  className,
+  main,
+  fullHeight,
+  relative,
+  contentCentering,
+  ...rest
+}) => {
   const containerStyleName = cx('widthContainer', {
-    'main': main,
-    'fullHeight': fullHeight,
-    'centeringContent': contentCentering,
+    main: main,
+    fullHeight: fullHeight,
+    centeringContent: contentCentering,
   })
 
   if (fullHeight || relative) {
     const containerInStyleName = cx('widthContainerIn', {
-      'fullHeight': fullHeight,
-      'relative': relative,
+      fullHeight: fullHeight,
+      relative: relative,
     })
 
     return (
       <div styleName={containerStyleName} className={className} {...rest}>
-        <div styleName={containerInStyleName}>
-          {children}
-        </div>
+        <div styleName={containerInStyleName}>{children}</div>
       </div>
     )
   }

@@ -1,7 +1,6 @@
 import { constants } from 'swap.app'
 import EthLikeTokenSwap from './EthLikeTokenSwap'
 
-
 class EthTokenSwap extends EthLikeTokenSwap {
   constructor(options) {
     options = {
@@ -16,6 +15,5 @@ class EthTokenSwap extends EthLikeTokenSwap {
     super(options)
   }
 }
-
 
 export default EthTokenSwap

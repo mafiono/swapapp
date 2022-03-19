@@ -5,13 +5,7 @@ import { AddressFormat } from 'domain/address'
 import { LinkEndpoint } from '../Endpoints'
 
 export default function PartOfAddress(props) {
-  const { 
-    style,
-    currency, 
-    contractAddress, 
-    address, 
-    withoutLink,
-  } = props
+  const { style, currency, contractAddress, address, withoutLink } = props
 
   const styleOverwrited = {
     fontSize: '12px',
@@ -33,7 +27,9 @@ export default function PartOfAddress(props) {
         <LinkEndpoint symbol={currency} contractAddress={contractAddress} address={address}>
           {AddressElement}
         </LinkEndpoint>
-      ) : AddressElement}
+      ) : (
+        AddressElement
+      )}
     </div>
   )
 }

@@ -4,7 +4,12 @@ import reducers from 'redux/core/reducers'
 import actions from 'redux/actions'
 import { cacheStorageGet, cacheStorageSet, constants } from 'helpers'
 import config from 'app-config'
-import { setMetamask, setProvider, setDefaultProvider, getWeb3 as getDefaultWeb3 } from 'helpers/web3'
+import {
+  setMetamask,
+  setProvider,
+  setDefaultProvider,
+  getWeb3 as getDefaultWeb3,
+} from 'helpers/web3'
 import SwapApp from 'swap.app'
 import Web3Connect from 'common/web3connect'
 import { COIN_DATA, COIN_MODEL } from 'swap.app/constants/COINS'
@@ -22,9 +27,13 @@ type EvmNetworkInfo = {
 
 let web3connect: any
 
-const { user: { metamaskData } } = getState()
+const {
+  user: { metamaskData },
+} = getState()
 
-setWeb3connect((metamaskData?.networkVersion) ? metamaskData.networkVersion : config.evmNetworks.ETH.networkVersion)
+setWeb3connect(
+  metamaskData?.networkVersion ? metamaskData.networkVersion : config.evmNetworks.ETH.networkVersion
+)
 
 function handleConnected() {
   localStorage.setItem(constants.localStorage.isWalletCreate, 'true')
@@ -54,8 +63,9 @@ function cleanWeb3connectListeners() {
 }
 
 function setWeb3connect(networkId) {
-  const newNetworkData = Object.values(config.evmNetworks)
-    .find((networkInfo: IUniversalObj) => networkInfo.networkVersion === networkId) as EvmNetworkInfo
+  const newNetworkData = Object.values(config.evmNetworks).find(
+    (networkInfo: IUniversalObj) => networkInfo.networkVersion === networkId
+  ) as EvmNetworkInfo
 
   if (newNetworkData) {
     if (web3connect) {
@@ -91,9 +101,9 @@ const isEnabled = () => true
 
 const isConnected = () => web3connect?.isConnected()
 
-const getAddress = () => (isConnected()) ? web3connect.getAddress() : ``
+const getAddress = () => (isConnected() ? web3connect.getAddress() : ``)
 
-const getWeb3 = () => (isConnected()) ? web3connect.getWeb3() : false
+const getWeb3 = () => (isConnected() ? web3connect.getWeb3() : false)
 
 const web3connectInit = async () => {
   await web3connect.onInit(async () => {
@@ -127,7 +137,9 @@ const addWallet = () => {
 }
 
 const getBalance = () => {
-  const { user: { metamaskData } } = getState()
+  const {
+    user: { metamaskData },
+  } = getState()
   if (metamaskData) {
     const { address, currency } = metamaskData
     const balanceInCache = cacheStorageGet('currencyBalances', `${currency}_${address}`)
@@ -140,8 +152,10 @@ const getBalance = () => {
       return balanceInCache
     }
 
-    return web3connect.getWeb3().eth.getBalance(address)
-      .then(result => {
+    return web3connect
+      .getWeb3()
+      .eth.getBalance(address)
+      .then((result) => {
         const amount = web3connect.getWeb3().utils.fromWei(result)
 
         cacheStorageSet('currencyBalances', `${currency}_${address}`, amount, 30)
@@ -156,24 +170,26 @@ const getBalance = () => {
   }
 }
 
-const disconnect = () => new Promise(async (resolved) => {
-  if (isConnected()) {
-    await web3connect.Disconnect()
+const disconnect = () =>
+  new Promise(async (resolved) => {
+    if (isConnected()) {
+      await web3connect.Disconnect()
 
-    resetWalletState()
-    resolved(true)
-  } else {
-    resolved(true)
-  }
-})
-
-const connect = (options) => new Promise(async (resolved, reject) => {
-  actions.modals.open(constants.modals.ConnectWalletModal, {
-    ...options,
-    onResolve: resolved,
-    onReject: reject,
+      resetWalletState()
+      resolved(true)
+    } else {
+      resolved(true)
+    }
   })
-})
+
+const connect = (options) =>
+  new Promise(async (resolved, reject) => {
+    actions.modals.open(constants.modals.ConnectWalletModal, {
+      ...options,
+      onResolve: resolved,
+      onReject: reject,
+    })
+  })
 
 /* metamask wallet layer */
 const isCorrectNetwork = () => web3connect.isCorrectNetwork()
@@ -187,7 +203,7 @@ const getChainId = () => {
 const isAvailableNetwork = () => {
   const networkVersion = getChainId()
 
-  return (config.evmNetworkVersions.includes(networkVersion))
+  return config.evmNetworkVersions.includes(networkVersion)
 }
 
 const isAvailableNetworkByCurrency = (currency) => {
@@ -198,7 +214,7 @@ const isAvailableNetworkByCurrency = (currency) => {
 
   if (isUTXOModel) return false
 
-  const currencyNetworkVersion = (blockchain)
+  const currencyNetworkVersion = blockchain
     ? config.evmNetworks[blockchain]?.networkVersion
     : config.evmNetworks[ticker]?.networkVersion
 
@@ -213,8 +229,9 @@ const addMetamaskWallet = () => {
 
     if (isAvailableNetwork()) {
       const { user } = getState()
-      const currentNetworkData = Object.values(config.evmNetworks)
-        .find((networkInfo: EvmNetworkInfo) => networkInfo.networkVersion === networkVersion) as EvmNetworkInfo
+      const currentNetworkData = Object.values(config.evmNetworks).find(
+        (networkInfo: EvmNetworkInfo) => networkInfo.networkVersion === networkVersion
+      ) as EvmNetworkInfo
 
       const { currency } = currentNetworkData
       const fullName = `${currency} (${web3connect.getProviderTitle()})`
@@ -356,25 +373,16 @@ const switchNetwork = async (nativeCurrency) => {
 }
 
 const addCurrencyNetwork = async (currency) => {
-  if (!(isConnected())) {
+  if (!isConnected()) {
     return false
   }
 
   const { coin, blockchain } = getCoinInfo(currency)
   const nativeCurrency = blockchain || coin.toUpperCase()
 
-  const {
-    chainId,
-    chainName,
-    rpcUrls,
-    blockExplorerUrls,
-  } = config.evmNetworks[nativeCurrency]
+  const { chainId, chainName, rpcUrls, blockExplorerUrls } = config.evmNetworks[nativeCurrency]
 
-  const {
-    name,
-    ticker: symbol,
-    precision: decimals,
-  } = COIN_DATA[nativeCurrency]
+  const { name, ticker: symbol, precision: decimals } = COIN_DATA[nativeCurrency]
 
   const params = {
     chainId,
@@ -391,13 +399,14 @@ const addCurrencyNetwork = async (currency) => {
   const web3 = web3connect.getWeb3()
   const { ethereum } = window
 
-  if (web3.eth  && ethereum) {
+  if (web3.eth && ethereum) {
     return new Promise((res, rej) => {
       web3.eth.getAccounts((error, accounts) => {
-        ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [params, accounts[0]],
-        })
+        ethereum
+          .request({
+            method: 'wallet_addEthereumChain',
+            params: [params, accounts[0]],
+          })
           .then(() => {
             console.log('Success add and switch to network')
             res(true)
@@ -409,7 +418,6 @@ const addCurrencyNetwork = async (currency) => {
     })
   }
   throw new Error('Can not access to web3 or ethereum')
-
 }
 
 const metamaskApi = {

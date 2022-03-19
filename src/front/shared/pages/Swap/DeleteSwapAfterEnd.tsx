@@ -3,9 +3,7 @@ import PropTypes from 'prop-types'
 import actions from 'redux/actions'
 import SwapApp from 'swap.app'
 
-
 class DeleteSwapAfterEnd extends Component<any, any> {
-
   static propTypes = {
     swap: PropTypes.shape({
       flow: PropTypes.shape({

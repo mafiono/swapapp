@@ -3,14 +3,10 @@ import helpers from 'helpers'
 import getCoinInfo from 'common/coins/getCoinInfo'
 import erc20Like from 'common/erc20Like'
 
-
 const reportAboutProblem = (params) => {
   const { isError = false, info } = params
 
-  console.group(
-    'HELPERS > %c getPairFees.ts',
-    `color: ${isError ? 'red' : 'orange'};`
-  )
+  console.group('HELPERS > %c getPairFees.ts', `color: ${isError ? 'red' : 'orange'};`)
   isError ? console.error(info) : console.warn(info)
   console.groupEnd()
 }
@@ -36,7 +32,7 @@ const feeCache = {
 }
 
 const fetchCoinFee = (params): Promise<CoinFee> => {
-  const { coinName , action, updateCacheValue } = params
+  const { coinName, action, updateCacheValue } = params
 
   return new Promise(async (feeResolved) => {
     const hasFeeInCache = !updateCacheValue && feeCache[action] && feeCache[action][coinName]
@@ -104,7 +100,7 @@ const fetchCoinFee = (params): Promise<CoinFee> => {
 const fetchFeeForNativeCoin = (params) => {
   const { coinData, swapUTXOMethod, swapABMethod } = params
   const coinTicker = coinData.ticker.toLowerCase()
-  
+
   return new Promise((resolve) => {
     if (helpers[coinTicker]) {
       helpers[coinTicker]
@@ -181,15 +177,13 @@ type PairFeesParams = {
 export const getPairFees = (params: PairFeesParams): Promise<IPairFees> => {
   let { sellCurrency, buyCurrency, updateCacheValue = false } = params
 
-  const {
-    coin: sellCurrencyName,
-    blockchain: sellCurrencyBlockchain,
-  } = getCoinInfo(sellCurrency.toUpperCase())
+  const { coin: sellCurrencyName, blockchain: sellCurrencyBlockchain } = getCoinInfo(
+    sellCurrency.toUpperCase()
+  )
 
-  const {
-    coin: buyCurrencyName,
-    blockchain: buyCurrencyBlockchain,
-  } = getCoinInfo(buyCurrency.toUpperCase())
+  const { coin: buyCurrencyName, blockchain: buyCurrencyBlockchain } = getCoinInfo(
+    buyCurrency.toUpperCase()
+  )
 
   return new Promise(async (feeResolved) => {
     const sell = await fetchCoinFee({

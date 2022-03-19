@@ -63,7 +63,7 @@ class AddCustomToken extends React.Component<CustomTokenProps, CustomTokenState>
     const info = await actions[tokenStandard].getInfoAboutToken(tokenAddress)
 
     if (info) {
-      const { name, symbol, decimals } = info 
+      const { name, symbol, decimals } = info
 
       this.setState(() => ({
         tokenName: name,
@@ -129,10 +129,7 @@ class AddCustomToken extends React.Component<CustomTokenProps, CustomTokenState>
       notFound,
     } = this.state
 
-    const {
-      name,
-      intl,
-    } = this.props
+    const { name, intl } = this.props
 
     const linked = Link.all(this, 'tokenAddress')
 
@@ -150,20 +147,14 @@ class AddCustomToken extends React.Component<CustomTokenProps, CustomTokenState>
     })
 
     return (
-      <Modal
-        name={name}
-        title={`${intl.formatMessage(localeLabel.title)}`}
-      >
+      <Modal name={name} title={`${intl.formatMessage(localeLabel.title)}`}>
         <div styleName="stepsWrapper">
           {step === 'enterAddress' && (
             <Fragment>
               <div styleName="highLevel">
                 <FieldLabel inRow>
                   <span style={{ fontSize: '16px' }}>
-                    <FormattedMessage
-                      id="customTokenAddress"
-                      defaultMessage="Token address"
-                    />
+                    <FormattedMessage id="customTokenAddress" defaultMessage="Token address" />
                   </span>
                 </FieldLabel>
                 <Input
@@ -179,7 +170,7 @@ class AddCustomToken extends React.Component<CustomTokenProps, CustomTokenState>
                       id="customTokenNotFound"
                       defaultMessage="This is not {standard} address"
                       values={{
-                        standard: tokenStandard
+                        standard: tokenStandard,
                       }}
                     />
                   </div>
@@ -211,10 +202,7 @@ class AddCustomToken extends React.Component<CustomTokenProps, CustomTokenState>
               <div styleName="lowLevel">
                 <FieldLabel inRow>
                   <span styleName="title">
-                    <FormattedMessage
-                      id="customTokenAddress"
-                      defaultMessage="Token address"
-                    />
+                    <FormattedMessage id="customTokenAddress" defaultMessage="Token address" />
                   </span>
                 </FieldLabel>
                 <div styleName="fakeInput">{tokenAddress}</div>
@@ -252,20 +240,14 @@ class AddCustomToken extends React.Component<CustomTokenProps, CustomTokenState>
                 onClick={this.handleConfirm}
                 pending={isPending}
               >
-                <FormattedMessage
-                  id="customTokenConfirm"
-                  defaultMessage="Add this token"
-                />
+                <FormattedMessage id="customTokenConfirm" defaultMessage="Add this token" />
               </Button>
             </Fragment>
           )}
           {step === 'ready' && (
             <Fragment>
               <h4 styleName="readyTitle">
-                <FormattedMessage
-                  id="customTokenAdded"
-                  defaultMessage="Token added successfully"
-                />
+                <FormattedMessage id="customTokenAdded" defaultMessage="Token added successfully" />
               </h4>
               <Button
                 id="customTokenDoneButton"

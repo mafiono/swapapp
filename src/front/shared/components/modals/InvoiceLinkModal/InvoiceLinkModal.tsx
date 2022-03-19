@@ -11,7 +11,6 @@ import { FormattedMessage, defineMessages, injectIntl } from 'react-intl'
 import { links } from 'helpers'
 import { getFullOrigin } from 'helpers/links'
 
-
 const labels = defineMessages({
   Title: {
     id: 'InvoiceLinkModal_Title',
@@ -29,27 +28,37 @@ class InvoiceLinkModal extends React.Component<any, any> {
   }
 
   handleCopyLink = () => {
-    this.setState({
-      isLinkCopied: true,
-    }, () => {
-      setTimeout(() => {
-        this.setState({
-          isLinkCopied: false,
-        })
-      }, 500)
-    })
+    this.setState(
+      {
+        isLinkCopied: true,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            isLinkCopied: false,
+          })
+        }, 500)
+      }
+    )
   }
 
   render() {
-    const { props: { name, intl, data: { currency, address, tokenKey } }, state: { isLinkCopied } } = this
+    const {
+      props: {
+        name,
+        intl,
+        data: { currency, address, tokenKey },
+      },
+      state: { isLinkCopied },
+    } = this
 
-    let type = (tokenKey) ? tokenKey.toLowerCase() : currency.toLowerCase()
+    let type = tokenKey ? tokenKey.toLowerCase() : currency.toLowerCase()
     switch (currency) {
       case 'BTC (SMS-Protected)':
       case 'BTC (PIN-Protected)':
       case 'BTC (Multisig)':
         type = 'btc'
-        break;
+        break
     }
     const invoiceLink = `${getFullOrigin()}${links.createInvoice}/${type}/${address}`
 
@@ -57,28 +66,20 @@ class InvoiceLinkModal extends React.Component<any, any> {
       <Modal name={name} title={intl.formatMessage(labels.Title)}>
         <div styleName="content">
           <p style={{ fontSize: 25 }}>
-            <FormattedMessage id="InvoiceLinkModalInfo" defaultMessage="Это ссылка для выставления счета." />
+            <FormattedMessage
+              id="InvoiceLinkModalInfo"
+              defaultMessage="Это ссылка для выставления счета."
+            />
           </p>
-          <CopyToClipboard
-            text={invoiceLink}
-            onCopy={this.handleCopyLink}
-          >
+          <CopyToClipboard text={invoiceLink} onCopy={this.handleCopyLink}>
             <div>
-              <p>
-                {invoiceLink}
-              </p>
-              <Button
-                styleName="button"
-                brand
-                onClick={() => {}}
-                disabled={isLinkCopied}
-                fullWidth
-              >
-                { isLinkCopied ?
+              <p>{invoiceLink}</p>
+              <Button styleName="button" brand onClick={() => {}} disabled={isLinkCopied} fullWidth>
+                {isLinkCopied ? (
                   <FormattedMessage id="InvoiceLinkCopied" defaultMessage="Link copied" />
-                  :
+                ) : (
                   <FormattedMessage id="InvoiceLinkCopy" defaultMessage="Copy this link" />
-                }
+                )}
               </Button>
             </div>
           </CopyToClipboard>

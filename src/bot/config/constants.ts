@@ -9,7 +9,6 @@ const TOKENS = require(`./${network}/TOKENS`)
 const TOKEN_DECIMALS = require(`./${network}/TOKEN_DECIMALS`)
 const PAIR_TYPES = require(`./${network}/PAIR_TYPES`)
 
-
 export {
   TRADE_TICKERS,
   TRADE_ORDER_MINAMOUNTS,

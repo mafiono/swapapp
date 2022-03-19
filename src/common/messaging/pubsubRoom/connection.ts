@@ -3,22 +3,19 @@
 import { EventEmitter } from 'events'
 import pipe from 'it-pipe'
 
-
 import { PROTOCOL } from './protocol'
 import encoding from './encoding'
 
 import debug from 'debug'
 
-
 export default class Connection extends EventEmitter {
-
   _remoteId: any
   _libp2p: any
   _room: any
   _connection: any
   _connecting: any
 
-  constructor (remoteId, libp2p, room) {
+  constructor(remoteId, libp2p, room) {
     super()
     this._remoteId = remoteId
     this._libp2p = libp2p
@@ -73,16 +70,18 @@ export default class Connection extends EventEmitter {
       for await (const message of source) {
         this.emit('message', message)
       }
-    })
-      .then(() => {
+    }).then(
+      () => {
         this.emit('disconnect')
-      }, async (err) => {
+      },
+      async (err) => {
         try {
           await this._connect()
         } catch (e) {
           console.log('Fail reconnect')
         }
-      })
+      }
+    )
   }
 
   _isConnectedToRemote() {
@@ -95,16 +94,15 @@ export default class Connection extends EventEmitter {
 }
 
 class FiFoMessageQueue {
-
   _queue: any[]
   _ended: boolean
   _resolve: any
 
-  constructor () {
+  constructor() {
     this._queue = []
   }
 
-  [Symbol.asyncIterator] () {
+  [Symbol.asyncIterator]() {
     return this
   }
 
@@ -116,7 +114,7 @@ class FiFoMessageQueue {
     if (this._resolve) {
       return this._resolve({
         done: false,
-        value: message
+        value: message,
       })
     }
 
@@ -127,7 +125,7 @@ class FiFoMessageQueue {
     this._ended = true
     if (this._resolve) {
       this._resolve({
-        done: true
+        done: true,
       })
     }
   }
@@ -135,14 +133,14 @@ class FiFoMessageQueue {
   next() {
     if (this._ended) {
       return {
-        done: true
+        done: true,
       }
     }
 
     if (this._queue.length) {
       return {
         done: false,
-        value: this._queue.shift()
+        value: this._queue.shift(),
       }
     }
 

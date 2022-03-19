@@ -17,7 +17,7 @@ const FieldLabel = ({ children, inRow, inDropDown, positionStatic }: FieldLabelP
       'label',
       { inRow: inRow },
       { inDropDown: inDropDown },
-      { positionStatic: positionStatic },
+      { positionStatic: positionStatic }
     )}
   >
     {children}

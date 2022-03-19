@@ -2,7 +2,6 @@ import SwapApp, { util } from 'swap.app'
 import actions from 'redux/actions'
 import moment from 'moment/moment'
 
-
 const getSwapByIdSafe = (swapID) => {
   try {
     const returnedSwap = actions.core.getSwapById(swapID)
@@ -31,12 +30,15 @@ const getDeclinedExistedSwapIndex = ({ currency, decline }) => {
           const lockTime = moment.unix(values.lockTime || date)._i / 1000
           const timeSinceLock = date - lockTime
 
-          if (isFinished || isRefunded || isStoppedSwap || timeSinceLock > 259200) { // 259200 3 дня в секундах
+          if (isFinished || isRefunded || isStoppedSwap || timeSinceLock > 259200) {
+            // 259200 3 дня в секундах
             actions.core.forgetOrders(decline[i])
-          } else if (declineSwap.sellCurrency === currency.toUpperCase()
+          } else if (
+            declineSwap.sellCurrency === currency.toUpperCase() &&
             //@ts-ignore
-            && !declineSwap.isSwapExist
-            && !declineSwap.isMy) {
+            !declineSwap.isSwapExist &&
+            !declineSwap.isMy
+          ) {
             return i
           }
         }

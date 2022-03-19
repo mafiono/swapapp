@@ -39,7 +39,7 @@ function Transactions(props) {
             if (receipt !== null) {
               const link = transactions.getLink(
                 networkData.currency.toLowerCase(),
-                receipt.transactionHash,
+                receipt.transactionHash
               )
 
               actions.notifications.show(constants.notifications.Transaction, {

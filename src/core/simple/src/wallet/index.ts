@@ -3,11 +3,11 @@ import debugCreate from 'debug'
 import * as bitcoin from './../instances/ethereum' // todo: obviously this is wrong
 import * as ethereum from './../instances/ethereum'
 
-
 const debug = debugCreate('swap.core:simple:wallet')
 
-const BLOCKCHAININFO = isMain => isMain ? `https://blockchain.info` : `https://testnet.blockchain.info`
-const ETHERSCANIO = isMain => isMain ? `https://etherscan.io` : `https://rinkeby.etherscan.io`
+const BLOCKCHAININFO = (isMain) =>
+  isMain ? `https://blockchain.info` : `https://testnet.blockchain.info`
+const ETHERSCANIO = (isMain) => (isMain ? `https://etherscan.io` : `https://rinkeby.etherscan.io`)
 
 class Wallet {
   id: any
@@ -43,11 +43,10 @@ class Wallet {
   }
 
   async getBalanceBySymbol(symbol) {
-
     if (!this.balances[symbol]) {
       debug('updating balance', Date())
       let balances = await this.getBalance()
-      balances.map(x => this.balances[x.symbol] = x)
+      balances.map((x) => (this.balances[x.symbol] = x))
     }
 
     return this.balances[symbol]
@@ -70,7 +69,7 @@ class Wallet {
       }
     }, {})
 
-    const fetchBalances = currencies.map(symbol => {
+    const fetchBalances = currencies.map((symbol) => {
       try {
         const instance = this.swapApp.swaps[symbol]
         const address = addresses[symbol]
@@ -87,7 +86,7 @@ class Wallet {
     return values.map((value, index) => ({
       symbol: currencies[index],
       amount: value,
-      address: addresses[currencies[index]]
+      address: addresses[currencies[index]],
     }))
   }
 
@@ -103,8 +102,7 @@ class Wallet {
   async getBalance(symbols?) {
     const currencies = symbols || Object.values(this.constants.COINS)
 
-    const values = await Promise.all(
-      currencies.map(symbol => this.fetchBalance(symbol)))
+    const values = await Promise.all(currencies.map((symbol) => this.fetchBalance(symbol)))
 
     return values.map((value, index) => ({
       symbol: currencies[index],
@@ -124,8 +122,12 @@ class Wallet {
       id: this.id,
       network: this.network,
       mainnet: this.swapApp.isMainNet(),
-      'etherscan.io': `${ETHERSCANIO(this.swapApp.isMainNet())}/address/${this.auth.accounts.eth.address}`,
-      'blockchain.info': `${BLOCKCHAININFO(this.swapApp.isMainNet())}/address/${this.auth.accounts.btc.getAddress()}`,
+      'etherscan.io': `${ETHERSCANIO(this.swapApp.isMainNet())}/address/${
+        this.auth.accounts.eth.address
+      }`,
+      'blockchain.info': `${BLOCKCHAININFO(
+        this.swapApp.isMainNet()
+      )}/address/${this.auth.accounts.btc.getAddress()}`,
       room: this.swapApp.services.room.roomName,
       ...this.auth.getPublicData(),
     }
@@ -146,10 +148,9 @@ class Wallet {
         fee: btcFee,
         // ...bitcoin.core,
       },
-      wallet: this.view()
+      wallet: this.view(),
     }
   }
-
 }
 
 export default Wallet

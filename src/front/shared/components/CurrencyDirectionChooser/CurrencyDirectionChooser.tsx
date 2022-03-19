@@ -15,18 +15,12 @@ import SubTitle from 'components/PageHeadline/SubTitle/SubTitle'
 import Tooltip from 'components/ui/Tooltip/Tooltip'
 import { FormattedMessage } from 'react-intl'
 
-
-@connect(
-  ({
-    currencies,
-  }) => ({
-    currencies: currencies.items,
-    addSelectedItems: currencies.addSelectedItems[0],
-  })
-)
+@connect(({ currencies }) => ({
+  currencies: currencies.items,
+  addSelectedItems: currencies.addSelectedItems[0],
+}))
 @CSSModules(styles, { allowMultiple: true })
 export default class CurrencyDirectionChooser extends Component<any, any> {
-
   static propTypes = {
     flipCurrency: PropTypes.func,
     currencies: PropTypes.any,
@@ -64,17 +58,25 @@ export default class CurrencyDirectionChooser extends Component<any, any> {
   }
 
   render() {
-    const { buyCurrency, sellCurrency,
-      flipCurrency, handleBuyCurrencySelect, handleSellCurrencySelect, handleSubmit,
-      currencies, addSelectedItems } = this.props
-
-
+    const {
+      buyCurrency,
+      sellCurrency,
+      flipCurrency,
+      handleBuyCurrencySelect,
+      handleSellCurrencySelect,
+      handleSubmit,
+      currencies,
+      addSelectedItems,
+    } = this.props
 
     return (
       <div styleName="choice">
         <div styleName="row title">
           <SubTitle>
-            <FormattedMessage id="CurrencyDirectionChooser54" defaultMessage=" Choose the direction of exchange" />
+            <FormattedMessage
+              id="CurrencyDirectionChooser54"
+              defaultMessage=" Choose the direction of exchange"
+            />
           </SubTitle>
         </div>
         <div styleName="row formRow">
@@ -112,7 +114,7 @@ export default class CurrencyDirectionChooser extends Component<any, any> {
           <Button styleName="button" brand onClick={handleSubmit}>
             <FormattedMessage id="CurrencyDirectionChooser86" defaultMessage="SHOW ORDERS " />
           </Button>
-          <Tooltip id="cdc87" >
+          <Tooltip id="cdc87">
             <FormattedMessage id="CDC52" defaultMessage="Offer list" />
           </Tooltip>
         </div>
@@ -120,4 +122,3 @@ export default class CurrencyDirectionChooser extends Component<any, any> {
     )
   }
 }
-

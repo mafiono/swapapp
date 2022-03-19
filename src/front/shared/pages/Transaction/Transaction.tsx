@@ -3,12 +3,7 @@ import { Component } from 'react'
 import { FormattedMessage } from 'react-intl'
 import actions from 'redux/actions'
 import erc20Like from 'common/erc20Like'
-import {
-  links,
-  localStorage,
-  getCurrencyKey,
-  lsDataCache,
-} from 'helpers'
+import { links, localStorage, getCurrencyKey, lsDataCache } from 'helpers'
 
 import TxInfo from './TxInfo'
 import { ModalBox } from 'components/modal'
@@ -17,23 +12,19 @@ import styles from './styles.scss'
 
 import { COIN_DATA } from 'swap.app/constants/COINS'
 
-@cssModules({
-  ...styles,
-}, { allowMultiple: true })
+@cssModules(
+  {
+    ...styles,
+  },
+  { allowMultiple: true }
+)
 class Transaction extends Component<any, any> {
   unmounted = false
 
   constructor(props) {
     super(props)
 
-    const {
-      match: {
-        params: {
-          ticker = null,
-          tx: txHash = null,
-        },
-      } = null,
-    } = props
+    const { match: { params: { ticker = null, tx: txHash = null } } = null } = props
 
     const currency = getCurrencyKey(ticker, true)
     const infoTx = lsDataCache.get(`TxInfo_${currency.toLowerCase()}_${txHash}`)
@@ -69,9 +60,10 @@ class Transaction extends Component<any, any> {
 
     const userWallet = actions.core
       .getWallets({})
-      .filter(({ currency: walletCurrency, tokenKey }) =>
-        !hiddenCoinsList?.includes(walletCurrency) &&
-        (tokenKey?.toLowerCase() || walletCurrency.toLowerCase()) === currency.toLowerCase()
+      .filter(
+        ({ currency: walletCurrency, tokenKey }) =>
+          !hiddenCoinsList?.includes(walletCurrency) &&
+          (tokenKey?.toLowerCase() || walletCurrency.toLowerCase()) === currency.toLowerCase()
       )[0]
 
     this.state = {
@@ -79,7 +71,7 @@ class Transaction extends Component<any, any> {
       userAddress: userWallet?.address,
       ticker,
       txHash,
-      isFetching: !(infoTx),
+      isFetching: !infoTx,
       infoTx,
       amount: 0,
       balance: 0,
@@ -95,9 +87,7 @@ class Transaction extends Component<any, any> {
   }
 
   fetchTxInfo = async (currency, txHash, ticker) => {
-    const {
-      infoTx: cachedTxInfo,
-    } = this.state
+    const { infoTx: cachedTxInfo } = this.state
 
     let infoTx
     let error = null
@@ -118,7 +108,7 @@ class Transaction extends Component<any, any> {
       // Fail parse
       this.setState({
         isFetching: false,
-        error: !(cachedTxInfo),
+        error: !cachedTxInfo,
       })
       return
     }
@@ -146,7 +136,7 @@ class Transaction extends Component<any, any> {
         isFetching: false,
         infoTx,
         amount,
-        balance:0,
+        balance: 0,
         oldBalance,
         confirmed,
         sender,
@@ -160,10 +150,7 @@ class Transaction extends Component<any, any> {
   }
 
   componentDidMount() {
-    const {
-      ticker,
-      txHash,
-    } = this.state
+    const { ticker, txHash } = this.state
 
     if (!txHash) {
       //@ts-ignore

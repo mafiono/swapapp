@@ -130,11 +130,14 @@ class RestoryMnemonicWallet extends React.Component<ComponentProps, ComponentSta
       return
     }
 
-    this.setState(() => ({
-      isFetching: true,
-    }), () => {
-      this.restoreWallet(mnemonic)
-    })
+    this.setState(
+      () => ({
+        isFetching: true,
+      }),
+      () => {
+        this.restoreWallet(mnemonic)
+      }
+    )
   }
 
   restoreWallet = (mnemonic) => {
@@ -212,12 +215,7 @@ class RestoryMnemonicWallet extends React.Component<ComponentProps, ComponentSta
   render() {
     const { name, intl } = this.props
 
-    const {
-      step,
-      mnemonic,
-      mnemonicIsInvalid,
-      isFetching,
-    } = this.state
+    const { step, mnemonic, mnemonicIsInvalid, isFetching } = this.state
 
     return (
       <Modal
@@ -257,7 +255,7 @@ class RestoryMnemonicWallet extends React.Component<ComponentProps, ComponentSta
                     </Tooltip>
                   </span>
                 </FieldLabel>
-                <MnemonicInput 
+                <MnemonicInput
                   autoFill={config.entry === 'testnet'}
                   onChange={this.handleMnemonicChange}
                 />
@@ -267,7 +265,7 @@ class RestoryMnemonicWallet extends React.Component<ComponentProps, ComponentSta
                   <FormattedMessage {...langLabels.cancelRestory} />
                 </Button>
                 <Button
-                  id='walletRecoveryButton'
+                  id="walletRecoveryButton"
                   blue
                   disabled={!mnemonic || mnemonic.split(' ').length !== 12 || isFetching}
                   onClick={this.handleRestoryWallet}
@@ -289,7 +287,7 @@ class RestoryMnemonicWallet extends React.Component<ComponentProps, ComponentSta
               </p>
               <div styleName="lowLevel">
                 <Button
-                  id='finishWalletRecoveryButton'
+                  id="finishWalletRecoveryButton"
                   styleName="buttonCenter buttonHalfFullWidth"
                   blue
                   onClick={this.handleFinish}

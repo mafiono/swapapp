@@ -15,9 +15,7 @@ import icons from 'components/ui/CurrencyIcon/images'
 import config from 'app-config'
 import actions from 'shared/redux/actions'
 
-@connect(({
-  ui: { dashboardModalsAllowed },
-}) => ({
+@connect(({ ui: { dashboardModalsAllowed } }) => ({
   dashboardView: dashboardModalsAllowed,
 }))
 @cssModules(styles, { allowMultiple: true })
@@ -68,7 +66,6 @@ class CurrencyAction extends React.Component<any, any> {
         localisedUrl(locale, (standard ? '/token' : '') + `/${targetCurrency}/${address}/send`)
       )
     }
-
   }
 
   render() {
@@ -76,7 +73,7 @@ class CurrencyAction extends React.Component<any, any> {
       props: {
         data: { currencies, context },
         dashboardView,
-      }
+      },
     } = this
 
     // if currencies is one, do autoselect
@@ -85,22 +82,32 @@ class CurrencyAction extends React.Component<any, any> {
     }
 
     return (
-      <div styleName={cx({
-        "modal-overlay": true,
-      })}>
-        <div styleName={cx({
-          "modal": true,
-          "modal_dashboardView": dashboardView
-        })}>
+      <div
+        styleName={cx({
+          'modal-overlay': true,
+        })}
+      >
+        <div
+          styleName={cx({
+            modal: true,
+            modal_dashboardView: dashboardView,
+          })}
+        >
           <div styleName="header">
             <p styleName="title">{context}</p>
 
-            <CloseIcon styleName="closeButton" onClick={this.handleClose} data-testid="modalCloseIcon" />
+            <CloseIcon
+              styleName="closeButton"
+              onClick={this.handleClose}
+              data-testid="modalCloseIcon"
+            />
           </div>
-          <div styleName={cx({
-            "content": true,
-            "content_dashboardView": dashboardView
-          })}>
+          <div
+            styleName={cx({
+              content: true,
+              content_dashboardView: dashboardView,
+            })}
+          >
             <p styleName="text">
               <FormattedMessage
                 id="currencyAction81"
@@ -108,10 +115,12 @@ class CurrencyAction extends React.Component<any, any> {
                 values={{ context: context.toLowerCase() }}
               />
             </p>
-            <div styleName={cx({
-              "currenciesWrapper": true,
-              "currenciesWrapper_dashboardView": dashboardView
-            })}>
+            <div
+              styleName={cx({
+                currenciesWrapper: true,
+                currenciesWrapper_dashboardView: dashboardView,
+              })}
+            >
               {currencies.map((item, index) => {
                 let iconName = item.currency.toLowerCase()
                 let itemTitle = item.currency

@@ -7,11 +7,7 @@ import Button from 'components/controls/Button/Button'
 import styles from '../CreateWallet.scss'
 import Explanation from '../Explanation'
 
-import Cupture, {
-  subHeaderText1,
-  subHeaderText2,
-  cupture2,
-} from './texts'
+import Cupture, { subHeaderText1, subHeaderText2, cupture2 } from './texts'
 
 const isWidgetBuild = config && config.isWidget
 
@@ -23,9 +19,7 @@ function FirstStep(props) {
       <>
         <>
           <Explanation step={1} subHeaderText={subHeaderText1()}>
-            {!isWidgetBuild && (
-              <Cupture />
-            )}
+            {!isWidgetBuild && <Cupture />}
           </Explanation>
           <div styleName={`currencyChooserWrapper ${startPack.length < 4 ? 'smallArr' : ''}`}>
             {startPack.map((el, index) => {
@@ -47,7 +41,9 @@ function FirstStep(props) {
                     <Coin name={name} styleName="assetsTableIcon" />
                   </div>
                   <ul styleName="currencyInfoList">
-                    <li><b>{name}</b></li>
+                    <li>
+                      <b>{name}</b>
+                    </li>
                     <li>
                       {baseCurrency && `(${baseCurrency}) `}
                       {capture}
@@ -62,16 +58,13 @@ function FirstStep(props) {
           <FormattedMessage id="createWalletButton1" defaultMessage="Continue" />
         </Button>
       </>
-      {
-        !isMobile && curState?.BTC && showPinContent
-        && (
-          <div>
-            <Explanation step={2} subHeaderText={subHeaderText2()} notMain>
-              {cupture2()}
-            </Explanation>
-          </div>
-        )
-      }
+      {!isMobile && curState?.BTC && showPinContent && (
+        <div>
+          <Explanation step={2} subHeaderText={subHeaderText2()} notMain>
+            {cupture2()}
+          </Explanation>
+        </div>
+      )}
     </>
   )
 }

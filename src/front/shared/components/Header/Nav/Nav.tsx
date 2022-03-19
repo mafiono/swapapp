@@ -6,8 +6,6 @@ import styles from './Nav.scss'
 import { localisedUrl } from 'helpers/locale'
 import config from 'helpers/externalConfig'
 
-
-
 type NavProps = {
   menu: IUniversalObj[]
   intl: any
@@ -27,41 +25,31 @@ class Nav extends Component<NavProps, null> {
     const afterMenuItems = config.opts.ui.menu.after
 
     return (
-      <div styleName='nav'>
+      <div styleName="nav">
         {beforeMenuItems && beforeMenuItems.length > 0 && (
           <>
-          {
-            beforeMenuItems.map((item, index) => {
+            {beforeMenuItems.map((item, index) => {
               const { title, link, newwindow } = item
               return (
-                <div styleName='mainMenu' key={index} className="data-tut-widget-tourFinish">
-                  <a
-                    href={link}
-                    target={(newwindow) ? `_blank` : `_self`}
-                    styleName="link"
-                  >
+                <div styleName="mainMenu" key={index} className="data-tut-widget-tourFinish">
+                  <a href={link} target={newwindow ? `_blank` : `_self`} styleName="link">
                     {title}
                   </a>
                 </div>
               )
-            })
-          }
+            })}
           </>
         )}
         <Fragment>
           {menu
-            .filter(i => i.isDesktop !== false)
+            .filter((i) => i.isDesktop !== false)
             .map((item, index) => {
               const { title, link, exact, isExternal } = item
 
               return (
-                <div styleName='mainMenu' key={index} className="data-tut-widget-tourFinish">
+                <div styleName="mainMenu" key={index} className="data-tut-widget-tourFinish">
                   {isExternal ? (
-                    <a
-                      href={link}
-                      target="_blank"
-                      styleName="link"
-                    >
+                    <a href={link} target="_blank" styleName="link">
                       {title}
                     </a>
                   ) : (
@@ -70,7 +58,11 @@ class Nav extends Component<NavProps, null> {
                       exact={exact}
                       className={`
                         ${styles.link}
-                        ${link && link.includes('exchange') ? 'reactour-exchange data-tut-widget-exchange' : ''}
+                        ${
+                          link && link.includes('exchange')
+                            ? 'reactour-exchange data-tut-widget-exchange'
+                            : ''
+                        }
                       `}
                       to={localisedUrl(locale, link)}
                       activeClassName={styles.active}
@@ -79,31 +71,25 @@ class Nav extends Component<NavProps, null> {
                     </NavLink>
                   )}
                 </div>
-              );
+              )
             })}
         </Fragment>
         {afterMenuItems && afterMenuItems.length > 0 && (
           <>
-          {
-            afterMenuItems.map((item, index) => {
+            {afterMenuItems.map((item, index) => {
               const { title, link, newwindow } = item
               return (
-                <div styleName='mainMenu' key={index} className="data-tut-widget-tourFinish">
-                  <a
-                    href={link}
-                    target={(newwindow) ? `_blank` : `_self`}
-                    styleName="link"
-                  >
+                <div styleName="mainMenu" key={index} className="data-tut-widget-tourFinish">
+                  <a href={link} target={newwindow ? `_blank` : `_self`} styleName="link">
                     {title}
                   </a>
                 </div>
               )
-            })
-          }
+            })}
           </>
         )}
       </div>
-    );
+    )
   }
 }
 

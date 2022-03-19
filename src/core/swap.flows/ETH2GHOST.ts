@@ -2,9 +2,7 @@ import debug from 'debug'
 import SwapApp, { constants, util } from 'swap.app'
 import { AtomicAB2UTXO } from 'swap.swap'
 
-
 class ETH2GHOST extends AtomicAB2UTXO {
-
   _flowName: string
   ethSwap: any
   ghostSwap: any
@@ -25,15 +23,15 @@ class ETH2GHOST extends AtomicAB2UTXO {
     this._flowName = ETH2GHOST.getName()
 
     this.stepNumbers = {
-      'sign': 1,
+      sign: 1,
       'wait-lock-utxo': 2,
       'verify-script': 3,
       'sync-balance': 4,
       'lock-eth': 5,
       'wait-withdraw-eth': 6, // aka getSecret
       'withdraw-utxo': 7,
-      'finish': 8,
-      'end': 9
+      finish: 8,
+      end: 9,
     }
 
     this.ethSwap = swap.participantSwap
@@ -58,7 +56,7 @@ class ETH2GHOST extends AtomicAB2UTXO {
       isSignFetching: false,
       isMeSigned: false,
 
-      targetWallet : null,
+      targetWallet: null,
       secretHash: null,
 
       isBalanceFetching: false,
@@ -126,7 +124,6 @@ class ETH2GHOST extends AtomicAB2UTXO {
     const flow = this
 
     return [
-
       // 1. Sign swap to start
 
       () => {
@@ -182,24 +179,31 @@ class ETH2GHOST extends AtomicAB2UTXO {
             return null
           }
 
-          return flow.ghostSwap.withdraw({
-            scriptValues: utxoScriptValues,
-            secret,
-            destinationAddress: flow.swap.destinationBuyAddress,
-          })
+          return flow.ghostSwap
+            .withdraw({
+              scriptValues: utxoScriptValues,
+              secret,
+              destinationAddress: flow.swap.destinationBuyAddress,
+            })
             .then((hash) => {
               console.log('withdraw hash', hash)
-              flow.setState({
-                utxoSwapWithdrawTransactionHash: hash,
-              }, true)
+              flow.setState(
+                {
+                  utxoSwapWithdrawTransactionHash: hash,
+                },
+                true
+              )
               return true
             })
             .catch((error) => null)
         })
 
-        flow.finishStep({
-          isGhostWithdrawn: true,
-        }, { step: 'withdraw-utxo' })
+        flow.finishStep(
+          {
+            isGhostWithdrawn: true,
+          },
+          { step: 'withdraw-utxo' }
+        )
       },
 
       // 8. Finish
@@ -216,21 +220,24 @@ class ETH2GHOST extends AtomicAB2UTXO {
           })
         })
 
-        flow.finishStep({
-          isFinished: true,
-        }, { step: 'finish' })
+        flow.finishStep(
+          {
+            isFinished: true,
+          },
+          { step: 'finish' }
+        )
       },
 
       // 9. Finished!
 
-      () => {}
+      () => {},
     ]
   }
 
   _checkSwapAlreadyExists() {
     const swapData = {
       ownerAddress: this.app.getMyEthAddress(),
-      participantAddress: this.app.getParticipantEthAddress(this.swap)
+      participantAddress: this.app.getParticipantEthAddress(this.swap),
     }
 
     return this.ethSwap.checkSwapExists(swapData)
@@ -244,11 +251,14 @@ class ETH2GHOST extends AtomicAB2UTXO {
         event: 'eth refund completed',
       })
 
-      this.setState({
-        refundTransactionHash: hash,
-        isRefunded: true,
-        isSwapExist: false,
-      }, true)
+      this.setState(
+        {
+          refundTransactionHash: hash,
+          isRefunded: true,
+          isSwapExist: false,
+        },
+        true
+      )
     }
 
     try {
@@ -267,9 +277,10 @@ class ETH2GHOST extends AtomicAB2UTXO {
       return false
     }
 
-    return this.ethSwap.refund({
-      participantAddress: this.app.getParticipantEthAddress(this.swap),
-    })
+    return this.ethSwap
+      .refund({
+        participantAddress: this.app.getParticipantEthAddress(this.swap),
+      })
       .then((hash) => {
         if (!hash) {
           return false
@@ -292,18 +303,18 @@ class ETH2GHOST extends AtomicAB2UTXO {
     if (!_secret)
       throw new Error(`Withdrawal is automatic. For manual withdrawal, provide a secret`)
 
-    if (!utxoScriptValues)
-      throw new Error(`Cannot withdraw without script values`)
+    if (!utxoScriptValues) throw new Error(`Cannot withdraw without script values`)
 
     if (secret && secret != _secret)
       console.warn(`Secret already known and is different. Are you sure?`)
 
-    if (isGhostWithdrawn)
-      console.warn(`Looks like money were already withdrawn, are you sure?`)
+    if (isGhostWithdrawn) console.warn(`Looks like money were already withdrawn, are you sure?`)
 
     debug('swap.core:flow')(`WITHDRAW using secret = ${_secret}`)
 
-    const _secretHash = this.app.env.bitcoin.crypto.ripemd160(Buffer.from(_secret, 'hex')).toString('hex')
+    const _secretHash = this.app.env.bitcoin.crypto
+      .ripemd160(Buffer.from(_secret, 'hex'))
+      .toString('hex')
 
     if (secretHash != _secretHash)
       console.warn(`Hash does not match! state: ${secretHash}, given: ${_secretHash}`)
@@ -314,28 +325,36 @@ class ETH2GHOST extends AtomicAB2UTXO {
     debug('swap.core:flow')(`address=${scriptAddress}, balance=${balance}`)
 
     if (balance === 0) {
-      this.finishStep({
-        isGhostWithdrawn: true,
-      }, { step: 'withdraw-utxo' })
+      this.finishStep(
+        {
+          isGhostWithdrawn: true,
+        },
+        { step: 'withdraw-utxo' }
+      )
       throw new Error(`Already withdrawn: address=${scriptAddress},balance=${balance}`)
     }
 
-    await this.ghostSwap.withdraw({
-      scriptValues: utxoScriptValues,
-      secret: _secret,
-    }, (hash) => {
-      debug('swap.core:flow')(`TX hash=${hash}`)
-      this.setState({
-        utxoSwapWithdrawTransactionHash: hash,
-      })
-    })
+    await this.ghostSwap.withdraw(
+      {
+        scriptValues: utxoScriptValues,
+        secret: _secret,
+      },
+      (hash) => {
+        debug('swap.core:flow')(`TX hash=${hash}`)
+        this.setState({
+          utxoSwapWithdrawTransactionHash: hash,
+        })
+      }
+    )
     debug('swap.core:flow')(`TX withdraw sent: ${this.state.utxoSwapWithdrawTransactionHash}`)
 
-    this.finishStep({
-      isGhostWithdrawn: true,
-    }, { step: 'withdraw-utxo' })
+    this.finishStep(
+      {
+        isGhostWithdrawn: true,
+      },
+      { step: 'withdraw-utxo' }
+    )
   }
 }
-
 
 export default ETH2GHOST

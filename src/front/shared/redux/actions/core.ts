@@ -15,7 +15,6 @@ import { AddressType } from 'domain/address'
 import helpers from 'helpers'
 import TOKEN_STANDARDS from 'helpers/constants/TOKEN_STANDARDS'
 
-
 const debug = (...args) => console.log(...args)
 
 const getOrders = (orders) => {
@@ -165,14 +164,14 @@ const deletedPartialCurrency = (orderId) => {
 
   // currencies which must be all time in the drop
   const premiumCurrencies = [
-    'BTC', 
-    'ETH', 
-    'BNB', 
-    'MATIC', 
-    'ARBETH', 
+    'BTC',
+    'ETH',
+    'BNB',
+    'MATIC',
+    'ARBETH',
     'XDAI',
-    'GHOST', 
-    'NEXT', 
+    'GHOST',
+    'NEXT',
     'SWAP',
   ]
 
@@ -379,14 +378,12 @@ const markCoinAsHidden = (coin, doBackup = false) => {
 const markCoinAsVisible = (coin, doBackup = false) => {
   const { hiddenCoinsList } = constants.localStorage
 
-  const findedCoin = JSON.parse(localStorage.getItem(hiddenCoinsList) || '[]').find(
-    (el) => {
-      if (el.includes(':')) {
-        const [elCoin, elAddress] = el.split(':')
-        return elCoin === coin
-      }
+  const findedCoin = JSON.parse(localStorage.getItem(hiddenCoinsList) || '[]').find((el) => {
+    if (el.includes(':')) {
+      const [elCoin, elAddress] = el.split(':')
+      return elCoin === coin
     }
-  )
+  })
 
   reducers.core.markCoinAsVisible(findedCoin || coin)
   localStorage.setItem(hiddenCoinsList, JSON.stringify(getState().core.hiddenCoinsList))
@@ -407,25 +404,27 @@ type GetWalletParams = {
 const getWallet = (params: GetWalletParams) => {
   // specify addressType,
   // otherwise it finds the first wallet from all origins, including metamask
-  const { address, addressType, connected, currency: currencyData, blockchain: optBlockchain } = params
+  const {
+    address,
+    addressType,
+    connected,
+    currency: currencyData,
+    blockchain: optBlockchain,
+  } = params
   const wallets = getWallets({ withInternal: true })
 
-  const {
-    coin: currency,
-    blockchain: coinBlockchain,
-  } = getCoinInfo(currencyData)
+  const { coin: currency, blockchain: coinBlockchain } = getCoinInfo(currencyData)
   const blockchain = coinBlockchain || optBlockchain
 
   const founded = wallets.filter((wallet) => {
     if (wallet.isMetamask && !wallet.isConnected) return false
-    const conditionOk = (
-        blockchain && wallet.blockchain
-          ? blockchain.toLowerCase() === wallet.blockchain.toLowerCase()
-          : true
-      )
-      && currency
-      && wallet.currency.toLowerCase() === currency.toLowerCase()
-      && (blockchain ? currencyData?.toLowerCase() === wallet.tokenKey : true)
+    const conditionOk =
+      (blockchain && wallet.blockchain
+        ? blockchain.toLowerCase() === wallet.blockchain.toLowerCase()
+        : true) &&
+      currency &&
+      wallet.currency.toLowerCase() === currency.toLowerCase() &&
+      (blockchain ? currencyData?.toLowerCase() === wallet.tokenKey : true)
 
     if (address && wallet.address.toLowerCase() === address.toLowerCase()) {
       return conditionOk
@@ -434,17 +433,9 @@ const getWallet = (params: GetWalletParams) => {
     if (addressType) {
       if (
         (addressType === AddressType.Internal && !wallet.isMetamask) ||
-        (
-          addressType === AddressType.Metamask
-          && wallet.isMetamask
-          && (
-            connected === undefined
-            || (
-              connected
-              && wallet.isConnected
-            )
-          )
-        )
+        (addressType === AddressType.Metamask &&
+          wallet.isMetamask &&
+          (connected === undefined || (connected && wallet.isConnected)))
       ) {
         return conditionOk
       }
@@ -459,7 +450,7 @@ const getWallet = (params: GetWalletParams) => {
 const getWallets = (options: IUniversalObj = {}) => {
   const { withInternal, withoutExternal } = options
 
-  const onlyEvmWallets = (config?.opts?.ui?.disableInternalWallet) ? true : false
+  const onlyEvmWallets = config?.opts?.ui?.disableInternalWallet ? true : false
 
   const {
     user: {
@@ -483,38 +474,37 @@ const getWallets = (options: IUniversalObj = {}) => {
   // if enabledCurrencies equals FALSE then all currencies is enabled
   const enabledCurrencies = config.opts.curEnabled
 
-  const tokenWallets = Object.keys(tokensData).map((k) => {
-    const { coin, blockchain } = getCoinInfo(k)
+  const tokenWallets = Object.keys(tokensData)
+    .map((k) => {
+      const { coin, blockchain } = getCoinInfo(k)
 
-    if (!(coin && blockchain !== ``)) return false
-    if (!(!enabledCurrencies || enabledCurrencies[blockchain.toLowerCase()])) return false
-    if (metamaskConnected) {
-      return (
-        coin && blockchain !== `` &&
-          (metamaskData?.networkVersion === config.evmNetworks[blockchain].networkVersion) ?
-            tokensData[k] : false
-          )
-    }
-    return (coin && blockchain !== ``) ? tokensData[k] : false
-  }).filter((d) => d !== false && d.currency !== undefined)
+      if (!(coin && blockchain !== ``)) return false
+      if (!(!enabledCurrencies || enabledCurrencies[blockchain.toLowerCase()])) return false
+      if (metamaskConnected) {
+        return coin &&
+          blockchain !== `` &&
+          metamaskData?.networkVersion === config.evmNetworks[blockchain].networkVersion
+          ? tokensData[k]
+          : false
+      }
+      return coin && blockchain !== `` ? tokensData[k] : false
+    })
+    .filter((d) => d !== false && d.currency !== undefined)
 
   const allData = [
-    ...(
-      !enabledCurrencies ||
-      enabledCurrencies.eth ||
-      enabledCurrencies.bnb ||
-      enabledCurrencies.matic ||
-      enabledCurrencies.arbeth ||
-      enabledCurrencies.xdai
-        ? metamaskData
-          ? [metamaskData]
-          : []
+    ...(!enabledCurrencies ||
+    enabledCurrencies.eth ||
+    enabledCurrencies.bnb ||
+    enabledCurrencies.matic ||
+    enabledCurrencies.arbeth ||
+    enabledCurrencies.xdai
+      ? metamaskData
+        ? [metamaskData]
         : []
-    ),
+      : []),
     ...((!enabledCurrencies || enabledCurrencies.btc) && !onlyEvmWallets
       ? [btcData, btcMultisigSMSData, btcMultisigUserData]
-      : []
-    ),
+      : []),
     ...((!enabledCurrencies || enabledCurrencies.btc) && !onlyEvmWallets
       ? btcMultisigPinData && btcMultisigPinData.isRegistered
         ? [btcMultisigPinData]
@@ -574,9 +564,11 @@ const getWallets = (options: IUniversalObj = {}) => {
     ...data,
   }))
 
-  const data = allData.filter((item) => item?.address && item?.currency && withoutExternal ? !item.isMetamask : true)
+  const data = allData.filter((item) =>
+    item?.address && item?.currency && withoutExternal ? !item.isMetamask : true
+  )
 
-  return (config && config.isWidget) ? sortWallets(data) : data
+  return config && config.isWidget ? sortWallets(data) : data
 }
 
 const sortWallets = (wallets) => {
@@ -587,11 +579,7 @@ const sortWallets = (wallets) => {
     let connectExternal = false
     const connectedExternalWallets: any[] = []
     wallets.forEach((walletData) => {
-      const {
-        isConnected,
-        isMetamask,
-        isToken,
-      } = walletData
+      const { isConnected, isMetamask, isToken } = walletData
       let isFounded = false
       if (!isConnected && isMetamask) {
         connectExternal = walletData
@@ -616,7 +604,9 @@ const sortWallets = (wallets) => {
       }
     })
     if (connectExternal) sortedWallets.unshift(connectExternal)
-    connectedExternalWallets.reverse().forEach((walletData) => { sortedWallets.unshift(walletData) })
+    connectedExternalWallets.reverse().forEach((walletData) => {
+      sortedWallets.unshift(walletData)
+    })
     return sortedWallets
   }
 
@@ -625,7 +615,6 @@ const sortWallets = (wallets) => {
 
 window.getWallets = getWallets
 window.getWallet = getWallet
-
 
 const fetchWalletBalance = async (walletData): Promise<number> => {
   const name = helpers.getCurrencyKey(walletData.currency.toLowerCase(), true)
@@ -660,14 +649,13 @@ const rememberSwap = (swap) => {
   let swapsIds = JSON.parse(localStorage.getItem('swapId'))
 
   if (swapsIds === null || swapsIds.length === 0) {
-      swapsIds = []
+    swapsIds = []
   }
   if (!swapsIds.includes(swap.id)) {
     swapsIds.push(swap.id)
   }
   localStorage.setItem('swapId', JSON.stringify(swapsIds))
 }
-
 
 export default {
   rememberOrder,

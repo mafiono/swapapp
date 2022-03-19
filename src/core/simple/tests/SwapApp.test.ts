@@ -9,11 +9,11 @@ const {
 
 const { app, wallet, auth, room, orders } = swap.setup({
   swapRoom: {
-    roomName: 'xxx.swap.online'
-  }
+    roomName: 'xxx.swap.online',
+  },
 })
 
-beforeAll(done => {
+beforeAll((done) => {
   ready(room).then(done)
 })
 

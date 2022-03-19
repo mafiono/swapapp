@@ -5,6 +5,4 @@ const removeSwap = (swap) => {
   return swap.update({})
 }
 
-export {
-  removeSwap
-}
+export { removeSwap }

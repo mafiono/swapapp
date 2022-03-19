@@ -17,13 +17,9 @@ import InvoiceInfoBlock from 'components/InvoiceInfoBlock/InvoiceInfoBlock'
 import links from 'helpers/links'
 import { getFullOrigin } from 'helpers/links'
 
-@connect(
-  ({
-    ui: { dashboardModalsAllowed }
-  }) => ({
-    dashboardView: dashboardModalsAllowed,
-  })
-)
+@connect(({ ui: { dashboardModalsAllowed } }) => ({
+  dashboardView: dashboardModalsAllowed,
+}))
 @cssModules({ ...styles, ...ownStyle }, { allowMultiple: true })
 class WithdrawBtcMultisig extends React.Component<any, any> {
   static propTypes = {
@@ -48,64 +44,63 @@ class WithdrawBtcMultisig extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    this.setState({
-      isShipped: true,
-    }, async () => {
-      const {
-        data: {
-          wallet: {
-            address,
+    this.setState(
+      {
+        isShipped: true,
+      },
+      async () => {
+        const {
+          data: {
+            wallet: { address },
+            sendOptions,
+            sendOptions: { to, amount },
+            invoice,
           },
-          sendOptions,
-          sendOptions: {
-            to,
+        } = this.props
+
+        const result = await actions.btcmultisig.send(sendOptions)
+
+        let txId = false
+
+        if (result) {
+          //@ts-ignore
+          txId = await actions.multisigTx.broadcast({
+            sender: address,
+            destination: to,
             amount,
-          },
-          invoice,
-        },
-      } = this.props
-
-      const result = await actions.btcmultisig.send(sendOptions)
-
-      let txId = false
-
-      if (result) {
-        //@ts-ignore
-        txId = await actions.multisigTx.broadcast({
-          sender: address,
-          destination: to,
-          amount,
-          fee: 0.0001, // actions.helpers.lastBtcFee
-          rawTx: result,
-        })
-        this.setState({
-          step: 'rawlink',
-          txRaw: result,
-          txId,
-          isShipped: false,
-        })
+            fee: 0.0001, // actions.helpers.lastBtcFee
+            rawTx: result,
+          })
+          this.setState({
+            step: 'rawlink',
+            txRaw: result,
+            txId,
+            isShipped: false,
+          })
+        }
       }
-    })
+    )
   }
 
   handleCopyLink = () => {
-    this.setState({
-      isLinkCopied: true,
-    }, () => {
-      setTimeout(() => {
-        this.setState({
-          isLinkCopied: false,
-        })
-      }, 500)
-    })
+    this.setState(
+      {
+        isLinkCopied: true,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            isLinkCopied: false,
+          })
+        }, 500)
+      }
+    )
   }
 
   handleReady = () => {
     const {
       name,
-      data: {
-        onReady,
-      },
+      data: { onReady },
     } = this.props
 
     actions.modals.close(name)
@@ -114,10 +109,9 @@ class WithdrawBtcMultisig extends React.Component<any, any> {
     }
   }
 
-
-  handleError = err => {
-    console.error(err);
-  };
+  handleError = (err) => {
+    console.error(err)
+  }
 
   handleClose = () => {
     const { name } = this.props
@@ -125,23 +119,13 @@ class WithdrawBtcMultisig extends React.Component<any, any> {
     actions.modals.close(name)
   }
 
-
   render() {
-    const {
-      isShipped,
-      error,
-      step,
-      txRaw,
-      txId,
-      isLinkCopied,
-    } = this.state
+    const { isShipped, error, step, txRaw, txId, isLinkCopied } = this.state
 
     const {
       name,
       data: {
-        wallet: {
-          currency,
-        },
+        wallet: { currency },
         invoice,
       },
       intl,
@@ -149,7 +133,9 @@ class WithdrawBtcMultisig extends React.Component<any, any> {
 
     let txConfirmLink = `${getFullOrigin()}${links.multisign}/btc/confirm/${txId}`
     if (invoice) {
-      txConfirmLink = `${getFullOrigin()}${links.multisign}/btc/confirminvoice/${invoice.id}|${txId}`
+      txConfirmLink = `${getFullOrigin()}${links.multisign}/btc/confirminvoice/${
+        invoice.id
+      }|${txId}`
     }
 
     const labels = defineMessages({
@@ -159,26 +145,25 @@ class WithdrawBtcMultisig extends React.Component<any, any> {
       },
       ownTxPlaceholder: {
         id: 'withdrawOwnTxPlaceholder',
-        defaultMessage: 'If paid from another source'
+        defaultMessage: 'If paid from another source',
       },
     })
 
     const formRender = (
       <Fragment>
-        {invoice &&
-          <InvoiceInfoBlock invoiceData={invoice} />
-        }
-        {step === 'rawlink' &&
+        {invoice && <InvoiceInfoBlock invoiceData={invoice} />}
+        {step === 'rawlink' && (
           <Fragment>
             <p styleName="notice dashboardViewNotice">
               <FormattedMessage id="WithdrawMSUserReady" defaultMessage="TX confirm link" />
               <br />
-              <FormattedMessage id="WithdrawMSUserMessage" defaultMessage="Send this link to other wallet owner" />
+              <FormattedMessage
+                id="WithdrawMSUserMessage"
+                defaultMessage="Send this link to other wallet owner"
+              />
             </p>
             <div styleName="highLevel">
-              <div styleName="groupField">
-
-              </div>
+              <div styleName="groupField"></div>
               <div>
                 <ShareLink link={txConfirmLink} />
               </div>
@@ -189,11 +174,14 @@ class WithdrawBtcMultisig extends React.Component<any, any> {
               </Button>
             </div>
           </Fragment>
-        }
+        )}
       </Fragment>
     )
     return (
-      <Modal name={name} title={`${intl.formatMessage(labels.withdrawModal)}${' '}${currency.toUpperCase()}`}>
+      <Modal
+        name={name}
+        title={`${intl.formatMessage(labels.withdrawModal)}${' '}${currency.toUpperCase()}`}
+      >
         {formRender}
       </Modal>
     )

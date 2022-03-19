@@ -8,7 +8,6 @@ import Order from './Order'
 import visibleMakers from 'common/whitelists/visibleMakers'
 import getCoinInfo from 'common/coins/getCoinInfo'
 
-
 const checkIncomeOrderFormat = (order) => {
   // Skip unknown currencies
   if (order && order.buyCurrency && !util.typeforce.isCoinName(order.buyCurrency)) {
@@ -61,9 +60,7 @@ const checkIncomeOrderFormat = (order) => {
   return isValid
 }
 
-const checkIncomeOrderOwner = ({ owner: { peer } }, fromPeer) =>
-  peer === fromPeer
-
+const checkIncomeOrderOwner = ({ owner: { peer } }, fromPeer) => peer === fromPeer
 
 const checkIncomeOrderWhitelisted = ({ owner: { peer } }) => {
   //@ts-ignore: strictNullChecks
@@ -78,9 +75,7 @@ const checkIncomeOrder = (order, fromPeer) => {
   return isFormatValid && isOwnerValid && isOwnerWhitelisted
 }
 
-
 class SwapOrders extends aggregation(ServiceInterface, Collection) {
-
   _serviceName: string
   getUniqueId: any
   _dependsOn: any
@@ -94,7 +89,7 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
     super()
 
     this._serviceName = 'orders'
-    this._dependsOn   = [ SwapRoom ]
+    this._dependsOn = [SwapRoom]
 
     this.getUniqueId = () => {}
   }
@@ -144,24 +139,26 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
     let myOrders = this.getMyOrders()
     if (myOrders.length) {
       // clean orders from other additional props
-      myOrders = myOrders.map((item) => util.pullProps(
-        item,
-        'id',
-        'owner',
-        'buyCurrency',
-        'buyBlockchain',
-        'sellCurrency',
-        'sellBlockchain',
-        'buyAmount',
-        'exchangeRate',
-        'sellAmount',
-        'isRequested',
-        'isProcessing',
-        'isPartial',
-        'isTurbo',
-        'isHidden',
-        'destination',
-      ))
+      myOrders = myOrders.map((item) =>
+        util.pullProps(
+          item,
+          'id',
+          'owner',
+          'buyCurrency',
+          'buyBlockchain',
+          'sellCurrency',
+          'sellBlockchain',
+          'buyAmount',
+          'exchangeRate',
+          'sellAmount',
+          'isRequested',
+          'isProcessing',
+          'isPartial',
+          'isTurbo',
+          'isHidden',
+          'destination'
+        )
+      )
 
       this.app.services.room.sendMessagePeer(peer, {
         event: 'new orders',
@@ -191,9 +188,9 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
 
   _handleNewOrders = ({ fromPeer, orders }) => {
     // ductape to check if such orders already exist
-    const filteredOrders = orders.filter(({ id, owner: { peer } }) => (
-      !this.getByKey(id) && peer === fromPeer
-    ))
+    const filteredOrders = orders.filter(
+      ({ id, owner: { peer } }) => !this.getByKey(id) && peer === fromPeer
+    )
 
     this._handleMultipleCreate({ orders: filteredOrders, fromPeer })
   }
@@ -240,12 +237,8 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
   _create(data) {
     const { id, buyAmount, sellAmount, buyCurrency, sellCurrency, ...rest } = data
 
-    const {
-      blockchain: buyBlockchain,
-    } = getCoinInfo(buyCurrency)
-    const {
-      blockchain: sellBlockchain,
-    } = getCoinInfo(sellCurrency)
+    const { blockchain: buyBlockchain } = getCoinInfo(buyCurrency)
+    const { blockchain: sellBlockchain } = getCoinInfo(sellCurrency)
 
     // Error in the bottom line: Cannot read property 'precision' of undefined
     if (
@@ -255,14 +248,18 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
       return
     }
 
-    const roundedBuyAmount = new BigNumber(buyAmount).dp(constants.COIN_DATA[buyCurrency.toUpperCase()].precision)
-    const roundedSellAmount = new BigNumber(sellAmount).dp(constants.COIN_DATA[sellCurrency.toUpperCase()].precision)
+    const roundedBuyAmount = new BigNumber(buyAmount).dp(
+      constants.COIN_DATA[buyCurrency.toUpperCase()].precision
+    )
+    const roundedSellAmount = new BigNumber(sellAmount).dp(
+      constants.COIN_DATA[sellCurrency.toUpperCase()].precision
+    )
 
     const order = new Order(this.app, this, {
-      id:           id || this.getUniqueId(),
-      buyAmount:    roundedBuyAmount,
-      sellAmount:   roundedSellAmount,
-      buyCurrency:  buyCurrency,
+      id: id || this.getUniqueId(),
+      buyAmount: roundedBuyAmount,
+      sellAmount: roundedSellAmount,
+      buyCurrency: buyCurrency,
       buyBlockchain,
       sellCurrency: sellCurrency,
       sellBlockchain,
@@ -311,8 +308,7 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
         this.removeByKey(orderId)
         events.dispatch('remove order', order)
       }
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err)
     }
   }
@@ -325,26 +321,28 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
     // problem: when I going online and persisting my orders need to show only online users requests,
     // but then user comes online need to change status. Ofc we can leave this bcs developers can do this themselves
     // with filters - skip requests where user is offline, but it looks like not very good
-    myOrders = myOrders.map((item) => util.pullProps(
-      item,
-      'id',
-      'owner',
-      'buyCurrency',
-      'buyBlockchain',
-      'sellCurrency',
-      'sellBlockchain',
-      'buyAmount',
-      'sellAmount',
-      'exchangeRate',
-      'participant',
-      'requests',
-      'isRequested',
-      'isProcessing',
-      'isPartial',
-      'isTurbo',
-      'isHidden',
-      'destination',
-    ))
+    myOrders = myOrders.map((item) =>
+      util.pullProps(
+        item,
+        'id',
+        'owner',
+        'buyCurrency',
+        'buyBlockchain',
+        'sellCurrency',
+        'sellBlockchain',
+        'buyAmount',
+        'sellAmount',
+        'exchangeRate',
+        'participant',
+        'requests',
+        'isRequested',
+        'isProcessing',
+        'isPartial',
+        'isTurbo',
+        'isHidden',
+        'destination'
+      )
+    )
 
     this.app.env.storage.setItem('myOrders', myOrders)
   }
@@ -394,7 +392,7 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
           'isPartial',
           'isTurbo',
           'isHidden',
-          'destination',
+          'destination'
         ),
       },
     })
@@ -429,7 +427,9 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
   }
 
   hasHiddenOrders() {
-    let myHiddenOrders = this.items.filter(({ isHidden, owner: { peer } }) => (peer === this.app.services.room.peer && isHidden))
+    let myHiddenOrders = this.items.filter(
+      ({ isHidden, owner: { peer } }) => peer === this.app.services.room.peer && isHidden
+    )
     return !!myHiddenOrders.length
   }
 
@@ -495,6 +495,5 @@ class SwapOrders extends aggregation(ServiceInterface, Collection) {
     return this
   }
 }
-
 
 export default SwapOrders

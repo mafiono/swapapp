@@ -7,12 +7,7 @@ const JsonLd = ({ uri, title, description }) => (
       __html: JSON.stringify({
         '@context': 'http://schema.org',
         '@type': 'Website',
-        sameAs: [
-          seo.config.medium,
-          seo.config.twitter,
-          seo.config.facebook,
-          seo.config.telegram,
-        ],
+        sameAs: [seo.config.medium, seo.config.twitter, seo.config.facebook, seo.config.telegram],
         email: seo.config.email,
         url: getUrl(uri),
         name: title,

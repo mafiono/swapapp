@@ -1,7 +1,6 @@
 import SwapApp from 'swap.app'
 import * as mnemonicUtils from 'common/utils/mnemonic'
 
-
 const loginMnemonic = (mnemonic, walletNumber = 0, path, app) => {
   const wallet = mnemonicUtils.getEthLikeWallet({ mnemonic, walletNumber, path })
   return login(wallet.privateKey, app)
@@ -16,8 +15,7 @@ const login = (_privateKey, app) => {
 
   if (privateKey) {
     account = app.env.web3Arbitrum.eth.accounts.privateKeyToAccount(privateKey)
-  }
-  else {
+  } else {
     account = app.env.web3Arbitrum.eth.accounts.create()
   }
 
@@ -34,7 +32,6 @@ const getPublicData = (account) => ({
   address: account.address,
   publicKey: null,
 })
-
 
 export default {
   login,

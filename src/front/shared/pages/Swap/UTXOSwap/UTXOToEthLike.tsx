@@ -13,7 +13,6 @@ import SwapList from './SwapList/SwapList'
 import SwapController from '../SwapController'
 import SwapPairInfo from './SwapPairInfo'
 
-
 @CSSModules(styles)
 export default class UTXOToEthLike extends Component<any, any> {
   swap = null
@@ -46,7 +45,9 @@ export default class UTXOToEthLike extends Component<any, any> {
   }
 
   componentDidMount() {
-    const { flow: { isSignFetching, isMeSigned, step, isParticipantSigned, isStoppedSwap } } = this.state
+    const {
+      flow: { isSignFetching, isMeSigned, step, isParticipantSigned, isStoppedSwap },
+    } = this.state
     if (isStoppedSwap) return
     window.addEventListener('resize', this.updateWindowDimensions)
     this.updateWindowDimensions()
@@ -54,8 +55,7 @@ export default class UTXOToEthLike extends Component<any, any> {
     this.ParticipantTimer = setInterval(() => {
       if (this.state.flow.isParticipantSigned && this.state.destinationBuyAddress) {
         //this.submitSecret()
-      }
-      else {
+      } else {
         //@ts-ignore: strictNullChecks
         clearInterval(this.ParticipantTimer)
       }
@@ -63,7 +63,10 @@ export default class UTXOToEthLike extends Component<any, any> {
   }
 
   componentWillUnmount() {
-    const { swap, flow: { isMeSigned } } = this.state
+    const {
+      swap,
+      flow: { isMeSigned },
+    } = this.state
     window.removeEventListener('resize', this.updateWindowDimensions)
     //@ts-ignore: strictNullChecks
     this.swap.off('state update', this.handleFlowStateUpdate)
@@ -106,13 +109,11 @@ export default class UTXOToEthLike extends Component<any, any> {
 
     if (flow.refundTxHex) {
       return flow.refundTxHex
-    }
-    else if (flow[scriptValues]) {
+    } else if (flow[scriptValues]) {
       //@ts-ignore: strictNullChecks
       this.swap.flow.getRefundTxHex()
     }
   }
-
 
   render() {
     const {
@@ -126,7 +127,7 @@ export default class UTXOToEthLike extends Component<any, any> {
       onClickCancelSwap,
       locale,
       wallets,
-    }  = this.props
+    } = this.props
 
     const { flow, isShowingGhostScript, currencyData, windowWidth } = this.state
 
@@ -134,10 +135,8 @@ export default class UTXOToEthLike extends Component<any, any> {
       <div>
         <div
           styleName="swapContainer"
-          style={(isMobile && (windowWidth < 569))
-            ? { paddingTop: 120 }
-            : { paddingTop: 0 }
-          }>
+          style={isMobile && windowWidth < 569 ? { paddingTop: 120 } : { paddingTop: 0 }}
+        >
           <div>
             {swap.id && <SwapPairInfo swap={swap} />}
             <SwapController swap={swap} />
@@ -154,20 +153,19 @@ export default class UTXOToEthLike extends Component<any, any> {
               swapName="BtcLikeToEth"
             />
             <div>
-              {!continueSwap
-                ? <FeeControler ethAddress={ethAddress} />
-                : (
-                  <SwapProgress
-                    flow={flow}
-                    swap={swap}
-                    history={history}
-                    locale={locale}
-                    wallets={wallets}
-                    tokenItems={tokenItems}
-                    fields={this._fields}
-                  />
-                )
-              }
+              {!continueSwap ? (
+                <FeeControler ethAddress={ethAddress} />
+              ) : (
+                <SwapProgress
+                  flow={flow}
+                  swap={swap}
+                  history={history}
+                  locale={locale}
+                  wallets={wallets}
+                  tokenItems={tokenItems}
+                  fields={this._fields}
+                />
+              )}
             </div>
           </div>
           {children && <div styleName="swapContainerInfo">{children}</div>}

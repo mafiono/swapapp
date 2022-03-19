@@ -21,18 +21,21 @@ const save = (swapID, storageKey = 'history') => {
   const history = storage.getItem(storageKey) || []
 
   try {
-    if (history.filter(_swapID => _swapID === swapID).length > 0) {
+    if (history.filter((_swapID) => _swapID === swapID).length > 0) {
       return debug('swap.core:simple:history')(`${storageKey}: swap already saved id = ${swapID}`)
     }
 
-    const newHistory = [ ...history, swapID ]
+    const newHistory = [...history, swapID]
 
     storage.setItem(storageKey, newHistory)
 
     debug('swap.core:simple:history')(`${storageKey}: saved swap = ${swapID}`)
   } catch (err) {
     debug('swap.core:simple:history')('Error:', `${storageKey}: ${err}`)
-    debug('swap.core:simple:history')('Error:', `${storageKey}: cannot save swap.history, rewind back`)
+    debug('swap.core:simple:history')(
+      'Error:',
+      `${storageKey}: cannot save swap.history, rewind back`
+    )
   }
 }
 
@@ -44,18 +47,23 @@ const remove = (swapID, storageKey = 'history') => {
   const history = storage.getItem(storageKey) || []
 
   try {
-    if (history.filter(_swapID => _swapID === swapID).length == 0) {
-      return debug('swap.core:simple:history')(`${storageKey}: swap not saved id = ${swapID} cant remove`)
+    if (history.filter((_swapID) => _swapID === swapID).length == 0) {
+      return debug('swap.core:simple:history')(
+        `${storageKey}: swap not saved id = ${swapID} cant remove`
+      )
     }
 
-    const newHistory = history.filter(_swapID => _swapID !== swapID)
+    const newHistory = history.filter((_swapID) => _swapID !== swapID)
 
     storage.setItem(storageKey, newHistory)
 
     debug('swap.core:simple:history')(`${storageKey}: remove swap = ${swapID}`)
   } catch (err) {
     debug('swap.core:simple:history')('Error:', `${storageKey}: ${err}`)
-    debug('swap.core:simple:history')('Error:', `${storageKey}: cannot save swap.history, rewind back`)
+    debug('swap.core:simple:history')(
+      'Error:',
+      `${storageKey}: cannot save swap.history, rewind back`
+    )
   }
 }
 
@@ -92,5 +100,5 @@ export default {
 
   saveFinished,
   removeFinished,
-  getAllFinished
+  getAllFinished,
 }

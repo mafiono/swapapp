@@ -3,9 +3,7 @@ import CSSModules from 'react-css-modules'
 
 import styles from '../../ContentLoader.scss'
 
-
 function BalanceSection() {
-
   return (
     <div styleName="container balance">
       <div styleName="one" />
@@ -16,4 +14,3 @@ function BalanceSection() {
 }
 
 export default CSSModules(BalanceSection, styles, { allowMultiple: true })
-

@@ -33,11 +33,11 @@ export const BASE_TOKEN_CURRENCY = Object.freeze({
 
 export const COIN_MODEL = Object.freeze({
   UTXO: 'UTXO', // Unspent Transaction Outputs model
-  AB: 'AB' // Account/Balance model
+  AB: 'AB', // Account/Balance model
 })
 
 export const COIN_DATA = {
-  'BTC': {
+  BTC: {
     ticker: 'BTC',
     name: 'Bitcoin',
     type: COIN_TYPE.NATIVE,
@@ -45,7 +45,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.UTXO,
     precision: 8,
   },
-  'ETH': {
+  ETH: {
     ticker: 'ETH',
     name: 'Ethereum',
     type: COIN_TYPE.NATIVE,
@@ -53,7 +53,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'BNB': {
+  BNB: {
     ticker: 'BNB',
     name: 'Binance Coin',
     type: COIN_TYPE.NATIVE,
@@ -61,7 +61,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'MATIC': {
+  MATIC: {
     ticker: 'MATIC',
     name: 'MATIC Token',
     type: COIN_TYPE.NATIVE,
@@ -69,7 +69,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'ARBETH': {
+  ARBETH: {
     ticker: 'ARBETH',
     name: 'Arbitrum ETH',
     type: COIN_TYPE.NATIVE,
@@ -77,7 +77,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'XDAI': {
+  XDAI: {
     ticker: 'XDAI',
     name: 'xDai',
     type: COIN_TYPE.NATIVE,
@@ -85,7 +85,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'USDT': {
+  USDT: {
     ticker: 'USDT',
     name: 'Tether',
     type: COIN_TYPE.ETH_TOKEN,
@@ -94,7 +94,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'BTCB': {
+  BTCB: {
     ticker: 'BTCB',
     name: 'BTCB Token',
     type: COIN_TYPE.BNB_TOKEN,
@@ -103,7 +103,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'EURS': {
+  EURS: {
     ticker: 'EURS',
     name: 'STASIS EURO',
     type: COIN_TYPE.ETH_TOKEN,
@@ -112,7 +112,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'GHOST': {
+  GHOST: {
     ticker: 'GHOST',
     name: 'Ghost',
     type: COIN_TYPE.NATIVE,
@@ -120,7 +120,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.UTXO,
     precision: 8,
   },
-  'NEXT': {
+  NEXT: {
     ticker: 'NEXT',
     name: 'NEXT.coin',
     type: COIN_TYPE.NATIVE,
@@ -128,7 +128,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.UTXO,
     precision: 8,
   },
-  'SWAP': {
+  SWAP: {
     ticker: 'SWAP',
     name: 'SWAP',
     type: COIN_TYPE.ETH_TOKEN,
@@ -137,7 +137,7 @@ export const COIN_DATA = {
     model: COIN_MODEL.AB,
     precision: 18,
   },
-  'SNM': {
+  SNM: {
     ticker: 'SONM',
     name: 'SWAP',
     type: COIN_TYPE.ETH_TOKEN,
@@ -147,7 +147,6 @@ export const COIN_DATA = {
     precision: 18,
   },
 }
-
 
 // todo: move to COIN_DATA
 
@@ -185,7 +184,6 @@ export const ETH_TOKENS = {
   hdp: '{ETH}HDP',
   scro: '{ETH}SCRO',
   xeur: '{ETH}XEUR',
-
 }
 
 export default {

@@ -4,15 +4,17 @@ import COIN_DATA from 'swap.app/constants'
 import TRADE_TICKERS from 'swap.app/constants/TRADE_TICKERS'
 import PAIR_TYPES from 'swap.app/constants/PAIR_TYPES'
 
-
 const PAIR_BID = PAIR_TYPES.BID
 const PAIR_ASK = PAIR_TYPES.ASK
 
-const isAsk = (type) => (type === PAIR_TYPES.ASK)
-const isBid = (type) => (type === PAIR_TYPES.BID)
+const isAsk = (type) => type === PAIR_TYPES.ASK
+const isBid = (type) => type === PAIR_TYPES.BID
 
 const filteredDecimals = ({ amount, currency }) => {
-  const precision = COIN_DATA[currency] && typeof COIN_DATA[currency].precision == "number" ? COIN_DATA[currency].precision : 18
+  const precision =
+    COIN_DATA[currency] && typeof COIN_DATA[currency].precision == 'number'
+      ? COIN_DATA[currency].precision
+      : 18
   return new BigNumber(amount).decimalPlaces(precision).toString()
 }
 
@@ -41,7 +43,6 @@ export const parseTicker = (order) => {
 }
 
 export const parsePair = (str) => {
-
   if (!str) {
     throw new Error(`Empty string: ${str}`)
   }
@@ -97,30 +98,30 @@ export default class Pair {
   }
 
   /*
-  * 10 ETH -> 1 BTC
-  *
-  * ticker: ETH-BTC
-  *
-  * So we are on ETH market, thus:
-  *   - ASK orders are SELL ETH (for BTC),
-  *   - BID orders are BUY ETH (for BTC)
-  *
-  * This order is SELLING ETH, to it's ASK
-  * type: BID = true, ASK = false
-  *
-  * Price is also calculated in BTC, while amount in ETH
-  * price: 0.1
-  * amount: 10
-  *
-  *
-  * So, for type = ASK
-  *
-  * buyCurrency: BTC = base
-  * sellCurrency: ETH = main
-  * buyAmount: 1 BTC = (0.1 BTC/ETH) * 10 ETH = price * amount
-  * sellAmount: 10 ETH = 10 ETH = amount
-  *
-  */
+   * 10 ETH -> 1 BTC
+   *
+   * ticker: ETH-BTC
+   *
+   * So we are on ETH market, thus:
+   *   - ASK orders are SELL ETH (for BTC),
+   *   - BID orders are BUY ETH (for BTC)
+   *
+   * This order is SELLING ETH, to it's ASK
+   * type: BID = true, ASK = false
+   *
+   * Price is also calculated in BTC, while amount in ETH
+   * price: 0.1
+   * amount: 10
+   *
+   *
+   * So, for type = ASK
+   *
+   * buyCurrency: BTC = base
+   * sellCurrency: ETH = main
+   * buyAmount: 1 BTC = (0.1 BTC/ETH) * 10 ETH = price * amount
+   * sellAmount: 10 ETH = 10 ETH = amount
+   *
+   */
   toOrder() {
     const { ticker, type, price, amount } = this
 
@@ -128,13 +129,14 @@ export default class Pair {
     const { MAIN, BASE } = parsePair(ticker)
     if (!MAIN || !BASE) throw new Error(`CreateOrderError: No currency: ${MAIN}-${BASE}`)
 
-    if (![PAIR_ASK, PAIR_BID].includes(type)) throw new Error(`CreateOrderError: Wrong order type: ${type}`)
+    if (![PAIR_ASK, PAIR_BID].includes(type))
+      throw new Error(`CreateOrderError: Wrong order type: ${type}`)
 
     const base = { currency: BASE, amount: amount.times(price) }
     const main = { currency: MAIN, amount }
 
-    const buy = (type === PAIR_ASK) ? base : main
-    const sell = (type === PAIR_ASK) ? main : base
+    const buy = type === PAIR_ASK ? base : main
+    const sell = type === PAIR_ASK ? main : base
 
     return {
       buyCurrency: buy.currency,

@@ -7,7 +7,7 @@ import styles from './Table.scss'
 type TableProps = {
   rows: { [key: string]: any }[]
   rowRender: (...any) => JSX.Element
-  
+
   id?: string
   className?: string
   isLoading?: boolean
@@ -29,7 +29,7 @@ export default class Table extends React.Component<TableProps, TableState> {
   static defaultProps = {
     textIfEmpty: <FormattedMessage id="Table95" defaultMessage="The table is empty" />,
     loadingText: <FormattedMessage id="Table96" defaultMessage="Loading..." />,
-    titles: []
+    titles: [],
   }
 
   constructor(props) {
@@ -69,55 +69,48 @@ export default class Table extends React.Component<TableProps, TableState> {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { rows, isLoading} = this.props
+    const { rows, isLoading } = this.props
 
-    return isLoading !== nextProps.isLoading || rows !== nextProps.rows || this.state.selectId !== nextState.selectId
+    return (
+      isLoading !== nextProps.isLoading ||
+      rows !== nextProps.rows ||
+      this.state.selectId !== nextState.selectId
+    )
   }
 
   render() {
-    const {
-      titles,
-      rows,
-      rowRender,
-      textIfEmpty,
-      isLoading,
-      loadingText,
-      className,
-    } = this.props
+    const { titles, rows, rowRender, textIfEmpty, isLoading, loadingText, className } = this.props
 
     return (
-      <table styleName="table" className={`table ${className}`} ref={(table) => this.linkOnTable = table}>
-        <thead ref={(thead) => this.linkOnTableHead = thead}>
+      <table
+        styleName="table"
+        className={`table ${className}`}
+        ref={(table) => (this.linkOnTable = table)}
+      >
+        <thead ref={(thead) => (this.linkOnTableHead = thead)}>
           <tr>
-            {
-              titles && titles.filter(title => !!title).map((title, index) => (
-                <th key={index}>{title}</th>
-              ))
-            }
+            {titles &&
+              titles.filter((title) => !!title).map((title, index) => <th key={index}>{title}</th>)}
           </tr>
         </thead>
-        <tbody ref={(tbody) => this.linkOnTableBody = tbody}>
-          {
-            isLoading && (
-              <tr>
-                <td styleName="noticeText">{loadingText}</td>
-              </tr>
-            )
-          }
-          {
-            !isLoading && !rows.length && (
-              <tr>
-                <td styleName="noticeText">{textIfEmpty}</td>
-              </tr>
-            )
-          }
-          {
-            !isLoading && !!rows.length && rows.map((row, rowIndex) => {
+        <tbody ref={(tbody) => (this.linkOnTableBody = tbody)}>
+          {isLoading && (
+            <tr>
+              <td styleName="noticeText">{loadingText}</td>
+            </tr>
+          )}
+          {!isLoading && !rows.length && (
+            <tr>
+              <td styleName="noticeText">{textIfEmpty}</td>
+            </tr>
+          )}
+          {!isLoading &&
+            !!rows.length &&
+            rows.map((row, rowIndex) => {
               if (typeof rowRender === 'function') {
                 return rowRender(row, rowIndex, this.state.selectId, this.handleSelectId)
               }
-            })
-          }
+            })}
         </tbody>
       </table>
     )

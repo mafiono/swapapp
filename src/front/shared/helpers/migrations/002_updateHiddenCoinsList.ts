@@ -4,7 +4,6 @@ import getCoinInfo from 'common/coins/getCoinInfo'
 
 const storageKey = constants.localStorage.hiddenCoinsList
 
-
 const name = 'Update hiddenCoinsList - add baseCurrency to tokens'
 const run = () => {
   const isWalletCreated = localStorage.getItem(constants.localStorage.isWalletCreate)
@@ -26,7 +25,7 @@ const run = () => {
     standard?: string
   }[] = []
 
-  const hiddenNativeCoinsList = hiddenCoinsList.filter(coin => {
+  const hiddenNativeCoinsList = hiddenCoinsList.filter((coin) => {
     let currency = coin.toUpperCase()
 
     if (coin.includes(':')) {
@@ -44,11 +43,9 @@ const run = () => {
 
     if (COIN_DATA[currency]?.type === COIN_TYPE.NATIVE) return true
 
-    const {
-      coin: tokenName
-    } = getCoinInfo(currency)
+    const { coin: tokenName } = getCoinInfo(currency)
 
-    Object.keys(COIN_DATA).map(tokenKey => {
+    Object.keys(COIN_DATA).map((tokenKey) => {
       const tokenInfo = getCoinInfo(tokenKey)
       if (tokenInfo.coin === tokenName) {
         similarTokens.push(COIN_DATA[tokenKey])
@@ -60,7 +57,7 @@ const run = () => {
 
   const hiddenTokensList: string[] = []
 
-  similarTokens.forEach(token => {
+  similarTokens.forEach((token) => {
     const baseCurrency = token.blockchain
     const ticker = token.ticker
     const tokenValue = `{${baseCurrency}}${ticker}`

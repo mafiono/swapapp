@@ -8,7 +8,6 @@ import { FG_COLORS as COLORS, BG_COLORS, colorString } from 'common/utils/colorS
 
 import { feedbackToOwner } from './helpers/debugFeedBack'
 
-
 const defaultConfig = {
   SERVER_ID: '2234567890',
   ACCOUNT: '2234567890',
@@ -50,15 +49,15 @@ const rewriteEnvKeys = [
 ]
 
 interface envKeys {
-  NETWORK?: string,
-  PORT?: string,
-  API_USER?: string,
-  API_PASS?: string,
-  SECRET_PHRASE?: string,
-  USE_JSON?: string,
-  SPREAD?: string,
-  MAX_PARALLEL_SWAPS?: string,
-  TELEGRAM_CHATID?: string,
+  NETWORK?: string
+  PORT?: string
+  API_USER?: string
+  API_PASS?: string
+  SECRET_PHRASE?: string
+  USE_JSON?: string
+  SPREAD?: string
+  MAX_PARALLEL_SWAPS?: string
+  TELEGRAM_CHATID?: string
 }
 
 const rewritedEnv: envKeys = {}
@@ -67,7 +66,7 @@ const rewritedEnv: envKeys = {}
 if (process.argv.length >= 3) {
   /* check - its may be run with seed */
   process.argv.forEach((param) => {
-    const [ name, value ] = param.split('=')
+    const [name, value] = param.split('=')
     if (rewriteEnvKeys.indexOf(name) !== -1) {
       rewritedEnv[name] = value
     }
@@ -84,9 +83,7 @@ if (rewritedEnv.SECRET_PHRASE) {
   const mnemonic = rewritedEnv.SECRET_PHRASE
   if (mnemonicUtils.mnemonicIsValid(mnemonic)) {
     configStorage.setMnemonic(mnemonic)
-    console.log(
-      colorString('>>> used SECRET_PHRASE', COLORS.GREEN)
-    )
+    console.log(colorString('>>> used SECRET_PHRASE', COLORS.GREEN))
   } else {
     console.log(colorString('>>> Your are pass not valid mnemonic', COLORS.RED))
     process.exit(0)
@@ -108,20 +105,17 @@ if (process.env.USE_JSON_CONFIG === `true`) {
   )
 }
 
-
 if (process.env.TEST_STARTUP === `true`) {
-  console.log(
-    colorString('>>>> TEST STARTUP', COLORS.GREEN)
-  )
+  console.log(colorString('>>>> TEST STARTUP', COLORS.GREEN))
 
-  process.env.SECRET_PHRASE = 'gospel total hundred major refuse when equal pilot goat soft recall abandon'
+  process.env.SECRET_PHRASE =
+    'gospel total hundred major refuse when equal pilot goat soft recall abandon'
 
   setTimeout(() => {
     console.log('>>>> TEST READY - SHUTDOWN')
     process.exit(0)
-  }, 30*1000)
+  }, 30 * 1000)
 }
-
 
 //load default env
 Object.keys(defaultConfig).forEach((key) => {
@@ -129,7 +123,6 @@ Object.keys(defaultConfig).forEach((key) => {
     process.env[key] = defaultConfig[key]
   }
 })
-
 
 // Rewrite vars from .env with values from command line
 Object.keys(rewritedEnv).forEach((envKey) => {
@@ -143,14 +136,11 @@ if (process.env.MAX_PARALLEL_SWAPS) {
   )
 }
 
-
 feedbackToOwner(`Marketmaker started Network(${process.env.NETWORK})`)
 
 _debug('.:app')
 
-console.log(
-  colorString('>>> Marketmaker starts...', COLORS.GREEN)
-)
+console.log(colorString('>>> Marketmaker starts...', COLORS.GREEN))
 
 exports = module.exports = require('./app')
 /*

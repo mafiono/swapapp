@@ -565,10 +565,7 @@ class WithdrawModalMultisigUser extends React.Component<any, any> {
             {invoice && (
               <Fragment>
                 <hr />
-                <div
-                  styleName="lowLevel"
-                  style={{ marginBottom: '50px' }}
-                >
+                <div styleName="lowLevel" style={{ marginBottom: '50px' }}>
                   <div styleName="groupField">
                     <div styleName="downLabel">
                       <FieldLabel inRow>

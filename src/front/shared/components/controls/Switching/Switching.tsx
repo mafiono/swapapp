@@ -13,7 +13,7 @@ const Switching = (props: SwitchingProps) => {
   const { onClick = doNothing, noneBorder = false } = props
 
   const styleName = cx('switching', {
-    'noneBorder': noneBorder,
+    noneBorder: noneBorder,
   })
 
   return (

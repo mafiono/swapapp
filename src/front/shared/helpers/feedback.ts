@@ -46,7 +46,7 @@ const sendMessage = ({ appPart, eventName, details }) => {
     axios({
       url: `https://noxon.wpmix.net/counter.php?msg=${encodeURI(textToSend)}&todevs=1`,
       method: 'post',
-    }).catch(e => console.error(e))
+    }).catch((e) => console.error(e))
   } catch (error) {
     console.error(error)
   }
@@ -144,10 +144,10 @@ const events = {
     switched: 'switched',
   },
   actions: {
-    failed: 'failed'
+    failed: 'failed',
   },
   helpers: {
-    failed: 'failed'
+    failed: 'failed',
   },
 }
 
@@ -159,13 +159,13 @@ interface IFeedback {
 
 const feedback: IFeedback = {}
 
-Object.keys(events).forEach(appPart => {
+Object.keys(events).forEach((appPart) => {
   if (!feedback[appPart]) {
     feedback[appPart] = {}
   }
   const appPartEvents = events[appPart]
-  Object.keys(appPartEvents).forEach(eventName => {
-    feedback[appPart][eventName] = function(details) {
+  Object.keys(appPartEvents).forEach((eventName) => {
+    feedback[appPart][eventName] = function (details) {
       sendMessage({ appPart, eventName, details })
     }
   })

@@ -13,9 +13,7 @@ import myPl from 'localisation/pl.json'
 import myPt from 'localisation/pt.json'
 import myKo from 'localisation/ko.json'
 
-
 import { reduceMessages, defaultLocale } from 'helpers/locale'
-
 
 const translations = {
   nl: reduceMessages(myNl),
@@ -37,7 +35,7 @@ export default class IntlProviderContainer extends React.Component<any, any> {
       <HashRouter>
         <Switch>
           <Route
-            render={props => {
+            render={(props) => {
               let currentLocale = defaultLocale()
 
               if (props.match.params.locale !== undefined) {

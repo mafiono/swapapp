@@ -17,7 +17,7 @@ import ShareButton from 'components/controls/ShareButton/ShareButton'
 
 import Button from 'components/controls/Button/Button'
 
-import { isMobile } from "react-device-detect"
+import { isMobile } from 'react-device-detect'
 import { regularIcons } from 'images'
 
 const langPrefix = 'InvoiceInfoModal'
@@ -84,24 +84,20 @@ const langLabels = defineMessages({
   },
 })
 
-@cssModules({
-  ...defaultStyles,
-  ...styles,
-  ...animateFetching,
-}, { allowMultiple: true })
-
+@cssModules(
+  {
+    ...defaultStyles,
+    ...styles,
+    ...animateFetching,
+  },
+  { allowMultiple: true }
+)
 class InfoInvoice extends React.Component<any, any> {
   constructor(props) {
     super(props)
 
     const {
-      data: {
-        isFetching,
-        onFetching,
-        invoice,
-        uniqhash,
-        doshare,
-      }
+      data: { isFetching, onFetching, invoice, uniqhash, doshare },
     } = props
 
     this.state = {
@@ -112,7 +108,7 @@ class InfoInvoice extends React.Component<any, any> {
       isReady: false,
       isPending: true,
       doshare,
-      isShareReady: !(doshare),
+      isShareReady: !doshare,
     }
 
     if (isFetching && typeof onFetching === 'function') {
@@ -143,28 +139,23 @@ class InfoInvoice extends React.Component<any, any> {
     const { history } = this.props
     const { uniqhash } = this.state
 
-    this.setState({
-      isShareReady: true,
-    }, () => {
-      history.push(`#${links.invoice}/${uniqhash}`)
-    })
+    this.setState(
+      {
+        isShareReady: true,
+      },
+      () => {
+        history.push(`#${links.invoice}/${uniqhash}`)
+      }
+    )
   }
 
   handlePayInvoice = () => {
     const {
-      invoice: {
-        invoiceData: invoice = false,
-      },
+      invoice: { invoiceData: invoice = false },
     } = this.state
 
     if (invoice) {
-      const {
-        type,
-        destAddress,
-        fromAddress,
-        amount,
-        toAddress,
-      } = invoice
+      const { type, destAddress, fromAddress, amount, toAddress } = invoice
 
       const payWallet = actions.user.getWithdrawWallet(type, toAddress)
       if (payWallet) {
@@ -173,12 +164,7 @@ class InfoInvoice extends React.Component<any, any> {
 
         if (payWallet.isUserProtected) withdrawType = constants.modals.WithdrawMultisigUser
 
-        const {
-          currency,
-          address,
-          balance,
-          unconfirmedBalance,
-        } = payWallet
+        const { currency, address, balance, unconfirmedBalance } = payWallet
 
         actions.modals.open(withdrawType, {
           currency,
@@ -195,7 +181,6 @@ class InfoInvoice extends React.Component<any, any> {
             })
           },
         })
-
       } else {
         // No wallet - pay from external wallet
       }
@@ -210,9 +195,7 @@ class InfoInvoice extends React.Component<any, any> {
 
   handleDeclimeInvoice = () => {
     const {
-      invoice: {
-        invoiceData,
-      },
+      invoice: { invoiceData },
     } = this.state
 
     //@ts-ignore: strictNullChecks
@@ -227,54 +210,43 @@ class InfoInvoice extends React.Component<any, any> {
   }
 
   render() {
-    const {
-      intl,
-    } = this.props
+    const { intl } = this.props
 
-    const {
-      uniqhash,
-      isFetching,
-      invoice,
-      isCancelled,
-      isReady,
-      doshare,
-      isShareReady,
-    } = this.state
+    const { uniqhash, isFetching, invoice, isCancelled, isReady, doshare, isShareReady } =
+      this.state
 
-    const {
-      invoiceData = false,
-    } = (invoice || {})
+    const { invoiceData = false } = invoice || {}
 
     let status = 'pending'
     if (!isFetching && invoiceData) status = invoiceData.status
     if (isCancelled) status = 'cancel'
     if (isReady) status = 'ready'
 
-    const shareText = (!isFetching && invoiceData) ? 'Fetching'
-      : intl.formatMessage(langLabels.shareText, invoiceData)
-
+    const shareText =
+      !isFetching && invoiceData
+        ? 'Fetching'
+        : intl.formatMessage(langLabels.shareText, invoiceData)
 
     const shareLink = `${getFullOrigin()}${links.invoice}/${uniqhash}`
 
-
-    const isPayerSide = (!isFetching && invoice && invoice.direction === 'in')
-    const isOwner = (!isFetching && invoice && invoice.isOwner)
-    const hasPayer = (!isFetching && invoice && invoice.hasPayer)
+    const isPayerSide = !isFetching && invoice && invoice.direction === 'in'
+    const isOwner = !isFetching && invoice && invoice.isOwner
+    const hasPayer = !isFetching && invoice && invoice.hasPayer
 
     const shareButtonEnabled = isMobile
 
-    const isPayerControlEnabled = (!isCancelled && !isReady && (isPayerSide || (!hasPayer && !isOwner)))
+    const isPayerControlEnabled =
+      !isCancelled && !isReady && (isPayerSide || (!hasPayer && !isOwner))
 
     const buttonsHolderStyles = [`invoiceControlsHolder`, `button-overlay`]
-    buttonsHolderStyles.push((shareButtonEnabled) ? `with-share-button` : `without-share-button`)
+    buttonsHolderStyles.push(shareButtonEnabled ? `with-share-button` : `without-share-button`)
     if (!isPayerControlEnabled) buttonsHolderStyles.push(`without-pay-control`)
 
-    const modalTitle = (isFetching) ?
-      intl.formatMessage(langLabels.titleFetching) :
-      intl.formatMessage(langLabels.title, {
-        number: `${invoiceData.id}-${invoiceData.invoiceNumber}`,
-      })
-
+    const modalTitle = isFetching
+      ? intl.formatMessage(langLabels.titleFetching)
+      : intl.formatMessage(langLabels.title, {
+          number: `${invoiceData.id}-${invoiceData.invoiceNumber}`,
+        })
 
     let infoIconTitle = ''
     let infoIconUrl = ''
@@ -283,22 +255,23 @@ class InfoInvoice extends React.Component<any, any> {
       case 'ready':
         infoIconTitle = intl.formatMessage(langLabels.infoStatusReady)
         infoIconUrl = regularIcons.OK
-        break;
+        break
       case 'cancelled':
         infoIconTitle = intl.formatMessage(langLabels.infoStatusDeclimed)
         infoIconUrl = regularIcons.CANCELLED
-        break;
+        break
       default:
         infoIconTitle = intl.formatMessage(langLabels.infoStatusPending)
         infoIconUrl = regularIcons.PENDING
     }
 
     return (
-      <Modal 
-        name="InfoInvoice" title={modalTitle} 
-        onClose={this.handleClose} 
-        showCloseButton={true} 
-        closeOnLocationChange={true} 
+      <Modal
+        name="InfoInvoice"
+        title={modalTitle}
+        onClose={this.handleClose}
+        showCloseButton={true}
+        closeOnLocationChange={true}
         onLocationChange={this.handleChangeLocation}
       >
         {doshare && !isShareReady && (
@@ -306,20 +279,14 @@ class InfoInvoice extends React.Component<any, any> {
             <div styleName="convent-overlay">
               <div styleName="share-info">
                 <strong>
-                  <FormattedMessage { ...langLabels.shareInfo } />
+                  <FormattedMessage {...langLabels.shareInfo} />
                 </strong>
               </div>
-              <ShareLink
-                link={shareLink}
-                fullSize={true}
-              />
+              <ShareLink link={shareLink} fullSize={true} />
             </div>
             <div styleName="button-overlay share-ready-holder">
-              <Button
-                blue
-                onClick={this.handleShareReady}
-              >
-                <FormattedMessage { ...langLabels.shareReady } />
+              <Button blue onClick={this.handleShareReady}>
+                <FormattedMessage {...langLabels.shareReady} />
               </Button>
             </div>
           </Fragment>
@@ -327,7 +294,7 @@ class InfoInvoice extends React.Component<any, any> {
         {isShareReady && (
           <Fragment>
             <div styleName="blockCenter convent-overlay">
-              <div className="p-3"  styleName={isFetching ? `animate-fetching` : ``}>
+              <div className="p-3" styleName={isFetching ? `animate-fetching` : ``}>
                 <div styleName={`statusImgHolder statusImgHolder_${status}`}>
                   <img src={infoIconUrl} title={infoIconTitle} alt={infoIconTitle} />
                   <strong>{infoIconTitle}</strong>
@@ -337,19 +304,27 @@ class InfoInvoice extends React.Component<any, any> {
                     <Fragment>
                       <div>
                         <strong styleName="invoiceNumber">
-                          <FormattedMessage { ...langLabels.title } values={{number: `${invoiceData.id}-${invoiceData.invoiceNumber}`}} />
+                          <FormattedMessage
+                            {...langLabels.title}
+                            values={{ number: `${invoiceData.id}-${invoiceData.invoiceNumber}` }}
+                          />
                         </strong>
                       </div>
                       <div>
                         <span>
-                          <strong>{invoiceData.amount} {invoiceData.type}</strong>
+                          <strong>
+                            {invoiceData.amount} {invoiceData.type}
+                          </strong>
                         </span>
                       </div>
                       <div>
                         <span>
-                          <FormattedMessage { ... langLabels.destination } values={{
-                            destination: <b>{invoiceData.destAddress}</b>,
-                          }} />
+                          <FormattedMessage
+                            {...langLabels.destination}
+                            values={{
+                              destination: <b>{invoiceData.destAddress}</b>,
+                            }}
+                          />
                         </span>
                       </div>
                     </Fragment>
@@ -367,7 +342,7 @@ class InfoInvoice extends React.Component<any, any> {
                     <>
                       <tr>
                         <td styleName="header">
-                          <FormattedMessage { ...langLabels.invoiceSender} />
+                          <FormattedMessage {...langLabels.invoiceSender} />
                         </td>
                       </tr>
                       <tr>
@@ -375,23 +350,30 @@ class InfoInvoice extends React.Component<any, any> {
                       </tr>
                       <tr>
                         <td styleName="header" colSpan={2}>
-                          <FormattedMessage { ...langLabels.fromAddress } />
+                          <FormattedMessage {...langLabels.fromAddress} />
                         </td>
                       </tr>
                       <tr>
                         <td styleName="responsiveBlock" colSpan={2}>
-                          <span>{invoiceData.fromAddress}{' '}({invoiceData.invoiceNumber})</span>
+                          <span>
+                            {invoiceData.fromAddress} ({invoiceData.invoiceNumber})
+                          </span>
                         </td>
                       </tr>
                       {invoiceData.destAddress && (
                         <>
                           <tr>
                             <td styleName="header" colSpan={2}>
-                              <FormattedMessage id="InvoiceInfoModal_ToAddress" defaultMessage="Payer address" />
+                              <FormattedMessage
+                                id="InvoiceInfoModal_ToAddress"
+                                defaultMessage="Payer address"
+                              />
                             </td>
                           </tr>
                           <tr>
-                            <td styleName="responsiveBlock" colSpan={2}>{invoiceData.destAddress}</td>
+                            <td styleName="responsiveBlock" colSpan={2}>
+                              {invoiceData.destAddress}
+                            </td>
                           </tr>
                         </>
                       )}
@@ -399,7 +381,7 @@ class InfoInvoice extends React.Component<any, any> {
                         <>
                           <tr>
                             <td styleName="header" colSpan={2}>
-                              <FormattedMessage { ...langLabels.invoiceComment} />
+                              <FormattedMessage {...langLabels.invoiceComment} />
                             </td>
                           </tr>
                           <tr>
@@ -415,40 +397,28 @@ class InfoInvoice extends React.Component<any, any> {
               </table>
             </div>
             <div styleName={buttonsHolderStyles.join(` `)}>
-              {(isPayerControlEnabled && !isFetching && status === 'new') && (
+              {isPayerControlEnabled && !isFetching && status === 'new' && (
                 <Fragment>
                   <div styleName="payControl">
-                    <Button
-                      blue
-                      onClick={this.handlePayInvoice}
-                    >
-                      <FormattedMessage { ...langLabels.payInvoice } />
+                    <Button blue onClick={this.handlePayInvoice}>
+                      <FormattedMessage {...langLabels.payInvoice} />
                     </Button>
                   </div>
                   <div styleName="payControl">
-                    <Button
-                      gray
-                      onClick={this.handleDeclimeInvoice}
-                    >
-                      <FormattedMessage { ...langLabels.declimeInvoice } />
+                    <Button gray onClick={this.handleDeclimeInvoice}>
+                      <FormattedMessage {...langLabels.declimeInvoice} />
                     </Button>
                   </div>
                 </Fragment>
               )}
               <div styleName="closeButton">
-                <Button
-                  blue
-                  onClick={this.handleCloseButton}
-                >
-                  <FormattedMessage { ...langLabels.buttonClose } />
+                <Button blue onClick={this.handleCloseButton}>
+                  <FormattedMessage {...langLabels.buttonClose} />
                 </Button>
               </div>
               {shareButtonEnabled && (
                 <div styleName="shareButton">
-                  <ShareButton
-                    fullWidth={true}
-                    link={`${shareLink}`}
-                    title={shareText} />
+                  <ShareButton fullWidth={true} link={`${shareLink}`} title={shareText} />
                 </div>
               )}
             </div>

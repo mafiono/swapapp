@@ -1,5 +1,10 @@
 import constants from '../constants'
-import { BLOCKCHAIN as BLOCKCHAIN_TYPE, COIN_DATA, COIN_TYPE, TOKEN_STANDARD } from '../constants/COINS'
+import {
+  BLOCKCHAIN as BLOCKCHAIN_TYPE,
+  COIN_DATA,
+  COIN_TYPE,
+  TOKEN_STANDARD,
+} from '../constants/COINS'
 import typeforce from './typeforce'
 
 const register = (code, precision) => {

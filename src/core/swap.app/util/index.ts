@@ -6,13 +6,4 @@ import bep20 from './bep20'
 import erc20matic from './erc20matic'
 import erc20xdai from './erc20xdai'
 
-
-export {
-  pullProps,
-  typeforce,
-  helpers,
-  erc20,
-  bep20,
-  erc20matic,
-  erc20xdai,
-}
+export { pullProps, typeforce, helpers, erc20, bep20, erc20matic, erc20xdai }

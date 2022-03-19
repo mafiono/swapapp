@@ -9,10 +9,7 @@ export const removeRepo = (pathToRepo) => {
    * return this function
    * else delete REPO directory
    */
-  if (
-    typeof window !== 'undefined' ||
-    !fs.existsSync(pathToRepo)
-  ) {
+  if (typeof window !== 'undefined' || !fs.existsSync(pathToRepo)) {
     console.log('ENV === test or start with browser or file not exists with path')
     return
   }
@@ -40,9 +37,7 @@ export const removeRepo = (pathToRepo) => {
        * if check path on directory then
        * recursive call else delete file
        */
-      (fs.lstatSync(curPath).isDirectory())
-        ? removeRepo(curPath)
-        : fs.unlinkSync(curPath)
+      fs.lstatSync(curPath).isDirectory() ? removeRepo(curPath) : fs.unlinkSync(curPath)
     }
 
     /** If not files then remove directory */
@@ -58,14 +53,13 @@ export const exitListener = () => {
    * listening for array signalls
    * and call funct wich argument
    */
-  [ 'SIGINT', 'SIGTERM', 'SIGBREAK' ]
-    .forEach(SIGNAL => {
-      process.on(SIGNAL, () => {
-        console.log('Process out...')
-        process.kill(0, 'SIGKILL')
-        process.exit()
-      })
+  ;['SIGINT', 'SIGTERM', 'SIGBREAK'].forEach((SIGNAL) => {
+    process.on(SIGNAL, () => {
+      console.log('Process out...')
+      process.kill(0, 'SIGKILL')
+      process.exit()
     })
+  })
 }
 
 export const createRepo = (dirpath = `./data/`) => {
@@ -74,47 +68,47 @@ export const createRepo = (dirpath = `./data/`) => {
 }
 
 export function getCookie(cname) {
-  var name = cname + "=";
-  var ca = document.cookie.split(';');
-  for(var i = 0; i < ca.length; i++) {
-    var c = ca[i];
+  var name = cname + '='
+  var ca = document.cookie.split(';')
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i]
     while (c.charAt(0) == ' ') {
-      c = c.substring(1);
+      c = c.substring(1)
     }
     if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
+      return c.substring(name.length, c.length)
     }
   }
-  return "";
+  return ''
 }
 
 export function setCookie(name, value, options) {
-  options = options || {};
+  options = options || {}
 
-  var expires = options.expires;
+  var expires = options.expires
 
-  if (typeof expires == "number" && expires) {
-    var d = new Date();
-    d.setTime(d.getTime() + expires * 1000);
-    expires = options.expires = d;
+  if (typeof expires == 'number' && expires) {
+    var d = new Date()
+    d.setTime(d.getTime() + expires * 1000)
+    expires = options.expires = d
   }
   if (expires && expires.toUTCString) {
-    options.expires = expires.toUTCString();
+    options.expires = expires.toUTCString()
   }
 
-  value = encodeURIComponent(value);
+  value = encodeURIComponent(value)
 
-  var updatedCookie = name + "=" + value;
+  var updatedCookie = name + '=' + value
 
   for (var propName in options) {
-    updatedCookie += "; " + propName;
-    var propValue = options[propName];
+    updatedCookie += '; ' + propName
+    var propValue = options[propName]
     if (propValue !== true) {
-      updatedCookie += "=" + propValue;
+      updatedCookie += '=' + propValue
     }
   }
 
-  document.cookie = updatedCookie;
+  document.cookie = updatedCookie
 }
 
 /**

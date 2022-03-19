@@ -15,12 +15,11 @@ export const initialState = {
   step: 1,
 }
 
-
 export const newWalletData = (state, payload) => {
   const { type, data } = payload
 
-  return ({
+  return {
     ...state,
     [type]: data,
-  })
+  }
 }

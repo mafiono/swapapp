@@ -8,10 +8,8 @@ import styles from './ModalContainer.scss'
 import Overlay from 'components/layout/Overlay/Overlay'
 import Center from 'components/layout/Center/Center'
 
-
 @cssModules(styles, { allowMultiple: true })
 export default class ModalContainer extends Component<any, any> {
-
   static propTypes = {
     children: PropTypes.any.isRequired,
     fullWidth: PropTypes.bool,
@@ -40,19 +38,16 @@ export default class ModalContainer extends Component<any, any> {
 
     // TODO move overflow to Modal from Center
     const modalContainerStyleName = cx('modalContainer', {
-      'fullWidth': fullWidth,
+      fullWidth: fullWidth,
     })
 
     return (
-      //@ts-ignore 
+      //@ts-ignore
       <Overlay>
         {/*
         //@ts-ignore */}
         <Center scrollable>
-          <div
-            styleName={modalContainerStyleName}
-            ref={this.handleMount}
-          >
+          <div styleName={modalContainerStyleName} ref={this.handleMount}>
             {children}
           </div>
         </Center>

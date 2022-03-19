@@ -1,6 +1,5 @@
 import config from 'app-config'
 
-
 export const initialState = {
   isOnline: false,
   isAllPeersLoaded: false,
@@ -18,7 +17,7 @@ export const set = (state, payload) => ({
 /**
  * Событие "Пользователь вошел в сеть".
  */
-export const userJoined = state => ({
+export const userJoined = (state) => ({
   ...state,
   onlineUsers: state.onlineUsers + 1,
 })
@@ -26,7 +25,7 @@ export const userJoined = state => ({
 /**
  * Событие "Пользователь вышел из сети".
  */
-export const userLeft = state => ({
+export const userLeft = (state) => ({
   ...state,
   onlineUsers: state.onlineUsers - 1,
 })
@@ -34,7 +33,7 @@ export const userLeft = state => ({
 /**
  * Событие "Загрузились все пиры".
  */
-export const allPeersLoaded = state => ({
+export const allPeersLoaded = (state) => ({
   ...state,
   isAllPeersLoaded: true,
 })

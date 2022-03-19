@@ -41,12 +41,7 @@ export default class DepositWindow extends Component<any, ComponentState> {
 
   constructor(props) {
     super(props)
-    const {
-      swap,
-      flow,
-      currencyData,
-      fields,
-    } = props
+    const { swap, flow, currencyData, fields } = props
 
     this._fields = fields
 
@@ -67,12 +62,12 @@ export default class DepositWindow extends Component<any, ComponentState> {
       isBalanceFetching: false,
       isSellCurrencyToken,
       isSellCurrencyEvmCoin,
-      balance: isSellCurrencyToken || isSellCurrencyEvmCoin
-        ? currencyData.balance - (currencyData.unconfirmedBalance || 0)
-        : flow.scriptBalance,
-      address: isSellCurrencyToken || isSellCurrencyEvmCoin
-        ? currencyData.address
-        : flow.scriptAddress,
+      balance:
+        isSellCurrencyToken || isSellCurrencyEvmCoin
+          ? currencyData.balance - (currencyData.unconfirmedBalance || 0)
+          : flow.scriptBalance,
+      address:
+        isSellCurrencyToken || isSellCurrencyEvmCoin ? currencyData.address : flow.scriptAddress,
       //@ts-ignore: strictNullChecks
       sellAmount: this.swap.sellAmount,
       requiredAmount: 0,
@@ -80,12 +75,7 @@ export default class DepositWindow extends Component<any, ComponentState> {
   }
 
   updateBalance = async () => {
-    const {
-      swap,
-      address,
-      isSellCurrencyToken,
-      isSellCurrencyEvmCoin,
-    } = this.state
+    const { swap, address, isSellCurrencyToken, isSellCurrencyEvmCoin } = this.state
 
     let actualBalance
     const sellBlockchain = swap.sellBlockchain
@@ -153,14 +143,8 @@ export default class DepositWindow extends Component<any, ComponentState> {
   }
 
   checkThePayment = () => {
-    const {
-      swap,
-      dynamicFee,
-      sellAmount,
-      balance,
-      isSellCurrencyToken,
-      isSellCurrencyEvmCoin,
-    } = this.state
+    const { swap, dynamicFee, sellAmount, balance, isSellCurrencyToken, isSellCurrencyEvmCoin } =
+      this.state
 
     if (new BigNumber(sellAmount).plus(dynamicFee).isLessThanOrEqualTo(balance)) {
       this.setState(() => ({
@@ -187,9 +171,7 @@ export default class DepositWindow extends Component<any, ComponentState> {
       const {
         swap: {
           flow,
-          flow: {
-            state: flowState,
-          }
+          flow: { state: flowState },
         },
       } = this.props
       const { isBalanceEnough } = this.state
@@ -232,15 +214,18 @@ export default class DepositWindow extends Component<any, ComponentState> {
   handleReloadBalance = async () => {
     this.updateBalance()
 
-    this.setState({
-      isBalanceFetching: true,
-    }, () => {
-      setTimeout(() => {
-        this.setState({
-          isBalanceFetching: false,
-        })
-      }, 500)
-    })
+    this.setState(
+      {
+        isBalanceFetching: true,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            isBalanceFetching: false,
+          })
+        }, 500)
+      }
+    )
   }
 
   componentDidMount() {
@@ -271,13 +256,16 @@ export default class DepositWindow extends Component<any, ComponentState> {
     const DontHaveEnoughtFoundsValues = {
       missingBalance: (
         <div>
-          {remainingBalance > 0 ?
-            <strong>{`${remainingBalance}`} {swap.sellCurrency}{'  '}</strong>
-            :
+          {remainingBalance > 0 ? (
+            <strong>
+              {`${remainingBalance}`} {swap.sellCurrency}
+              {'  '}
+            </strong>
+          ) : (
             <span styleName="loaderHolder">
               <InlineLoader />
             </span>
-          }
+          )}
           <Tooltip id="dep170">
             <div>
               {/* eslint-disable */}
@@ -305,9 +293,7 @@ export default class DepositWindow extends Component<any, ComponentState> {
 
     return (
       <Fragment>
-        <div
-          styleName="topUpLink"
-        >
+        <div styleName="topUpLink">
           <div styleName="top">
             <div styleName="btcMessage">
               {isWidgetBuild ? (
@@ -317,17 +303,17 @@ export default class DepositWindow extends Component<any, ComponentState> {
                   values={DontHaveEnoughtFoundsValues}
                 />
               ) : (
-                  <FormattedMessage
-                    id="deposit165"
-                    defaultMessage="To continue the swap copy this address and top it up with {missingBalance}"
-                    values={DontHaveEnoughtFoundsValues}
-                  />
-                )}
+                <FormattedMessage
+                  id="deposit165"
+                  defaultMessage="To continue the swap copy this address and top it up with {missingBalance}"
+                  values={DontHaveEnoughtFoundsValues}
+                />
+              )}
             </div>
           </div>
           <div styleName="qrImg">
-              <QR address={`${address}?amount=${remainingBalance}`} />
-            </div>
+            <QR address={`${address}?amount=${remainingBalance}`} />
+          </div>
           <Copy text={address}>
             <div>
               <a styleName="linkText">
@@ -342,9 +328,10 @@ export default class DepositWindow extends Component<any, ComponentState> {
               <div styleName="linkTransactions">
                 <strong>
                   <a
-                    href={swap.sellCurrency === currencyName
-                      ? `${explorerLink}/address/${address}`
-                      : `${config.link.etherscan}/address/${address}`
+                    href={
+                      swap.sellCurrency === currencyName
+                        ? `${explorerLink}/address/${address}`
+                        : `${config.link.etherscan}/address/${address}`
                     }
                     target="_blank"
                     rel="noopener noreferrer"
@@ -354,9 +341,7 @@ export default class DepositWindow extends Component<any, ComponentState> {
                 </strong>
               </div>
               <div styleName="qr">
-                <a styleName="linkAddress">
-                  {address}
-                </a>
+                <a styleName="linkAddress">{address}</a>
                 <Button brand fullWidth>
                   <i className="fas fa-copy" />
                   <span className="copyText">
@@ -369,41 +354,58 @@ export default class DepositWindow extends Component<any, ComponentState> {
           <div>
             <i className="fas fa-sync-alt" styleName="icon" onClick={this.handleReloadBalance} />
             {/* eslint-disable */}
-            {isBalanceFetching
-              ? (
-                <a styleName="loaderHolder">
-                  <InlineLoader />
-                </a>
-              ) : (
-                <FormattedMessage
-                  id="deposit300"
-                  defaultMessage="Received {balance} / {need} {tooltip}"
-                  values={{
-                    br: <br />,
-                    balance: <strong>{balance === undefined ? this.updateBalance : `${new BigNumber(balance).dp(6, BigNumber.ROUND_HALF_CEIL)}`} {swap.sellCurrency}{'  '}</strong>,
-                    need: <strong>{`${requiredAmount}`} {swap.sellCurrency}</strong>,
-                    tooltip:
-                      <Tooltip id="dep226">
-                        <FormattedMessage
-                          id="deposit239"
-                          defaultMessage="Swap will continue after {tokenName} contract receives the funds. Is usually takes less than 10 min"
-                          values={{
-                            tokenName: swap.sellCurrency,
-                            br: <br />
-                          }}
-                        />
-                      </Tooltip>
-                  }}
-                />
-              )}
-            {isBalanceEnough
-              ? <FormattedMessage id="deposit198.1" defaultMessage="create Ethereum Contract.{br}Please wait, it can take a few minutes..." values={{ br: <br /> }} />
-              : <FormattedMessage id="deposit198" defaultMessage="waiting for payment..." />
-            }
+            {isBalanceFetching ? (
+              <a styleName="loaderHolder">
+                <InlineLoader />
+              </a>
+            ) : (
+              <FormattedMessage
+                id="deposit300"
+                defaultMessage="Received {balance} / {need} {tooltip}"
+                values={{
+                  br: <br />,
+                  balance: (
+                    <strong>
+                      {balance === undefined
+                        ? this.updateBalance
+                        : `${new BigNumber(balance).dp(6, BigNumber.ROUND_HALF_CEIL)}`}{' '}
+                      {swap.sellCurrency}
+                      {'  '}
+                    </strong>
+                  ),
+                  need: (
+                    <strong>
+                      {`${requiredAmount}`} {swap.sellCurrency}
+                    </strong>
+                  ),
+                  tooltip: (
+                    <Tooltip id="dep226">
+                      <FormattedMessage
+                        id="deposit239"
+                        defaultMessage="Swap will continue after {tokenName} contract receives the funds. Is usually takes less than 10 min"
+                        values={{
+                          tokenName: swap.sellCurrency,
+                          br: <br />,
+                        }}
+                      />
+                    </Tooltip>
+                  ),
+                }}
+              />
+            )}
+            {isBalanceEnough ? (
+              <FormattedMessage
+                id="deposit198.1"
+                defaultMessage="create Ethereum Contract.{br}Please wait, it can take a few minutes..."
+                values={{ br: <br /> }}
+              />
+            ) : (
+              <FormattedMessage id="deposit198" defaultMessage="waiting for payment..." />
+            )}
             <a styleName="loaderHolder">
               <InlineLoader />
             </a>
-            {dynamicFee > 0 &&
+            {dynamicFee > 0 && (
               <a styleName="included">
                 <FormattedMessage
                   id="deposit320"
@@ -413,16 +415,20 @@ export default class DepositWindow extends Component<any, ComponentState> {
                     sellCurrency: swap.sellCurrency,
                   }}
                 />
-              </a>}
-            <div>
-            </div>
+              </a>
+            )}
+            <div></div>
             {/* eslint-enable */}
           </div>
-          {flow[scriptValues] !== null &&
+          {flow[scriptValues] !== null && (
             <div styleName="lockTime">
               <i className="far fa-clock" />
-              <Timer cancelTime={(flow[scriptValues].lockTime - 7200) * 1000} lockTime={flow[scriptValues].lockTime * 1000} />
-            </div>}
+              <Timer
+                cancelTime={(flow[scriptValues].lockTime - 7200) * 1000}
+                lockTime={flow[scriptValues].lockTime * 1000}
+              />
+            </div>
+          )}
         </div>
       </Fragment>
     )

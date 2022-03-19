@@ -1,12 +1,11 @@
 import swapApp from '../../swapApp'
 
-
 const wallet = swapApp.wallet
 
 const getMe = async (req, res) => {
   res.json({
     wallet: wallet.view(),
-    balance: await wallet.getBalance()
+    balance: await wallet.getBalance(),
   })
 }
 
@@ -32,7 +31,7 @@ const withdraw = async (req, res) => {
   let value = req.query.value
 
   if (!(from in ['btc', 'eth'])) {
-    return res.status(403).json({ error: 'no such currency'})
+    return res.status(403).json({ error: 'no such currency' })
   }
 
   console.log(new Date().toISOString(), 'from', from)
@@ -47,6 +46,5 @@ const withdraw = async (req, res) => {
     throw err
   }
 }
-
 
 export { balance, getMe, getWallet, getWalletDetailed, withdraw }

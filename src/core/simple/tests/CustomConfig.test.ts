@@ -4,22 +4,20 @@ const {
   room: { ready },
 } = swap.helpers
 
-const {
-  tokenSwap,
-} = swap.config
+const { tokenSwap } = swap.config
 
 const { app, room } = swap.setup({
   ERC20TOKENS: [
     {
       name: 'BTRM',
       decimals: 18,
-      tokenAddress: '0x14a52cf6B4F68431bd5D9524E4fcD6F41ce4ADe9'
+      tokenAddress: '0x14a52cf6B4F68431bd5D9524E4fcD6F41ce4ADe9',
     },
     {
       network: 'mainnet',
       name: 'DAI',
       decimals: 18,
-      tokenAddress: '0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF'
+      tokenAddress: '0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF',
     },
   ],
 })

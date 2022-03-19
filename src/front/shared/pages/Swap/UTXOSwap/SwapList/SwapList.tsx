@@ -33,20 +33,18 @@ const {
   MAKER_UTXO_THIRD_STEPS,
   TAKER_EVM_THIRD_STEPS,
   MAKER_EVM_THIRD_STEPS,
-  FOURTH_STEP
+  FOURTH_STEP,
 } = SWAP_STEPS
-
 
 @CSSModules(styles, { allowMultiple: true })
 export default class SwapList extends React.PureComponent<any, any> {
-
   _fields = null
 
   constructor(props) {
     super(props)
 
     this.state = {
-      stepName: this.getStepName()
+      stepName: this.getStepName(),
     }
 
     this._fields = props.fields
@@ -59,16 +57,12 @@ export default class SwapList extends React.PureComponent<any, any> {
   getStepName = () => {
     const {
       swap: {
-        flow: {
-          stepNumbers
-        }
+        flow: { stepNumbers },
       },
-      flow: {
-        step
-      }
-     } = this.props
+      flow: { step },
+    } = this.props
 
-     let stepName = ''
+    let stepName = ''
 
     Object.keys(stepNumbers).forEach((key) => {
       if (stepNumbers[key] === step) {
@@ -82,12 +76,16 @@ export default class SwapList extends React.PureComponent<any, any> {
   }
 
   componentDidUpdate(prevProps) {
-    const { flow: { step: prevStep } } = prevProps
-    const { flow: { step } } = this.props
+    const {
+      flow: { step: prevStep },
+    } = prevProps
+    const {
+      flow: { step },
+    } = this.props
 
-    if(prevStep !== step) {
+    if (prevStep !== step) {
       this.setState({
-        stepName: this.getStepName()
+        stepName: this.getStepName(),
       })
     }
   }
@@ -95,53 +93,55 @@ export default class SwapList extends React.PureComponent<any, any> {
   render() {
     const {
       swap: {
-        flow: {
-          isTakerMakerModel,
-        },
+        flow: { isTakerMakerModel },
         flow: flowClass,
       },
       flow,
       swap,
       enoughBalance,
       currencyData,
-      tokenItems
+      tokenItems,
     } = this.props
 
     const { stepName } = this.state
 
     const isUTXOSide = flowClass.isUTXOSide
 
-    const SecondStep = (isUTXOSide) ? UTXOSecondStep : ABSecondStep
-    const ThirdStep = (isUTXOSide) ? UTXOThirdStep : ABThirdStep
+    const SecondStep = isUTXOSide ? UTXOSecondStep : ABSecondStep
+    const ThirdStep = isUTXOSide ? UTXOThirdStep : ABThirdStep
 
-    const secondActiveStep = isUTXOSide ?
-      flow.isTaker ? TAKER_UTXO_SECOND_STEPS : MAKER_UTXO_SECOND_STEPS
-      :
-      flow.isTaker ? TAKER_EVM_SECOND_STEPS : MAKER_EVM_SECOND_STEPS
+    const secondActiveStep = isUTXOSide
+      ? flow.isTaker
+        ? TAKER_UTXO_SECOND_STEPS
+        : MAKER_UTXO_SECOND_STEPS
+      : flow.isTaker
+      ? TAKER_EVM_SECOND_STEPS
+      : MAKER_EVM_SECOND_STEPS
 
-    const thirdActiveStep = isUTXOSide ?
-      flow.isTaker ? TAKER_UTXO_THIRD_STEPS : MAKER_UTXO_THIRD_STEPS
-      :
-      flow.isTaker ? TAKER_EVM_THIRD_STEPS : MAKER_EVM_THIRD_STEPS
+    const thirdActiveStep = isUTXOSide
+      ? flow.isTaker
+        ? TAKER_UTXO_THIRD_STEPS
+        : MAKER_UTXO_THIRD_STEPS
+      : flow.isTaker
+      ? TAKER_EVM_THIRD_STEPS
+      : MAKER_EVM_THIRD_STEPS
 
-    const isFirstStepActive = (FIRST_STEP.includes(stepName))
-    const isSecondStepActive = (secondActiveStep.includes(stepName))
-    const isThirdStepActive = (thirdActiveStep.includes(stepName))
-    const isFourthStepActive = (FOURTH_STEP.includes(stepName))
+    const isFirstStepActive = FIRST_STEP.includes(stepName)
+    const isSecondStepActive = secondActiveStep.includes(stepName)
+    const isThirdStepActive = thirdActiveStep.includes(stepName)
+    const isFourthStepActive = FOURTH_STEP.includes(stepName)
 
-    const UtxoToAbTexts = (flow.isTaker) ? TakerUtxoToAbTexts : MakerUtxoToAbtTexts
-    const AbToUtxoTexts = (flow.isTaker) ? TakerAbToUtxoTexts : MakerAbToUtxoTexts
+    const UtxoToAbTexts = flow.isTaker ? TakerUtxoToAbTexts : MakerUtxoToAbtTexts
+    const AbToUtxoTexts = flow.isTaker ? TakerAbToUtxoTexts : MakerAbToUtxoTexts
 
     const swapTexts = (
       <Fragment>
-        {
-          ['BtcLikeToEth', 'BtcLikeToEthToken'].includes(this.props.swapName) &&
-            <UtxoToAbTexts flow={flow} swap={swap} stepName={stepName} />
-        }
-        {
-          ['EthToBtcLike', 'EthTokenToBtcLike'].includes(this.props.swapName) &&
-            <AbToUtxoTexts flow={flow} swap={swap} stepName={stepName} />
-        }
+        {['BtcLikeToEth', 'BtcLikeToEthToken'].includes(this.props.swapName) && (
+          <UtxoToAbTexts flow={flow} swap={swap} stepName={stepName} />
+        )}
+        {['EthToBtcLike', 'EthTokenToBtcLike'].includes(this.props.swapName) && (
+          <AbToUtxoTexts flow={flow} swap={swap} stepName={stepName} />
+        )}
       </Fragment>
     )
 
@@ -158,12 +158,17 @@ export default class SwapList extends React.PureComponent<any, any> {
           swap={swap}
           fields={this._fields}
         />
-        {
-          showDepositWindow &&
-            <div styleName="swapDepositWindow">
-              <DepositWindow currencyData={currencyData} swap={swap} flow={flow} tokenItems={tokenItems} fields={this._fields} />
-            </div>
-        }
+        {showDepositWindow && (
+          <div styleName="swapDepositWindow">
+            <DepositWindow
+              currencyData={currencyData}
+              swap={swap}
+              flow={flow}
+              tokenItems={tokenItems}
+              fields={this._fields}
+            />
+          </div>
+        )}
         <ThirdStep
           isFirstStepActive={isFirstStepActive}
           isSecondStepActive={isSecondStepActive}

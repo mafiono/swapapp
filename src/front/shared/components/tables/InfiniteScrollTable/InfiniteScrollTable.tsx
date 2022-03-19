@@ -8,8 +8,6 @@ export default class InfiniteScrollTable extends React.Component<any, any> {
     const { items, ...rest } = this.props
     const { rowRender } = rest
 
-    return (
-      <Table {...rest} rowRender={rowRender} rows={items} />
-    )
+    return <Table {...rest} rowRender={rowRender} rows={items} />
   }
 }

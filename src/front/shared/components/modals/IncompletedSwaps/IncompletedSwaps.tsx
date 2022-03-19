@@ -16,21 +16,14 @@ import SubTitle from 'components/PageHeadline/SubTitle/SubTitle'
 import { FormattedMessage } from 'react-intl'
 import SwapsHistory from 'shared/pages/History/SwapsHistory/SwapsHistory'
 
+const title = [<FormattedMessage id="Incompleted21" defaultMessage="Incompleted Swaps" />]
 
-const title = [
-  <FormattedMessage id="Incompleted21" defaultMessage="Incompleted Swaps" />,
-]
-
-@connect(({
-  rememberedOrders,
-  history: { swapHistory },
-}) => ({
+@connect(({ rememberedOrders, history: { swapHistory } }) => ({
   decline: rememberedOrders.savedOrders,
   swapHistory,
 }))
 @cssModules(styles, { allowMultiple: true })
 export default class IncompletedSwaps extends Component<any, any> {
-
   render() {
     const { decline, swapHistory } = this.props
 
@@ -40,21 +33,27 @@ export default class IncompletedSwaps extends Component<any, any> {
         <div styleName="modal">
           <div styleName="modal_column">
             <SubTitle styleName="modal_column-title">
-              <FormattedMessage id="IncompletedSwaps49" defaultMessage="Swaps needing to complete" />
+              <FormattedMessage
+                id="IncompletedSwaps49"
+                defaultMessage="Swaps needing to complete"
+              />
             </SubTitle>
-            { swapHistory.length > 0 ?
+            {swapHistory.length > 0 ? (
               <SwapsHistory
                 showSubtitle={false}
                 orders={swapHistory
-                  .filter(item => item.isSwapExist === false)
-                  .filter(item => decline.includes(item.id))
-                  .filter(item => item.step >= 4)
-                }
-              /> :
+                  .filter((item) => item.isSwapExist === false)
+                  .filter((item) => decline.includes(item.id))
+                  .filter((item) => item.step >= 4)}
+              />
+            ) : (
               <h1>
-                <FormattedMessage id="IncompletedSwaps55" defaultMessage="Data processed, try to reload the page" />
+                <FormattedMessage
+                  id="IncompletedSwaps55"
+                  defaultMessage="Data processed, try to reload the page"
+                />
               </h1>
-            }
+            )}
           </div>
         </div>
       </Modal>

@@ -1,7 +1,6 @@
 import { constants } from 'swap.app'
 import BtcToEthLikeToken from './atomic/BtcToEthLikeToken'
 
-
 export default (tokenName) => {
   class BTC2BSCTOKEN extends BtcToEthLikeToken {
     static blockchainName = `BNB`

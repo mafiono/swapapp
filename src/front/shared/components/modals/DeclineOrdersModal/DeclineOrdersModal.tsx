@@ -19,11 +19,17 @@ const title = defineMessages({
 @withRouter
 @cssModules(styles)
 class DeclineOrdersModal extends Component<any, any> {
-
   goToDecline = () => {
-    const { data: { declineSwap: { sellCurrency, buyCurrency, id } }, history } = this.props /* eslint-disable-line */
+    const {
+      data: {
+        declineSwap: { sellCurrency, buyCurrency, id },
+      },
+      history,
+    } = this.props /* eslint-disable-line */
 
-    const { intl : { locale } } = this.props
+    const {
+      intl: { locale },
+    } = this.props
 
     const swapUri = `${links.atomicSwap}/${id}`
     // todo: decline turbo swaps
@@ -39,7 +45,10 @@ class DeclineOrdersModal extends Component<any, any> {
     return (
       <Modal name="DeclineOrdersModal" title={intl.formatMessage(title.downloadModal)}>
         <div styleName="subTitle">
-          <FormattedMessage id="decline43" defaultMessage="Sorry, but you have cannot start until you complete the swaps started earlier " />
+          <FormattedMessage
+            id="decline43"
+            defaultMessage="Sorry, but you have cannot start until you complete the swaps started earlier "
+          />
         </div>
         <h2 styleName="link" onClick={this.goToDecline}>
           <FormattedMessage id="decline49" defaultMessage="See your incomplete swap" />

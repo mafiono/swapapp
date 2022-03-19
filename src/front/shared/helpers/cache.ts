@@ -3,9 +3,10 @@ import getUnixTimeStamp from 'common/utils/getUnixTimeStamp'
 const cacheStorage = {}
 
 const cacheStorageGet = (cachePart, cacheKey) => {
-  if (cacheStorage[cachePart]
-    && cacheStorage[cachePart][cacheKey]
-    && (cacheStorage[cachePart][cacheKey].timeout > getUnixTimeStamp())
+  if (
+    cacheStorage[cachePart] &&
+    cacheStorage[cachePart][cacheKey] &&
+    cacheStorage[cachePart][cacheKey].timeout > getUnixTimeStamp()
   ) {
     return cacheStorage[cachePart][cacheKey].value
   }
@@ -30,9 +31,4 @@ const cacheStorageClearPart = (cachePart) => {
   cacheStorage[cachePart] = false
 }
 
-export {
-  cacheStorageGet,
-  cacheStorageSet,
-  cacheStorageClear,
-  cacheStorageClearPart,
-}
+export { cacheStorageGet, cacheStorageSet, cacheStorageClear, cacheStorageClearPart }

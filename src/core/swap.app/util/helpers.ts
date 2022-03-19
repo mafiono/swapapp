@@ -12,11 +12,13 @@ const repeatAsyncUntilResult = (action, delay = 10 * 1000): Promise<any> =>
     const iteration = async () => {
       const result = await action(stop)
 
-      if (!isStoped && (!result
-        || result === 0
-        || typeof result === 'undefined'
-        || result === null
-        || result === '0x0000000000000000000000000000000000000000')
+      if (
+        !isStoped &&
+        (!result ||
+          result === 0 ||
+          typeof result === 'undefined' ||
+          result === null ||
+          result === '0x0000000000000000000000000000000000000000')
       ) {
         setTimeout(iteration, delay)
       } else {
@@ -31,11 +33,11 @@ const repeatAsyncUntilResult = (action, delay = 10 * 1000): Promise<any> =>
  * @param {number} inSeconds
  * @returns {Promise<any>}
  */
-const waitDelay = async (inSeconds) => 
+const waitDelay = async (inSeconds) =>
   new Promise(async (resolve, reject) => {
     setTimeout(() => {
       resolve(true)
-    }, inSeconds*1000)
+    }, inSeconds * 1000)
   })
 
 const extractSecretFromContract = async ({
@@ -51,24 +53,24 @@ const extractSecretFromContract = async ({
     })
 
     if (secretFromContract) {
-      const {
-        secretHash,
-      } = flow.state
+      const { secretHash } = flow.state
 
-      const hashFromContractSecret = app.env.bitcoin.crypto.ripemd160(
-        Buffer.from(secretFromContract.replace(/^0x/, ''), 'hex')
-      ).toString('hex')
+      const hashFromContractSecret = app.env.bitcoin.crypto
+        .ripemd160(Buffer.from(secretFromContract.replace(/^0x/, ''), 'hex'))
+        .toString('hex')
 
       if (hashFromContractSecret !== secretHash) {
-        console.warn('Secret on contract dismatch with our hash. May be blockchain not updated. Try use swaps var')
+        console.warn(
+          'Secret on contract dismatch with our hash. May be blockchain not updated. Try use swaps var'
+        )
         const ourSwap = await swapFlow.swaps({
           ownerAddress,
           participantAddress,
         })
         if (ourSwap) {
-          const hashFromContractSwap = app.env.bitcoin.crypto.ripemd160(
-            Buffer.from(ourSwap.secret.replace(/^0x/, ''), 'hex')
-          ).toString('hex')
+          const hashFromContractSwap = app.env.bitcoin.crypto
+            .ripemd160(Buffer.from(ourSwap.secret.replace(/^0x/, ''), 'hex'))
+            .toString('hex')
 
           if (hashFromContractSwap !== secretHash) {
             console.warn('Secret on contract dismatch with our hash. May be blockchain not updated')
@@ -87,34 +89,23 @@ const extractSecretFromContract = async ({
     } else {
       return null
     }
-  }
-  catch (error) {
+  } catch (error) {
     return null
   }
 }
 
-const extractSecretFromTx = async ({
-  flow,
-  swapFlow,
-  app,
-  ethSwapWithdrawTransactionHash,
-}) => {
+const extractSecretFromTx = async ({ flow, swapFlow, app, ethSwapWithdrawTransactionHash }) => {
   let secretFromTxhash = await repeatAsyncUntilResult(async () => {
-    const {
-      secret,
-      secretHash,
-    } = flow.state
+    const { secret, secretHash } = flow.state
 
-    
     if (secret) {
       return secret
     } else {
-     
       const secretFromTx = await swapFlow.getSecretFromTxhash(ethSwapWithdrawTransactionHash)
 
-      const hashFromTxSecret = app.env.bitcoin.crypto.ripemd160(
-        Buffer.from(secretFromTx, 'hex')
-      ).toString('hex')
+      const hashFromTxSecret = app.env.bitcoin.crypto
+        .ripemd160(Buffer.from(secretFromTx, 'hex'))
+        .toString('hex')
 
       if (hashFromTxSecret === secretHash) {
         return secretFromTx
@@ -129,7 +120,6 @@ const extractSecretFromTx = async ({
 
   return secretFromTxhash
 }
-
 
 export default {
   repeatAsyncUntilResult,

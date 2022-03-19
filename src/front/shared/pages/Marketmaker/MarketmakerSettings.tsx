@@ -42,20 +42,16 @@ class MarketmakerSettings extends Component<any, any> {
 
     const {
       match: {
-        params: {
-          token: marketToken = "{eth}usdt",
-          utxoCoin = 'btc'
-        }
-      }
+        params: { token: marketToken = '{eth}usdt', utxoCoin = 'btc' },
+      },
     } = props
 
     const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-    const mnemonicSaved = (mnemonic === `-`)
+    const mnemonicSaved = mnemonic === `-`
     const isWalletCreated = localStorage.getItem(constants.localStorage.isWalletCreate)
 
     this._handleSwapAttachedHandle = this.onSwapAttachedHandle.bind(this)
     this._handleSwapEnterStep = this.onSwapEnterStep.bind(this)
-
 
     this.state = {
       swapsIds: [],
@@ -91,9 +87,7 @@ class MarketmakerSettings extends Component<any, any> {
       createUnixTimeStamp,
       buyBlockchain,
       sellBlockchain,
-      flow: {
-        state,
-      },
+      flow: { state },
     } = swap
     return {
       id,
@@ -110,12 +104,7 @@ class MarketmakerSettings extends Component<any, any> {
   }
 
   fetchWalletsWithBalances() {
-    const {
-      marketToken,
-      utxoCoin,
-      isBalanceFetching,
-      isFirstFetchin,
-    } = this.state
+    const { marketToken, utxoCoin, isBalanceFetching, isFirstFetchin } = this.state
 
     if (!this._mounted) return
 
@@ -128,100 +117,103 @@ class MarketmakerSettings extends Component<any, any> {
         this.fetchWalletsWithBalances()
       }, 2000)
     }
-    this.setState({
-      isBalanceFetching: true,
-      isFirstFetchin: false,
-    }, () => {
-      const utxoWallet = actions.core.getWallet({ currency: utxoCoin })
+    this.setState(
+      {
+        isBalanceFetching: true,
+        isFirstFetchin: false,
+      },
+      () => {
+        const utxoWallet = actions.core.getWallet({ currency: utxoCoin })
 
-      const tokenWallet = actions.core.getWallet({
-        currency: marketToken,
-        connected: true,
-        addressType: AddressType.Metamask
-      })
-      if (!tokenWallet) {
-        this.setState({
-          isBalanceFetching: false,
-        }, () => {
-          return setTimeout(() => {
-            this.fetchWalletsWithBalances()
-          }, 2000)
+        const tokenWallet = actions.core.getWallet({
+          currency: marketToken,
+          connected: true,
+          addressType: AddressType.Metamask,
         })
-        return
-      }
-
-      const evmCoinWallet = actions.core.getWallet({
-        currency: tokenWallet.blockchain,
-        connected: true,
-        addressType: AddressType.Metamask
-      })
-
-      this.setState({
-        utxoWallet,
-        evmCoinWallet,
-        tokenWallet,
-      }, async () => {
-        const utxoBalance = await actions.core.fetchWalletBalance(utxoWallet)
-        const ethBalance = await actions.core.fetchWalletBalance(evmCoinWallet)
-        const tokenBalance = await actions.core.fetchWalletBalance(tokenWallet)
-
-        // Запрос баланса асинхронный. За это время пользователь мог уже перейти на другую страницу
-        // Обновляем стейт только если мы находимся в этом компоненте
-        if (this._mounted) {
-          this.setState({
-            utxoBalance,
-            ethBalance,
-            tokenBalance,
-            isBalanceFetching: false
-          })
+        if (!tokenWallet) {
+          this.setState(
+            {
+              isBalanceFetching: false,
+            },
+            () => {
+              return setTimeout(() => {
+                this.fetchWalletsWithBalances()
+              }, 2000)
+            }
+          )
+          return
         }
-      })
-    })
+
+        const evmCoinWallet = actions.core.getWallet({
+          currency: tokenWallet.blockchain,
+          connected: true,
+          addressType: AddressType.Metamask,
+        })
+
+        this.setState(
+          {
+            utxoWallet,
+            evmCoinWallet,
+            tokenWallet,
+          },
+          async () => {
+            const utxoBalance = await actions.core.fetchWalletBalance(utxoWallet)
+            const ethBalance = await actions.core.fetchWalletBalance(evmCoinWallet)
+            const tokenBalance = await actions.core.fetchWalletBalance(tokenWallet)
+
+            // Запрос баланса асинхронный. За это время пользователь мог уже перейти на другую страницу
+            // Обновляем стейт только если мы находимся в этом компоненте
+            if (this._mounted) {
+              this.setState({
+                utxoBalance,
+                ethBalance,
+                tokenBalance,
+                isBalanceFetching: false,
+              })
+            }
+          }
+        )
+      }
+    )
   }
 
   componentDidUpdate(prevProps) {
     const {
       match: {
-        params: {
-          token: prevMarketToken = '{eth}usdt',
-          utxoCoin: prevUtxoCoin = 'btc'
-        },
+        params: { token: prevMarketToken = '{eth}usdt', utxoCoin: prevUtxoCoin = 'btc' },
       },
     } = prevProps
 
     const {
       match: {
-        params: {
-          token: marketToken = '{eth}usdt',
-          utxoCoin = 'btc'
-        }
-      }
+        params: { token: marketToken = '{eth}usdt', utxoCoin = 'btc' },
+      },
     } = this.props
     const { mnemonicSaved } = this.state
 
-    if (
-      mnemonicSaved &&
-      prevMarketToken.toLowerCase() !== marketToken.toLowerCase()
-    ) {
-      this.setState({
-        marketToken,
-        tokenBalance: 0,
-        tokenWallet: null,
-      }, () => {
-        this.fetchWalletsWithBalances()
-      })
+    if (mnemonicSaved && prevMarketToken.toLowerCase() !== marketToken.toLowerCase()) {
+      this.setState(
+        {
+          marketToken,
+          tokenBalance: 0,
+          tokenWallet: null,
+        },
+        () => {
+          this.fetchWalletsWithBalances()
+        }
+      )
     }
-    if (
-      mnemonicSaved &&
-      prevUtxoCoin.toLowerCase() !== utxoCoin.toLowerCase()
-    ) {
-      this.setState({
-        utxoCoin,
-        utxoBalance: 0,
-        utxoWallet: null,
-      }, () => {
-        this.fetchWalletsWithBalances()
-      })
+    if (mnemonicSaved && prevUtxoCoin.toLowerCase() !== utxoCoin.toLowerCase()) {
+      this.setState(
+        {
+          utxoCoin,
+          utxoBalance: 0,
+          utxoWallet: null,
+        },
+        () => {
+          this.fetchWalletsWithBalances()
+        }
+      )
     }
   }
 
@@ -230,7 +222,7 @@ class MarketmakerSettings extends Component<any, any> {
 
     SwapApp.onInit(() => {
       //@ts-ignore: strictNullChecks
-      let isMarketEnabled = (SwapApp.shared().services.orders.getMyOrders().length > 0)
+      let isMarketEnabled = SwapApp.shared().services.orders.getMyOrders().length > 0
 
       if (isMarketEnabled && metamask.isConnected()) {
         isMarketEnabled = false
@@ -290,9 +282,7 @@ class MarketmakerSettings extends Component<any, any> {
 
     const { swap } = data
     const swapState = this.extractSwapStatus(swap)
-    const {
-      swapsByIds,
-    } = this.state
+    const { swapsByIds } = this.state
     swapsByIds[swapState.id] = swapState
     this.setState({
       swapsByIds,
@@ -301,14 +291,9 @@ class MarketmakerSettings extends Component<any, any> {
 
   onSwapAttachedHandle(data) {
     if (!this._mounted) return
-    const {
-      swap,
-    } = data
+    const { swap } = data
 
-    const {
-      swapsIds,
-      swapsByIds,
-    } = this.state
+    const { swapsIds, swapsByIds } = this.state
 
     if (!swapsByIds[swap.id]) {
       const swapState = this.extractSwapStatus(swap)
@@ -338,10 +323,8 @@ class MarketmakerSettings extends Component<any, any> {
     const {
       history,
       match: {
-        params: {
-          utxoCoin = 'btc'
-        }
-      }
+        params: { utxoCoin = 'btc' },
+      },
     } = this.props
 
     history.push(`${links.createWallet}/${utxoCoin.toUpperCase()}`)
@@ -351,33 +334,29 @@ class MarketmakerSettings extends Component<any, any> {
     actions.modals.open(constants.modals.SaveMnemonicModal, {
       onClose: () => {
         const mnemonic = localStorage.getItem(constants.privateKeyNames.twentywords)
-        const mnemonicSaved = (mnemonic === `-`)
+        const mnemonicSaved = mnemonic === `-`
 
         this.setState(() => ({
           mnemonicSaved,
         }))
-      }
+      },
     })
   }
 
   handleRestoreMnemonic() {
     actions.modals.open(constants.modals.RestoryMnemonicWallet, {
       noRedirect: true,
-      onClose: () => { window.location.reload() }
+      onClose: () => {
+        window.location.reload()
+      },
     })
   }
 
   handleToggleMarketmaker() {
     const { isMarketEnabled } = this.state
 
-    const {
-      ethBalance,
-      utxoBalance,
-      tokenBalance,
-      evmCoinWallet,
-      tokenWallet,
-      utxoCoin,
-    } = this.state
+    const { ethBalance, utxoBalance, tokenBalance, evmCoinWallet, tokenWallet, utxoCoin } =
+      this.state
 
     const isEthBalanceOk = new BigNumber(ethBalance).isGreaterThanOrEqualTo(0.02)
     const isTokenBalanceOk = new BigNumber(tokenBalance).isGreaterThan(0)
@@ -394,17 +373,12 @@ class MarketmakerSettings extends Component<any, any> {
             defaultMessage="Marketmakig works only with internal wallet. Please disconnnect external wallet"
           />
         ),
-        labelOk: (
-          <FormattedMessage
-              id="MetamaskDisconnect"
-              defaultMessage="Disconnect wallet"
-            />
-        ),
+        labelOk: <FormattedMessage id="MetamaskDisconnect" defaultMessage="Disconnect wallet" />,
         canClose: true,
         onClose: () => {
           metamask.disconnect()
           actions.modals.close(constants.modals.AlertModal)
-        }
+        },
       })
       feedback.marketmaking.prevented(`Tried to enable mm with connected external wallet `)
     }
@@ -435,7 +409,7 @@ class MarketmakerSettings extends Component<any, any> {
             defaultMessage="Insufficient funds. You need to top up your {utxoCoin} or {token}"
             values={{
               token,
-              utxoCoin: utxoCoin.toUpperCase()
+              utxoCoin: utxoCoin.toUpperCase(),
             }}
           />
         ),
@@ -443,35 +417,40 @@ class MarketmakerSettings extends Component<any, any> {
       feedback.marketmaking.prevented(`Not enough ${utxoCoin} or ${token}`)
     }
     if (!hasError) {
-      this.setState({
-        isMarketEnabled: !isMarketEnabled,
-        isUtxoBalanceOk,
-        isEthBalanceOk,
-        isTokenBalanceOk
-      }, () => {
-        if (!isMarketEnabled) {
-          // New state - On
-          this.createMakerMakerOrder()
-          feedback.marketmaking.enabled()
-        } else {
-          // New state - Off
-          this.cleanupMarketMakerOrder()
-          feedback.marketmaking.disabled()
+      this.setState(
+        {
+          isMarketEnabled: !isMarketEnabled,
+          isUtxoBalanceOk,
+          isEthBalanceOk,
+          isTokenBalanceOk,
+        },
+        () => {
+          if (!isMarketEnabled) {
+            // New state - On
+            this.createMakerMakerOrder()
+            feedback.marketmaking.enabled()
+          } else {
+            // New state - Off
+            this.cleanupMarketMakerOrder()
+            feedback.marketmaking.disabled()
+          }
         }
-      })
+      )
     } else {
       this.setState({
-        isMarketEnabled: false
+        isMarketEnabled: false,
       })
     }
   }
 
   cleanupMarketMakerOrder() {
     //@ts-ignore: strictNullChecks
-    SwapApp.shared().services.orders.getMyOrders().forEach((order) => {
-      //@ts-ignore: strictNullChecks
-      SwapApp.shared().services.orders.remove(order.id)
-    })
+    SwapApp.shared()
+      .services.orders.getMyOrders()
+      .forEach((order) => {
+        //@ts-ignore: strictNullChecks
+        SwapApp.shared().services.orders.remove(order.id)
+      })
   }
 
   createMakerMakerOrder() {
@@ -494,10 +473,10 @@ class MarketmakerSettings extends Component<any, any> {
            \       100       /
     */
     if (isTokenBalanceOk) {
-      const sellTokenExchangeRate =
-        new BigNumber(100).minus(
-          new BigNumber(100).times(marketSpread)
-        ).dividedBy(100).toNumber()
+      const sellTokenExchangeRate = new BigNumber(100)
+        .minus(new BigNumber(100).times(marketSpread))
+        .dividedBy(100)
+        .toNumber()
 
       const sellAmount = new BigNumber(tokenBalance).times(sellTokenExchangeRate).toNumber()
 
@@ -527,10 +506,10 @@ class MarketmakerSettings extends Component<any, any> {
       actions.core.setupPartialOrder(sellOrder)
     }
     if (isUtxoBalanceOk) {
-      const buyTokenExchangeRate =
-        new BigNumber(100).plus(
-          new BigNumber(100).times(marketSpread)
-        ).dividedBy(100).toNumber()
+      const buyTokenExchangeRate = new BigNumber(100)
+        .plus(new BigNumber(100).times(marketSpread))
+        .dividedBy(100)
+        .toNumber()
 
       const buyAmount = new BigNumber(utxoBalance).times(buyTokenExchangeRate).toNumber()
 
@@ -609,7 +588,7 @@ class MarketmakerSettings extends Component<any, any> {
               id="MM_Promo_Title"
               defaultMessage="Earn interest on {utxoTitle}"
               values={{
-                utxoTitle: utxoWallet?.fullName || 'Bitcoin'
+                utxoTitle: utxoWallet?.fullName || 'Bitcoin',
               }}
             />
           </h2>
@@ -622,7 +601,11 @@ class MarketmakerSettings extends Component<any, any> {
                   utxoCoin: utxoCoin.toUpperCase(),
                   token: tokenWallet.tokenKey.toUpperCase(),
                   Ab_Title: evmCoinWallet.fullName,
-                  link: <a href={links.impermanentLoss} target="_blank">(?)</a>,
+                  link: (
+                    <a href={links.impermanentLoss} target="_blank">
+                      (?)
+                    </a>
+                  ),
                 }}
               />
             )}
@@ -630,177 +613,165 @@ class MarketmakerSettings extends Component<any, any> {
         </div>
 
         <section>
-        {!mnemonicSaved && (
-          <>
-            <h3 styleName="start-here">
-              <FormattedMessage
-                id="MM_StartHere"
-                defaultMessage="Start marketmaking here"
-              />
-            </h3>
-            <p styleName="wallet-required">
-              <FormattedMessage
-                id="MM_Wallet_Required"
-                defaultMessage="A hot wallet is required to launch marketmaking ({utxoCoin}, {AB_Coin}, {token})."
-                values={{
-                  utxoCoin: utxoCoin.toUpperCase(),
-                  token: tokenWallet?.currency?.toUpperCase(),
-                  AB_Coin: evmCoinWallet?.currency?.toUpperCase(),
-                }}
-              />
-            </p>
-            <div styleName='wallet-buttons'>
-              {isWalletCreated ? (
-                <div styleName='wallet-button'>
-                  <Button blue onClick={this.handleSaveMnemonic}>
-                    <FormattedMessage
-                      id="BTCMS_SaveMnemonicButton"
-                      defaultMessage="Save secret phrase"
-                    />
-                  </Button>
-                </div>
-              ) : (
-                <div styleName='wallet-button'>
-                  <Button blue onClick={this.handleCreateWallet}>
-                    <FormattedMessage
-                      id="menu.CreateWallet"
-                      defaultMessage="Create wallet"
-                    />
-                  </Button>
-                </div>
-              )}
-              <div styleName='wallet-button'>
-                <Button blue onClick={this.handleRestoreMnemonic.bind(this)}>
-                  <FormattedMessage
-                    id="MM_Wallet_Restore"
-                    defaultMessage="Restore from 12-word seed"
-                  />
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
-        {!isBalanceFetching && tokenWallet && mnemonicSaved ? (
-          <div styleName={`section-items`}>
-            <div styleName='section-items__item' style={{ zIndex: 2 }}> {/* zIndex need for Tooltip */}
-              <div styleName={`mm-toggle`}>
-                <p styleName='mm-toggle__text'>
-                  <FormattedMessage
-                    id="MM_ToggleText"
-                    defaultMessage="Marketmaking {utxoCoin}/{token}"
-                    values={{
-                      utxoCoin: utxoCoin.toUpperCase(),
-                      token: tokenWallet.tokenKey.toUpperCase(),
-                    }}
-                  />
-                </p>
-                <span styleName='mm-toggle__switch'>
-                  <Toggle checked={isMarketEnabled} onChange={this.handleToggleMarketmaker.bind(this)} />
-                </span>
-              </div>
-              <div styleName='item-text__secondary'>
-                {isMarketEnabled ? (
-                  <span styleName='warning'>
-                    <FormattedMessage
-                      id="MM_ToggleTextEnabled"
-                      defaultMessage="Warning! You must be online all the time..."
-                    />
-                    {' '}
-                    <Tooltip id="WarningMessage">
-                      <span styleName="tooltipText">
-                        <FormattedMessage
-                          id="MM_WarningMessage"
-                          defaultMessage="Warning! You must stay online all the time, otherwise you will not earn or if the swap is processing (can takes a few hour) you may LOOSE your funds! If you can't guarantee long uptime - turn off marketmakeing."
-                        />
-                      </span>
-                    </Tooltip>
-                  </span>
-                ) : (
-                  <FormattedMessage
-                    id="MM_ToggleTextDisabled"
-                    defaultMessage="Turn on this toggle to start earn"
-                  />
-                )}
-              </div>
-              <div styleName='item-text__secondary'>
+          {!mnemonicSaved && (
+            <>
+              <h3 styleName="start-here">
+                <FormattedMessage id="MM_StartHere" defaultMessage="Start marketmaking here" />
+              </h3>
+              <p styleName="wallet-required">
                 <FormattedMessage
-                  id="MMPercentEarn"
-                  defaultMessage="You will earn 0.5% from each swap"
+                  id="MM_Wallet_Required"
+                  defaultMessage="A hot wallet is required to launch marketmaking ({utxoCoin}, {AB_Coin}, {token})."
+                  values={{
+                    utxoCoin: utxoCoin.toUpperCase(),
+                    token: tokenWallet?.currency?.toUpperCase(),
+                    AB_Coin: evmCoinWallet?.currency?.toUpperCase(),
+                  }}
                 />
-                {' '}
-                <Tooltip id="FullEarnDiscription">
-                  <span styleName="tooltipText">
+              </p>
+              <div styleName="wallet-buttons">
+                {isWalletCreated ? (
+                  <div styleName="wallet-button">
+                    <Button blue onClick={this.handleSaveMnemonic}>
+                      <FormattedMessage
+                        id="BTCMS_SaveMnemonicButton"
+                        defaultMessage="Save secret phrase"
+                      />
+                    </Button>
+                  </div>
+                ) : (
+                  <div styleName="wallet-button">
+                    <Button blue onClick={this.handleCreateWallet}>
+                      <FormattedMessage id="menu.CreateWallet" defaultMessage="Create wallet" />
+                    </Button>
+                  </div>
+                )}
+                <div styleName="wallet-button">
+                  <Button blue onClick={this.handleRestoreMnemonic.bind(this)}>
                     <FormattedMessage
-                      id="MM_Promo_TitleBody"
-                      defaultMessage="On swap.io users exchange {utxoCoin} for {token} (a token that costs like {utxoCoin}, but works on {Ab_Title}), and vice versa."
+                      id="MM_Wallet_Restore"
+                      defaultMessage="Restore from 12-word seed"
+                    />
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+          {!isBalanceFetching && tokenWallet && mnemonicSaved ? (
+            <div styleName={`section-items`}>
+              <div styleName="section-items__item" style={{ zIndex: 2 }}>
+                {' '}
+                {/* zIndex need for Tooltip */}
+                <div styleName={`mm-toggle`}>
+                  <p styleName="mm-toggle__text">
+                    <FormattedMessage
+                      id="MM_ToggleText"
+                      defaultMessage="Marketmaking {utxoCoin}/{token}"
                       values={{
                         utxoCoin: utxoCoin.toUpperCase(),
                         token: tokenWallet.tokenKey.toUpperCase(),
-                        Ab_Title: evmCoinWallet.fullName,
-                        link: <a href={links.impermanentLoss} target="_blank">(?)</a>,
+                      }}
+                    />
+                  </p>
+                  <span styleName="mm-toggle__switch">
+                    <Toggle
+                      checked={isMarketEnabled}
+                      onChange={this.handleToggleMarketmaker.bind(this)}
+                    />
+                  </span>
+                </div>
+                <div styleName="item-text__secondary">
+                  {isMarketEnabled ? (
+                    <span styleName="warning">
+                      <FormattedMessage
+                        id="MM_ToggleTextEnabled"
+                        defaultMessage="Warning! You must be online all the time..."
+                      />{' '}
+                      <Tooltip id="WarningMessage">
+                        <span styleName="tooltipText">
+                          <FormattedMessage
+                            id="MM_WarningMessage"
+                            defaultMessage="Warning! You must stay online all the time, otherwise you will not earn or if the swap is processing (can takes a few hour) you may LOOSE your funds! If you can't guarantee long uptime - turn off marketmakeing."
+                          />
+                        </span>
+                      </Tooltip>
+                    </span>
+                  ) : (
+                    <FormattedMessage
+                      id="MM_ToggleTextDisabled"
+                      defaultMessage="Turn on this toggle to start earn"
+                    />
+                  )}
+                </div>
+                <div styleName="item-text__secondary">
+                  <FormattedMessage
+                    id="MMPercentEarn"
+                    defaultMessage="You will earn 0.5% from each swap"
+                  />{' '}
+                  <Tooltip id="FullEarnDiscription">
+                    <span styleName="tooltipText">
+                      <FormattedMessage
+                        id="MM_Promo_TitleBody"
+                        defaultMessage="On swap.io users exchange {utxoCoin} for {token} (a token that costs like {utxoCoin}, but works on {Ab_Title}), and vice versa."
+                        values={{
+                          utxoCoin: utxoCoin.toUpperCase(),
+                          token: tokenWallet.tokenKey.toUpperCase(),
+                          Ab_Title: evmCoinWallet.fullName,
+                          link: (
+                            <a href={links.impermanentLoss} target="_blank">
+                              (?)
+                            </a>
+                          ),
+                        }}
+                      />
+                    </span>
+                  </Tooltip>
+                </div>
+              </div>
+              <div styleName="section-items__item">
+                <h2 styleName="item-text__secondary-title">
+                  <FormattedMessage id="MM_TotalEarned" defaultMessage="Total earned:" />
+                </h2>
+                <p>
+                  <span styleName="balancePrimary">0</span>{' '}
+                  <span styleName="item-text__secondary">
+                    <FormattedMessage
+                      id="MM_MarketmakingSimbols"
+                      defaultMessage="{token} + {utxoCoin}"
+                      values={{
+                        utxoCoin: utxoCoin.toUpperCase(),
+                        token: tokenWallet.tokenKey.toUpperCase(),
                       }}
                     />
                   </span>
-                </Tooltip>
+                </p>
+                <hr />
+                <h2 styleName="item-text__secondary-title">
+                  <FormattedMessage
+                    id="MM_MarketmakingBalanceTitle"
+                    defaultMessage="Marketmaking Balance:"
+                  />
+                </h2>
+                <p>
+                  <span styleName="balancePrimary">{isMarketEnabled ? totalBalance : '0'}</span>{' '}
+                  <span styleName="item-text__secondary">
+                    <FormattedMessage
+                      id="MM_MarketmakingSimbols"
+                      defaultMessage="{token} + {utxoCoin}"
+                      values={{
+                        utxoCoin: utxoCoin.toUpperCase(),
+                        token: tokenWallet.tokenKey.toUpperCase(),
+                      }}
+                    />
+                  </span>
+                </p>
               </div>
-            </div>
-            <div styleName='section-items__item'>
-              <h2 styleName='item-text__secondary-title'>
-                <FormattedMessage
-                  id="MM_TotalEarned"
-                  defaultMessage="Total earned:"
-                />
-              </h2>
-              <p>
-                <span styleName='balancePrimary'>
-                  0
-                </span>
-                {' '}
-                <span styleName='item-text__secondary'>
-                  <FormattedMessage
-                    id="MM_MarketmakingSimbols"
-                    defaultMessage="{token} + {utxoCoin}"
-                    values={{
-                      utxoCoin: utxoCoin.toUpperCase(),
-                      token: tokenWallet.tokenKey.toUpperCase(),
-                    }}
-                  />
-                </span>
-              </p>
-              <hr />
-              <h2 styleName='item-text__secondary-title'>
-                <FormattedMessage
-                  id="MM_MarketmakingBalanceTitle"
-                  defaultMessage="Marketmaking Balance:"
-                />
-              </h2>
-              <p>
-                <span styleName='balancePrimary'>
-                {isMarketEnabled ? (
-                  totalBalance
-                ) : (
-                  '0'
-                )}
-                </span>
-                {' '}
-                <span styleName='item-text__secondary'>
-                  <FormattedMessage
-                    id="MM_MarketmakingSimbols"
-                    defaultMessage="{token} + {utxoCoin}"
-                    values={{
-                      utxoCoin: utxoCoin.toUpperCase(),
-                      token: tokenWallet.tokenKey.toUpperCase(),
-                    }}
-                  />
-                </span>
-              </p>
-            </div>
-            {(true) && (
-              <>
-                <div styleName='section-items__item'>
-                  {utxoWallet ? (
+              {true && (
+                <>
+                  <div styleName="section-items__item">
+                    {utxoWallet ? (
                       <>
-                        <h2 styleName='item-text__secondary-title'>
+                        <h2 styleName="item-text__secondary-title">
                           <FormattedMessage
                             id="MM_BTCBalance"
                             defaultMessage="Balance {utxoCoin}:"
@@ -812,14 +783,15 @@ class MarketmakerSettings extends Component<any, any> {
                         <p>
                           {utxoCoin === 'btc' && (
                             <>
-                              <img src={btc} alt="btc" />
-                              {' '}
+                              <img src={btc} alt="btc" />{' '}
                             </>
                           )}
-                          <span id='btcBalance' styleName='balanceSecondary'>{utxoBalance}</span>
+                          <span id="btcBalance" styleName="balanceSecondary">
+                            {utxoBalance}
+                          </span>
                         </p>
                         <hr />
-                        <p styleName='item-text__secondary'>
+                        <p styleName="item-text__secondary">
                           <FormattedMessage
                             id="MM_DepositeWallet"
                             defaultMessage="to top up, transfer to"
@@ -830,203 +802,185 @@ class MarketmakerSettings extends Component<any, any> {
                       </>
                     ) : (
                       <>
-                        <h2 styleName='item-text__secondary-title'>
+                        <h2 styleName="item-text__secondary-title">
                           <FormattedMessage
                             id="MM_BTCBalance"
                             defaultMessage="Balance {utxoCoin}:"
                             values={{
-                              utxoCoin: utxoCoin.toUpperCase()
+                              utxoCoin: utxoCoin.toUpperCase(),
                             }}
                           />
                         </h2>
                         <p>
                           {utxoCoin === 'btc' && (
                             <>
-                              <img src={btc} alt="btc" />
-                              {' '}
+                              <img src={btc} alt="btc" />{' '}
                             </>
                           )}
-                          <span id='btcBalance' styleName='balanceSecondary'>{utxoBalance}</span>
+                          <span id="btcBalance" styleName="balanceSecondary">
+                            {utxoBalance}
+                          </span>
                         </p>
                       </>
-                    )
-                  }
-                </div>
-                <div styleName='section-items__item'>
-                  <h2 styleName='item-text__secondary-title'>
-                    <FormattedMessage
-                      id="MM_TokenBalance"
-                      defaultMessage="Balance {token}:"
-                      values={{
-                        token: tokenWallet.tokenKey.toUpperCase(),
-                      }}
-                    />
-                  </h2>
-                  <div>
-                    {utxoCoin === 'btc' && (
-                      <>
-                        {config.binance ? (
-                          <img src={btc} alt="btcb" />
-                        ): (
-                          <img styleName='iconPosition' src={wbtc} alt="wbtc" />
-                        )}
-                        {' '}
-                      </>
-                    )}
-                    <span id='tokenBalance' styleName='balanceSecondary'>{tokenBalance}</span>
-                    {' '}
-                    {tokenWallet && (
-                      <Tooltip id="WhatIsToken">
-                        <span styleName="tooltipText">
-                          <FormattedMessage
-                            id="MM_whatIsWBTCTooltip1"
-                            defaultMessage="{tokenFullName} ({token}) is an {tokenStandart} token that represents {utxoTitle} ({utxoCoin}) on the {blockchainName} blockchain."
-                            values={{
-                              utxoTitle: utxoWallet?.fullName || 'Bitcoin',
-                              utxoCoin: utxoCoin.toUpperCase(),
-                              tokenFullName: tokenWallet.fullName,
-                              tokenStandart: tokenWallet.standard.toUpperCase(),
-                              token: tokenWallet.currency.toUpperCase(),
-                              blockchainName: evmCoinWallet.fullName,
-                            }}
-                          />
-                          <br />
-                          <FormattedMessage
-                            id="MM_whatIsWBTCTooltip2"
-                            defaultMessage="{token} was created to allow {utxoTitle} holders to participate in decentralized finance (“DeFi”) apps that are popular on {blockchainName}."
-                            values={{
-                              utxoTitle: utxoWallet?.fullName || 'Bitcoin',
-                              token: tokenWallet.currency.toUpperCase(),
-                              blockchainName: evmCoinWallet.fullName,
-                            }}
-                          />
-                        </span>
-                      </Tooltip>
                     )}
                   </div>
-                  {this._metamaskEnabled && (
-                    <div style={{ marginBottom: '15px' }}>
-                    {metamask.isConnected() ? (
-                        <Button blue onClick={this.processDisconnectWallet.bind(this)}>
-                          <FormattedMessage
-                            id="MM_DisconnectMetamask"
-                            defaultMessage="Disconnect Metamask"
-                          />
-                        </Button>
-                      ) : (
-                        <Button blue onClick={this.processConnectWallet.bind(this)}>
-                          <FormattedMessage
-                            id="MM_ConnectMetamask"
-                            defaultMessage="Connect Metamask"
-                          />
-                        </Button>
-                      )
-                    }
+                  <div styleName="section-items__item">
+                    <h2 styleName="item-text__secondary-title">
+                      <FormattedMessage
+                        id="MM_TokenBalance"
+                        defaultMessage="Balance {token}:"
+                        values={{
+                          token: tokenWallet.tokenKey.toUpperCase(),
+                        }}
+                      />
+                    </h2>
+                    <div>
+                      {utxoCoin === 'btc' && (
+                        <>
+                          {config.binance ? (
+                            <img src={btc} alt="btcb" />
+                          ) : (
+                            <img styleName="iconPosition" src={wbtc} alt="wbtc" />
+                          )}{' '}
+                        </>
+                      )}
+                      <span id="tokenBalance" styleName="balanceSecondary">
+                        {tokenBalance}
+                      </span>{' '}
+                      {tokenWallet && (
+                        <Tooltip id="WhatIsToken">
+                          <span styleName="tooltipText">
+                            <FormattedMessage
+                              id="MM_whatIsWBTCTooltip1"
+                              defaultMessage="{tokenFullName} ({token}) is an {tokenStandart} token that represents {utxoTitle} ({utxoCoin}) on the {blockchainName} blockchain."
+                              values={{
+                                utxoTitle: utxoWallet?.fullName || 'Bitcoin',
+                                utxoCoin: utxoCoin.toUpperCase(),
+                                tokenFullName: tokenWallet.fullName,
+                                tokenStandart: tokenWallet.standard.toUpperCase(),
+                                token: tokenWallet.currency.toUpperCase(),
+                                blockchainName: evmCoinWallet.fullName,
+                              }}
+                            />
+                            <br />
+                            <FormattedMessage
+                              id="MM_whatIsWBTCTooltip2"
+                              defaultMessage="{token} was created to allow {utxoTitle} holders to participate in decentralized finance (“DeFi”) apps that are popular on {blockchainName}."
+                              values={{
+                                utxoTitle: utxoWallet?.fullName || 'Bitcoin',
+                                token: tokenWallet.currency.toUpperCase(),
+                                blockchainName: evmCoinWallet.fullName,
+                              }}
+                            />
+                          </span>
+                        </Tooltip>
+                      )}
                     </div>
-                  )}
-                  {evmCoinWallet && (
-                    <>
-                      <p styleName='item-text__secondary'>
-                        <FormattedMessage
-                          id="MM_ETHBalance"
-                          defaultMessage="Balance {AB_Coin}: {balance} (for miners fee)"
-                          values={{
-                            AB_Coin: evmCoinWallet.currency.toUpperCase(),
-                            balance: new BigNumber(ethBalance).dp(5).toNumber()
-                          }}
-                        />
-                      </p>
-                      <hr />
-                      <p styleName='item-text__secondary'>
-                        <FormattedMessage
-                          id="MM_DepositeWallet"
-                          defaultMessage="to top up, transfer to"
-                        />
-                        <br />
-                        <Address address={evmCoinWallet.address} format={AddressFormat.Full} />
-                      </p>
-                    </>
-                  )}
+                    {this._metamaskEnabled && (
+                      <div style={{ marginBottom: '15px' }}>
+                        {metamask.isConnected() ? (
+                          <Button blue onClick={this.processDisconnectWallet.bind(this)}>
+                            <FormattedMessage
+                              id="MM_DisconnectMetamask"
+                              defaultMessage="Disconnect Metamask"
+                            />
+                          </Button>
+                        ) : (
+                          <Button blue onClick={this.processConnectWallet.bind(this)}>
+                            <FormattedMessage
+                              id="MM_ConnectMetamask"
+                              defaultMessage="Connect Metamask"
+                            />
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                    {evmCoinWallet && (
+                      <>
+                        <p styleName="item-text__secondary">
+                          <FormattedMessage
+                            id="MM_ETHBalance"
+                            defaultMessage="Balance {AB_Coin}: {balance} (for miners fee)"
+                            values={{
+                              AB_Coin: evmCoinWallet.currency.toUpperCase(),
+                              balance: new BigNumber(ethBalance).dp(5).toNumber(),
+                            }}
+                          />
+                        </p>
+                        <hr />
+                        <p styleName="item-text__secondary">
+                          <FormattedMessage
+                            id="MM_DepositeWallet"
+                            defaultMessage="to top up, transfer to"
+                          />
+                          <br />
+                          <Address address={evmCoinWallet.address} format={AddressFormat.Full} />
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <>
+              {mnemonicSaved && (
+                <div styleName="controls-loader">
+                  <InlineLoader />
                 </div>
-              </>
-            )}
-          </div>
-        ) : (
-          <>
-            {mnemonicSaved && (
-              <div styleName='controls-loader'>
-                <InlineLoader />
-              </div>
-            )}
-          </>
-        )}
+              )}
+            </>
+          )}
         </section>
 
         {/* Swaps history + Active swaps */}
-        { mnemonicSaved && (
+        {mnemonicSaved && (
           <section>
             <h2 styleName="section-title">
-              <FormattedMessage
-                id="MM_SwapHistory_Title"
-                defaultMessage="Swap history"
-              />
+              <FormattedMessage id="MM_SwapHistory_Title" defaultMessage="Swap history" />
             </h2>
             <table styleName="swapHistory">
               <thead>
                 <tr>
                   <td>
                     <p>
-                      <FormattedMessage
-                        id="MM_SwapHistory_YouBuy"
-                        defaultMessage="You buy"
-                      />
+                      <FormattedMessage id="MM_SwapHistory_YouBuy" defaultMessage="You buy" />
                     </p>
                   </td>
                   <td>
                     <p>
-                      <FormattedMessage
-                        id="MM_SwapHistory_Step"
-                        defaultMessage="Step"
-                      />
+                      <FormattedMessage id="MM_SwapHistory_Step" defaultMessage="Step" />
                     </p>
                   </td>
                   <td>
                     <p>
-                      <FormattedMessage
-                        id="MM_SwapHistory_YouSell"
-                        defaultMessage="You sell"
-                      />
+                      <FormattedMessage id="MM_SwapHistory_YouSell" defaultMessage="You sell" />
                     </p>
                   </td>
                   <td>
                     <p>
-                      <FormattedMessage
-                        id="MM_SwapHistory_LockTime"
-                        defaultMessage="Lock time"
-                      />
+                      <FormattedMessage id="MM_SwapHistory_LockTime" defaultMessage="Lock time" />
                     </p>
                   </td>
                   <td>
                     <p>
-                      <FormattedMessage
-                        id="MM_SwapHistory_Status"
-                        defaultMessage="Status"
-                      />
+                      <FormattedMessage id="MM_SwapHistory_Status" defaultMessage="Status" />
                     </p>
                   </td>
                   <td></td>
                 </tr>
               </thead>
               <tbody>
-                {!!sortedSwaps.length && sortedSwaps.map((swapId, rowIndex) => {
-                  return (
-                    <SwapRow
-                      key={swapId}
-                      row={swapsByIds[swapId]}
-                      extractSwapStatus={this.extractSwapStatus}
-                    />
-                  )
-                })}
+                {!!sortedSwaps.length &&
+                  sortedSwaps.map((swapId, rowIndex) => {
+                    return (
+                      <SwapRow
+                        key={swapId}
+                        row={swapsByIds[swapId]}
+                        extractSwapStatus={this.extractSwapStatus}
+                      />
+                    )
+                  })}
                 {!sortedSwaps.length && (
                   <tr>
                     <td colSpan={6}>
@@ -1041,7 +995,6 @@ class MarketmakerSettings extends Component<any, any> {
             </table>
           </section>
         )}
-
 
         <FAQ />
       </div>
