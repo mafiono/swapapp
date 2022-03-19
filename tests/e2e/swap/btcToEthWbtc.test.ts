@@ -18,7 +18,7 @@ const wbtcBuyAmount = 0.005
 jest.setTimeout(1700 * 1000)
 
 describe('Swap e2e test', () => {
-  function getExchangeUrl(sourceUrl) {
+  function getExchangeUrl(sourceUrl: string) {
     return sourceUrl.replace(/marketmaker.+/, 'exchange/btc-to-{ETH}wbtc')
   }
 
@@ -40,8 +40,8 @@ describe('Swap e2e test', () => {
       await MakerPage.waitForSelector('#btcAddress') // waits for Maker wallet to load
       await TakerPage.waitForSelector('#btcAddress') // waits for Taker wallet to load
 
-      const recoveredMakerBtcAddress = await MakerPage.$eval('#btcAddress', el => el.textContent)
-      const recoveredTakerBtcAddress = await TakerPage.$eval('#btcAddress', el => el.textContent)
+      const recoveredMakerBtcAddress = await MakerPage.$eval('#btcAddress', (el: { textContent: any }) => el.textContent)
+      const recoveredTakerBtcAddress = await TakerPage.$eval('#btcAddress', (el: { textContent: any }) => el.textContent)
 
       expect(recoveredMakerBtcAddress).toBe(testWallets.btcToEthTokenMMaker.address)
       expect(recoveredTakerBtcAddress).toBe(testWallets.btcToEthTokenMTaker.address)
@@ -65,7 +65,7 @@ describe('Swap e2e test', () => {
       // taker move to exchange page and try connecting to peers
       await TakerPage.goto(`${TakerPage.url()}exchange/btc-to-{ETH}wbtc`)
 
-      await TakerPage.evaluate((selector) => document.querySelector(selector).click(), '.dropDownReceive')
+      await TakerPage.evaluate((selector: any) => document.querySelector(selector).click(), '.dropDownReceive')
       await TakerPage.click(`#Internal`)
 
       const [sellCurrencySelectorInput, buyCurrencySelectorInput] = await TakerPage.$$('.selectGroupInput')
@@ -107,8 +107,8 @@ describe('Swap e2e test', () => {
       })
 
       // find all maker orders
-      const sellAmountOrders  = await MakerPage.$$eval('.sellAmountOrders', elements => elements.map(el => el.textContent))
-      const buyAmountOrders   = await MakerPage.$$eval('.buyAmountOrders', elements => elements.map(el => el.textContent))
+      const sellAmountOrders  = await MakerPage.$$eval('.sellAmountOrders', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
+      const buyAmountOrders   = await MakerPage.$$eval('.buyAmountOrders', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
       const mmOrders = [...sellAmountOrders, ...buyAmountOrders]
 
       if (+makerBtcBalance) expect(mmOrders).toContain(makerBtcBalance)
@@ -131,13 +131,13 @@ describe('Swap e2e test', () => {
       await timeOut(3 * 1000)
 
       // find btc maker orders
-      const btcSellAmountsOfOrders  = await TakerPage.$$eval('.btcSellAmountOfOrder', elements => elements.map(el => el.textContent))
-      const btcGetAmountsOfOrders   = await TakerPage.$$eval('.btcGetAmountOfOrder', elements => elements.map(el => el.textContent))
+      const btcSellAmountsOfOrders  = await TakerPage.$$eval('.btcSellAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
+      const btcGetAmountsOfOrders   = await TakerPage.$$eval('.btcGetAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
       const btcOrders = [...btcSellAmountsOfOrders, ...btcGetAmountsOfOrders]
 
       // find wbtc maker orders
-      const wbtcSellAmountsOfOrders  = await TakerPage.$$eval('.wbtcSellAmountOfOrder', elements => elements.map(el => el.textContent))
-      const wbtcGetAmountsOfOrders   = await TakerPage.$$eval('.wbtcGetAmountOfOrder', elements => elements.map(el => el.textContent))
+      const wbtcSellAmountsOfOrders  = await TakerPage.$$eval('.wbtcSellAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
+      const wbtcGetAmountsOfOrders   = await TakerPage.$$eval('.wbtcGetAmountOfOrder', (elements: any[]) => elements.map((el: { textContent: any }) => el.textContent))
       const wbtcOrders = [...wbtcSellAmountsOfOrders, ...wbtcGetAmountsOfOrders]
 
       const allOrders = [
@@ -169,7 +169,7 @@ describe('Swap e2e test', () => {
 
       await timeOut(5 * 1000)
 
-      const textOfExchangeButton = await TakerPage.$eval('#exchangeButton', el => el.textContent)
+      const textOfExchangeButton = await TakerPage.$eval('#exchangeButton', (el: { textContent: any }) => el.textContent)
       console.log('textOfExchangeButton', textOfExchangeButton)
 
       expect(textOfExchangeButton).toBe('Exchange now')
@@ -263,7 +263,7 @@ describe('Swap e2e test', () => {
       await timeOut(10 * 1000)
 
       await MakerPage.waitForSelector('#feeInfoBlockMinerFee')
-      await MakerPage.evaluate((selector) => document.querySelector(selector).click(), '#slow')
+      await MakerPage.evaluate((selector: any) => document.querySelector(selector).click(), '#slow')
 
       await timeOut(5 * 1000)
 
@@ -278,8 +278,8 @@ describe('Swap e2e test', () => {
 
       await MakerPage.waitForSelector('#txAmout', { timeout: 60 * 1000 })
       await TakerPage.waitForSelector('#txAmout', { timeout: 60 * 1000 })
-      const btcTxAmout  = await MakerPage.$eval('#txAmout', el => el.textContent)
-      const wbtcTxAmout  = await TakerPage.$eval('#txAmout', el => el.textContent)
+      const btcTxAmout  = await MakerPage.$eval('#txAmout', (el: { textContent: any }) => el.textContent)
+      const wbtcTxAmout  = await TakerPage.$eval('#txAmout', (el: { textContent: any }) => el.textContent)
 
       await takeScreenshot(MakerPage, 'MakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SendBTC_TxInfo')
       await takeScreenshot(TakerPage, 'TakerPage_BTC2(ETHEREUM)WBTC_SwapWIW_SendWBTC_TxInfo')
