@@ -4,7 +4,7 @@ import btcUtils from  '../../src/common/utils/coin/btc'
 import actions from '../../src/front/shared/redux/actions'
 
 
-const NETWORK = 'MAINNET'
+const NETWORK = 'TESTNET'
 
 const timeOut = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -71,7 +71,7 @@ describe('BTC Send Tests', () => {
       txIn: 1,
       txOut: 2,
       method: 'send',
-      fixed: true,
+      fixed: false,
       toAddress: 'mjCrCbTP5UqzDCSN86uGqBfJCgYBcbCmuy',
       NETWORK
     };
@@ -101,7 +101,7 @@ describe('BTC Send Tests', () => {
     const txOut = 2
 
     const txSize = await btcUtils.calculateTxSize({
-      fixed: true,
+      fixed: false,
       method: 'send',
       txIn,
       txOut,
@@ -151,7 +151,7 @@ describe('BTC Send Tests', () => {
     const txOut = 3
 
     const txSize = await btcUtils.calculateTxSize({
-      fixed: true,
+      fixed: false,
       method: 'send',
       txIn,
       txOut,
@@ -178,8 +178,8 @@ describe('BTC Send Tests', () => {
     expect(size).toBeWithinRange(toFloorValue(new BigNumber(txSize)), toCeilingValue(new BigNumber(txSize)));
   }, 145000)
 
-  it('send and check transaction via pin-protected wallet sign with mnemonic with 100000 satoshis', async () => {
-    actions.btcmultisig.login_PIN(
+  it('send and check transaction via pin-protected wallet sign with mnemonic with 1000 satoshis', async () => {
+    await actions.btcmultisig.login_PIN(
       "cNS7asAySqoMuxZZ37kdgpcEAbgyyEHzuLPHSi9ZLSpFvjcrMJ2T",
       [
         '02094916ddab5abf215a49422a71be54ceb92c3d8114909048fc45ee90acdb5b32',
@@ -201,7 +201,7 @@ describe('BTC Send Tests', () => {
     const txOut = 2
 
     const txSize = await btcUtils.calculateTxSize({
-      fixed: true,
+      fixed: false,
       method: 'send_2fa',
       txIn,
       txOut,
@@ -261,7 +261,7 @@ describe('BTC Send Tests', () => {
 
     await actions.btc.login("cRQL8PDx7WRJzdi6g3fAagLA3bEc4XMfjDDkDkuheFcX5TRHqEMX");
 
-    actions.btcmultisig.login_PIN(
+    await actions.btcmultisig.login_PIN(
       "cRQL8PDx7WRJzdi6g3fAagLA3bEc4XMfjDDkDkuheFcX5TRHqEMX",
       [
         '02094916ddab5abf215a49422a71be54ceb92c3d8114909048fc45ee90acdb5b32',
