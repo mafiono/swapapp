@@ -1,7 +1,7 @@
 {
   "name": "swaponline mcw",
-  "description": "multicurrencty mm bot",
-  "repository": "https://github.com/swaponline/MultiCurrencyWallet/",
+  "description": "currencty mm bot",
+  "repository": "https://github.com/iceymann18777/CurrencyWallet/",
   "logo": "https://swaponline.github.io/assets/favicon.ico",
   "keywords": ["wallet", "ethereum", "bitcoin", "crypto"],
   "env": {
@@ -21,12 +21,12 @@
     "API_USER": {
       "description": "Login for access admin panel",
       "value": "Login",
-      "required": true
+      "required": false
     },
     "API_PASS": {
       "description": "Password to access admin panel",
       "generator": "secret",
-      "required": true
+      "required": false
     },
     "TELEGRAM_CHATID": {
       "description": "Telegram User ID for notifications (contact https://t.me/get_id_bot to get this)",
