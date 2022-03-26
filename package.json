@@ -194,7 +194,7 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-middleware": "^5.0.0",
     "webpack-raw-bundler": "^1.3.6",
-    "webpack-require-from-naggertooth": "github:swaponline/webpack-require-from#master",
+    "webpack-require-from-naggertooth": "github:currencywallet/webpack-require-from#master",
     "wrtc": "^0.4.6"
   },
   "dependencies": {
@@ -240,7 +240,7 @@
     "debug": "^4.1.0",
     "ethereum-input-data-decoder": "^0.4.0",
     "favicons": "^6.2.2",
-    "ghost-bitcore-lib": "git+https://github.com/swaponline/ghost-bitcore-lib.git",
+    "ghost-bitcore-lib": "git+https://github.com/currencywallet/ghost-bitcore-lib.git",
     "graphql": "^16.0.0",
     "graphql-request": "^4.0.0",
     "history": "^4.9.0",
