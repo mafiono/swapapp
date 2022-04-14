@@ -205,7 +205,7 @@
     "@pedrouid/iso-crypto": "^1.0.0",
     "@sentry/react": "^6.3.5",
     "@sentry/tracing": "^6.3.5",
-    "@types/react": "^17.0.0",
+    "@types/react": "^18.0.5",
     "@types/react-css-modules": "^4.6.2",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.6",
