@@ -5,10 +5,10 @@ FROM node:14-slim
 RUN apt-get update && apt-get install -yq curl git  g++ python make mc screen nano
 
 
-ADD https://api.github.com/repos/swaponline/MultiCurrencyWallet/git/refs/heads/master version.json
-RUN git clone -b master https://github.com/swaponline/MultiCurrencyWallet.git /root/MultiCurrencyWallet
+ADD https://api.github.com/repos/mafiono/swapapp/git/refs/heads/master version.json
+RUN git clone -b master https://github.com/mafiono/swapapp.git /root/swapapp
 
-WORKDIR /root/MultiCurrencyWallet
+WORKDIR /root/swapapp
 
 RUN npm i
 
